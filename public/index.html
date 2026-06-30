@@ -12,8 +12,6 @@
   --teal:#06b6d4;--purple:#8b5cf6;--blue:#3b82f6;
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;height:100vh;display:flex;overflow:hidden}
-
-/* ── LEFT NAV ── */
 .left-nav{width:160px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:12px 8px;gap:4px}
 .nav-logo{font-weight:800;font-size:15px;color:var(--text);padding:6px 8px 14px;letter-spacing:.5px}
 .nav-logo span{color:var(--green)}
@@ -24,16 +22,10 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .nav-item.sc.active{color:var(--amber)}
 .nav-item.scm.active{color:var(--purple)}
 .nav-icon{font-size:15px;flex-shrink:0}
-
-/* ── MAIN ── */
 .main-content{flex:1;display:flex;overflow:hidden}
 .panel{display:none;flex:1;flex-direction:column;overflow:hidden}
 .panel.active{display:flex}
-
-/* ── SCANNER WRAP ── */
 .scanner-wrap{display:flex;flex:1;overflow:hidden}
-
-/* ── FILTER SIDEBAR ── */
 .fsb{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:12px;flex-shrink:0;overflow-y:auto;transition:width .22s}
 .fsb.collapsed{width:36px;padding:12px 6px;overflow:hidden}
 .fsb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;min-height:20px}
@@ -50,7 +42,6 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .sel-inp{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:4px;font-size:12px;width:100%}
 .apply-btn{width:100%;padding:7px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px;transition:opacity .15s}
 .apply-btn:hover{opacity:.85}
-/* ── RACE AREA ── */
 .race-area{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:10px 12px}
 .prog-bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:8px;flex-shrink:0}
 .prog-fill{height:100%;border-radius:2px;transition:width .5s linear}
@@ -89,12 +80,14 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .col-inner::-webkit-scrollbar{width:3px}
 .col-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .idle-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:16px}
-.row{position:absolute;left:2px;right:2px;height:38px;display:flex;align-items:center;padding:0 8px;border-radius:6px;border:1px solid transparent;transition:top .55s cubic-bezier(.4,0,.2,1);cursor:default}
+.row{position:absolute;left:2px;right:2px;height:38px;display:flex;align-items:center;padding:0 8px;border-radius:6px;border:1px solid transparent;cursor:default}
+.row.flash{animation:flash .5s ease-out}
+@keyframes flash{0%{filter:brightness(2.5)}100%{filter:brightness(1)}}
 .bar-up{background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(6,182,212,.08));border-color:rgba(16,185,129,.18)}
 .bar-dn{background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(220,38,38,.08));border-color:rgba(239,68,68,.18)}
 .bar-sc-up{background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(251,191,36,.08));border-color:rgba(245,158,11,.18)}
 .bar-scm-up{background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));border-color:rgba(139,92,246,.18)}
-.fill{position:absolute;left:0;top:0;height:100%;border-radius:6px;opacity:.13;transition:width .55s cubic-bezier(.4,0,.2,1)}
+.fill{position:absolute;left:0;top:0;height:100%;border-radius:6px;opacity:.13;transition:width .6s ease-out}
 .fill-up{background:linear-gradient(90deg,var(--green),var(--teal))}
 .fill-dn{background:linear-gradient(90deg,var(--red),#dc2626)}
 .fill-sc{background:linear-gradient(90deg,var(--amber),#fbbf24)}
@@ -110,15 +103,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 <body>
 <nav class="left-nav">
   <div class="nav-logo">📊 <span>Rachki</span></div>
-  <button class="nav-item wl active" id="nav-wl" onclick="showPanel('wl')">
-    <span class="nav-icon">📈</span><span>Watchlist</span>
-  </button>
-  <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')">
-    <span class="nav-icon">⚡</span><span>Small Cap</span>
-  </button>
-  <button class="nav-item scm" id="nav-scm" onclick="showPanel('scm')">
-    <span class="nav-icon">🔥</span><span>SC Momentum</span>
-  </button>
+  <button class="nav-item wl active" id="nav-wl" onclick="showPanel('wl')"><span class="nav-icon">📈</span><span>Watchlist</span></button>
+  <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')"><span class="nav-icon">⚡</span><span>Small Cap</span></button>
+  <button class="nav-item scm" id="nav-scm" onclick="showPanel('scm')"><span class="nav-icon">🔥</span><span>SC Momentum</span></button>
 </nav>
 <div class="main-content">
 
@@ -132,9 +119,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
       <span class="badge" id="wl-badge" style="display:none">LIVE</span>
       <span class="count-lbl" id="wl-count"></span>
       <div class="sort-tabs">
-        <button class="sort-tab active" onclick="wl.setSort('pct',this)">% Chg</button>
+        <button class="sort-tab active" onclick="wl.setSort('pct',this)">% Move</button>
+        <button class="sort-tab" onclick="wl.setSort('chg',this)">$ Move</button>
         <button class="sort-tab" onclick="wl.setSort('vol',this)">Volume</button>
-        <button class="sort-tab" onclick="wl.setSort('price',this)">Price</button>
       </div>
       <button class="race-btn btn-wl" id="wl-btn" onclick="wl.toggle()">&#9654; START</button>
     </div>
@@ -146,7 +133,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     <div class="cols">
       <div class="col">
         <div class="col-hdr up-hdr">&#9650; GAINERS <span id="wl-up-count"></span></div>
-        <div class="col-inner" id="wl-up-inner"><div class="idle-msg" id="wl-up-idle">Click START to begin race</div></div>
+        <div class="col-inner" id="wl-up-inner"><div class="idle-msg" id="wl-up-idle">Click &#9654; START to begin race</div></div>
       </div>
       <div class="col">
         <div class="col-hdr dn-hdr">&#9660; LOSERS <span id="wl-dn-count"></span></div>
@@ -162,32 +149,14 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     <div class="fsb" id="fsb-sc">
       <div class="fsb-header"><span class="fsb-title">Filters</span><button class="fsb-toggle" onclick="toggleFSB('sc')">&#9664;</button></div>
       <div class="fsb-body">
-        <div class="fsb-group">
-          <label class="fsb-label">Min Rel Vol</label>
-          <div class="fsb-row">
-            <input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="1" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'">
-            <span class="fsb-val" id="f-sc-rv-v">1x</span>
-          </div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Min % Change</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-sc-pct" value="0" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Price Range ($)</label>
-          <div class="fsb-row">
-            <input type="number" class="num-inp" id="f-sc-pmin" value="1" min="0" max="50" step="0.5" style="width:52px">
-            <span style="font-size:11px;color:var(--muted)">&#8211;</span>
-            <input type="number" class="num-inp" id="f-sc-pmax" value="11" min="0" max="50" step="0.5" style="width:52px">
-          </div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Min $ Volume</label>
-          <select class="sel-inp" id="f-sc-dv">
-            <option value="0">Any</option><option value="100000">$100K</option>
-            <option value="250000">$250K</option><option value="500000">$500K</option><option value="1000000">$1M</option>
-          </select>
-        </div>
+        <div class="fsb-group"><label class="fsb-label">Min Rel Vol</label>
+          <div class="fsb-row"><input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="1" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-sc-rv-v">1x</span></div></div>
+        <div class="fsb-group"><label class="fsb-label">Min % Change</label>
+          <div class="fsb-row"><input type="number" class="num-inp" id="f-sc-pct" value="0" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
+        <div class="fsb-group"><label class="fsb-label">Price Range ($)</label>
+          <div class="fsb-row"><input type="number" class="num-inp" id="f-sc-pmin" value="1" min="0" max="50" step="0.5" style="width:52px"><span style="font-size:11px;color:var(--muted)">&#8211;</span><input type="number" class="num-inp" id="f-sc-pmax" value="11" min="0" max="50" step="0.5" style="width:52px"></div></div>
+        <div class="fsb-group"><label class="fsb-label">Min $ Volume</label>
+          <select class="sel-inp" id="f-sc-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="500000">$500K</option><option value="1000000">$1M</option></select></div>
         <button class="apply-btn" onclick="applyFSB('sc')">Apply Filters</button>
       </div>
     </div>
@@ -204,50 +173,27 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
         <button class="race-btn btn-sc" id="sc-btn" onclick="sc.toggle()">&#9654; START</button>
       </div>
       <div class="cols">
-        <div class="col">
-          <div class="col-hdr sc-up-hdr">&#9650; GAINERS <span id="sc-up-count"></span></div>
-          <div class="col-inner" id="sc-up-inner"><div class="idle-msg" id="sc-up-idle">Click START to begin</div></div>
-        </div>
-        <div class="col">
-          <div class="col-hdr dn-hdr">&#9660; LOSERS <span id="sc-dn-count"></span></div>
-          <div class="col-inner" id="sc-dn-inner"><div class="idle-msg" id="sc-dn-idle"></div></div>
-        </div>
+        <div class="col"><div class="col-hdr sc-up-hdr">&#9650; GAINERS <span id="sc-up-count"></span></div><div class="col-inner" id="sc-up-inner"><div class="idle-msg" id="sc-up-idle">Click START to begin</div></div></div>
+        <div class="col"><div class="col-hdr dn-hdr">&#9660; LOSERS <span id="sc-dn-count"></span></div><div class="col-inner" id="sc-dn-inner"><div class="idle-msg" id="sc-dn-idle"></div></div></div>
       </div>
     </div>
   </div>
 </div>
+
 <!-- SC MOMENTUM -->
 <div class="panel" id="panel-scm">
   <div class="scanner-wrap">
     <div class="fsb" id="fsb-scm">
       <div class="fsb-header"><span class="fsb-title">Filters</span><button class="fsb-toggle" onclick="toggleFSB('scm')">&#9664;</button></div>
       <div class="fsb-body">
-        <div class="fsb-group">
-          <label class="fsb-label">Min Rel Vol</label>
-          <div class="fsb-row">
-            <input type="range" id="f-scm-rv" min="0" max="5" step="0.5" value="2" oninput="document.getElementById('f-scm-rv-v').textContent=this.value+'x'">
-            <span class="fsb-val" id="f-scm-rv-v">2x</span>
-          </div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Min % Change</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pct" value="2" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Price Range ($)</label>
-          <div class="fsb-row">
-            <input type="number" class="num-inp" id="f-scm-pmin" value="1" min="0" max="50" step="0.5" style="width:52px">
-            <span style="font-size:11px;color:var(--muted)">&#8211;</span>
-            <input type="number" class="num-inp" id="f-scm-pmax" value="11" min="0" max="50" step="0.5" style="width:52px">
-          </div>
-        </div>
-        <div class="fsb-group">
-          <label class="fsb-label">Min $ Volume</label>
-          <select class="sel-inp" id="f-scm-dv">
-            <option value="0">Any</option><option value="100000">$100K</option>
-            <option value="250000">$250K</option><option value="500000" selected>$500K</option><option value="1000000">$1M</option>
-          </select>
-        </div>
+        <div class="fsb-group"><label class="fsb-label">Min Rel Vol</label>
+          <div class="fsb-row"><input type="range" id="f-scm-rv" min="0" max="5" step="0.5" value="2" oninput="document.getElementById('f-scm-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-scm-rv-v">2x</span></div></div>
+        <div class="fsb-group"><label class="fsb-label">Min % Change</label>
+          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pct" value="2" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
+        <div class="fsb-group"><label class="fsb-label">Price Range ($)</label>
+          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pmin" value="1" min="0" max="50" step="0.5" style="width:52px"><span style="font-size:11px;color:var(--muted)">&#8211;</span><input type="number" class="num-inp" id="f-scm-pmax" value="11" min="0" max="50" step="0.5" style="width:52px"></div></div>
+        <div class="fsb-group"><label class="fsb-label">Min $ Volume</label>
+          <select class="sel-inp" id="f-scm-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="500000" selected>$500K</option><option value="1000000">$1M</option></select></div>
         <button class="apply-btn" onclick="applyFSB('scm')">Apply Filters</button>
       </div>
     </div>
@@ -264,47 +210,33 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
         <button class="race-btn btn-scm" id="scm-btn" onclick="scm.toggle()">&#9654; START</button>
       </div>
       <div class="cols">
-        <div class="col">
-          <div class="col-hdr scm-up-hdr">&#128293; MOMENTUM UP <span id="scm-up-count"></span></div>
-          <div class="col-inner" id="scm-up-inner"><div class="idle-msg" id="scm-up-idle">Click START to begin</div></div>
-        </div>
-        <div class="col">
-          <div class="col-hdr dn-hdr">&#128165; MOMENTUM DOWN <span id="scm-dn-count"></span></div>
-          <div class="col-inner" id="scm-dn-inner"><div class="idle-msg" id="scm-dn-idle"></div></div>
-        </div>
+        <div class="col"><div class="col-hdr scm-up-hdr">&#128293; MOMENTUM UP <span id="scm-up-count"></span></div><div class="col-inner" id="scm-up-inner"><div class="idle-msg" id="scm-up-idle">Click START to begin</div></div></div>
+        <div class="col"><div class="col-hdr dn-hdr">&#128165; MOMENTUM DOWN <span id="scm-dn-count"></span></div><div class="col-inner" id="scm-dn-inner"><div class="idle-msg" id="scm-dn-idle"></div></div></div>
       </div>
     </div>
   </div>
 </div>
-</div><!-- /main-content -->
-
+</div>
 <script>
-const ROW_H=42,RACE_DUR=45000,POLL_MS=8000;
+const ROW_H=48, RACE_DUR=45000, POLL_MS=3000, LERP=0.06;
 const pc=v=>(v>=0?'+':'')+v.toFixed(2)+'%';
-const abb=n=>n&&n.length>12?n.slice(0,12)+'\u2026':n||'';
+const pd=v=>(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);
+const abb=n=>n&&n.length>14?n.slice(0,14)+'\u2026':n||'';
+const AVATAR_COLORS=['#10b981','#3b82f6','#8b5cf6','#f59e0b','#06b6d4','#ec4899','#f97316','#14b8a6','#84cc16','#6366f1'];
+function avatarColor(t){let h=0;for(let c of t)h=(h*31+c.charCodeAt(0))&0x7fffffff;return AVATAR_COLORS[h%AVATAR_COLORS.length];}
 
 let customTickers=JSON.parse(localStorage.getItem('rc_tickers')||'[]');
 function renderTickers(){
   document.getElementById('wl-tags').innerHTML=
-    customTickers.map(t=>'<span class="ticker-tag">'+t+'<button onclick="removeTicker(\''+t+'\')">\u00d7</button></span>').join('');
+    customTickers.map(t=>'<span class="ticker-tag">'+t+'<button onclick="removeTicker(\''+t+'\')">&#215;</button></span>').join('');
 }
 function addTicker(){
   const inp=document.getElementById('wl-inp');
   const t=inp.value.trim().toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);
-  if(t&&!customTickers.includes(t)){
-    customTickers.push(t);
-    localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
-    renderTickers();
-    if(wl.running)wl.reset();
-  }
+  if(t&&!customTickers.includes(t)){customTickers.push(t);localStorage.setItem('rc_tickers',JSON.stringify(customTickers));renderTickers();if(wl.running)wl.reset();}
   inp.value='';inp.focus();
 }
-function removeTicker(t){
-  customTickers=customTickers.filter(x=>x!==t);
-  localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
-  renderTickers();
-  if(wl.running)wl.reset();
-}
+function removeTicker(t){customTickers=customTickers.filter(x=>x!==t);localStorage.setItem('rc_tickers',JSON.stringify(customTickers));renderTickers();if(wl.running)wl.reset();}
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -320,9 +252,9 @@ function applyFSB(id){
     minPrice:parseFloat(document.getElementById('f-'+id+'-pmin').value)||0,
     maxPrice:parseFloat(document.getElementById('f-'+id+'-pmax').value)||9999,
     minDolVol:parseFloat(document.getElementById('f-'+id+'-dv').value)||0,
-  };
-  tab.applyFilters();
+  };tab.applyFilters();
 }
+
 class RaceTab{
   constructor(c){
     Object.assign(this,{running:false,rawStocks:[],filtered:[],upRows:{},dnRows:{},startTime:0,rafId:null,lastFetch:0});
@@ -335,25 +267,25 @@ class RaceTab{
     this.btnId=c.btnId;this.sortKey=c.sortKey||'pct';this.filters=c.filters||{};
     this.metricFn=c.metricFn||(s=>Math.abs(s.pct||0));
     this.labelFn=c.labelFn||(s=>pc(s.pct||0));
+    this.subFn=c.subFn||(s=>s.relVol!=null?s.relVol.toFixed(1)+'x rel':'');
     this.barUp=c.barUp||'bar-up';this.barDn=c.barDn||'bar-dn';
     this.fillUp=c.fillUp||'fill-up';this.fillDn=c.fillDn||'fill-dn';
     this.lblUp=c.lblUp||'lbl-up';this.lblDn=c.lblDn||'lbl-dn';
+    this.showAvatar=c.showAvatar!==false;
   }
   getUrl(){return typeof this.apiUrl==='function'?this.apiUrl():this.apiUrl;}
   applyFilters(){
-    const f=this.filters;
-    let s=this.rawStocks;
+    const f=this.filters;let s=this.rawStocks;
     if(f.minRelVol)s=s.filter(x=>(x.relVol||0)>=f.minRelVol);
     if(f.minPct)s=s.filter(x=>Math.abs(x.pct||0)>=f.minPct);
     if(f.minPrice)s=s.filter(x=>(x.price||0)>=f.minPrice);
     if(f.maxPrice&&f.maxPrice<9000)s=s.filter(x=>(x.price||0)<=f.maxPrice);
     if(f.minDolVol)s=s.filter(x=>(x.price||0)*(x.vol||0)>=f.minDolVol);
-    this.filtered=s;
-    if(this.running)this._buildRows();
+    this.filtered=s;if(this.running)this._buildRows();
   }
   splitAndSort(stocks){
     const k=this.sortKey;
-    const m=s=>k==='score'?Math.abs(s.pct||0)*(s.relVol||1):k==='relVol'?(s.relVol||0):k==='vol'?(s.vol||0):Math.abs(s.pct||0);
+    const m=s=>k==='score'?Math.abs(s.pct||0)*(s.relVol||1):k==='relVol'?(s.relVol||0):k==='chg'?Math.abs(s.chg||0):k==='vol'?(s.vol||0):Math.abs(s.pct||0);
     const up=stocks.filter(s=>(s.pct||0)>=0).sort((a,b)=>m(b)-m(a));
     const dn=stocks.filter(s=>(s.pct||0)<0).sort((a,b)=>m(b)-m(a));
     return{up,dn};
@@ -369,30 +301,41 @@ class RaceTab{
       if(!rows[s.t]){
         const el=document.createElement('div');
         el.className='row '+bCls;
-        el.innerHTML='<div class="fill '+fCls+'"></div><span class="rank"></span><span class="ticker-name">'+abb(s.n||s.t)+'</span><span class="lbl '+lCls+'"></span><span class="sub"></span>';
+        const av=this.showAvatar?'<span class="avatar" style="background:'+avatarColor(s.t)+'">'+s.t.slice(0,2)+'</span>':'';
+        el.innerHTML='<div class="fill '+fCls+'"></div>'
+          +'<span class="rank"></span>'+av
+          +'<div class="rinfo"><span class="rsym">'+s.t+'</span><span class="rname">'+abb(s.n||s.t)+'</span></div>'
+          +'<div class="rprice"><span class="lbl '+lCls+'"></span><span class="rchg"></span></div>';
         c.appendChild(el);rows[s.t]=el;
       }
       const el=rows[s.t];
+      const prevLbl=el.querySelector('.lbl').textContent;
+      const newLbl=this.labelFn(s);
       el.querySelector('.rank').textContent='#'+(i+1);
-      el.querySelector('.lbl').textContent=this.labelFn(s);
-      el.querySelector('.sub').textContent=s.relVol!=null?s.relVol.toFixed(1)+'x':'';
+      el.querySelector('.lbl').textContent=newLbl;
+      const rchg=el.querySelector('.rchg');
+      if(rchg)rchg.textContent=s.price?'$'+s.price.toFixed(2)+(s.chg!=null?' '+pd(s.chg):''):'';
       el.querySelector('.fill').style.width=(this.metricFn(s)/maxM*100)+'%';
-      el.style.top=(i*ROW_H)+'px';
+      el._targetY=i*ROW_H;
+      if(el._currentY===undefined)el._currentY=i*ROW_H;
+      if(prevLbl&&prevLbl!==newLbl){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
     });
     const tks=new Set(stocks.map(s=>s.t));
     Object.keys(rows).forEach(t=>{if(!tks.has(t)){rows[t].remove();delete rows[t];}});
     c.style.height=(stocks.length*ROW_H)+'px';
     document.getElementById(isUp?this.upCountId:this.dnCountId).textContent=stocks.length?'('+stocks.length+')':'';
   }
-  _buildRows(){
-    const{up,dn}=this.splitAndSort(this.filtered);
-    this._buildCol(this.upId,this.upIdleId,up,true);
-    this._buildCol(this.dnId,this.dnIdleId,dn,false);
+  _buildRows(){const{up,dn}=this.splitAndSort(this.filtered);this._buildCol(this.upId,this.upIdleId,up,true);this._buildCol(this.dnId,this.dnIdleId,dn,false);}
+  _animateRows(){
+    [...Object.values(this.upRows),...Object.values(this.dnRows)].forEach(el=>{
+      if(el._targetY===undefined)return;
+      el._currentY+=(el._targetY-el._currentY)*LERP;
+      el.style.top=el._currentY+'px';
+    });
   }
   async _fetch(){
     try{
-      const r=await fetch(this.getUrl());
-      if(!r.ok)throw new Error(r.status);
+      const r=await fetch(this.getUrl());if(!r.ok)throw new Error(r.status);
       const d=await r.json();
       this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
       this.applyFilters();
@@ -400,10 +343,7 @@ class RaceTab{
       document.getElementById(this.lblId).textContent='Live \u00b7 '+new Date().toLocaleTimeString();
       if(this.badgeId)document.getElementById(this.badgeId).style.display='';
       if(this.countId)document.getElementById(this.countId).textContent=this.rawStocks.length+' stocks';
-    }catch(e){
-      document.getElementById(this.dotId).className='conn-dot';
-      document.getElementById(this.lblId).textContent='Error \u2013 retrying\u2026';
-    }
+    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error \u2013 retrying\u2026';}
     this.lastFetch=Date.now();
   }
   _loop(ts){
@@ -412,14 +352,11 @@ class RaceTab{
     document.getElementById(this.progId).style.width=(pct*100)+'%';
     if(pct>=1){this.reset();return;}
     if(Date.now()-this.lastFetch>POLL_MS)this._fetch();
+    this._animateRows();
     this.rafId=requestAnimationFrame(ts=>this._loop(ts));
   }
   toggle(){this.running?this.reset():this.start();}
-  start(){
-    this.running=true;this.startTime=performance.now();
-    document.getElementById(this.btnId).textContent='\u23f9 STOP';
-    this._fetch();this.rafId=requestAnimationFrame(ts=>this._loop(ts));
-  }
+  start(){this.running=true;this.startTime=performance.now();document.getElementById(this.btnId).textContent='\u23f9 STOP';this._fetch();this.rafId=requestAnimationFrame(ts=>this._loop(ts));}
   reset(){
     this.running=false;cancelAnimationFrame(this.rafId);
     document.getElementById(this.progId).style.width='0%';
@@ -428,24 +365,20 @@ class RaceTab{
     this.upRows={};this.dnRows={};
     document.getElementById(this.upIdleId).style.display='';
     const di=document.getElementById(this.dnIdleId);if(di)di.style.display='';
-    document.getElementById(this.upCountId).textContent='';
-    document.getElementById(this.dnCountId).textContent='';
+    document.getElementById(this.upCountId).textContent='';document.getElementById(this.dnCountId).textContent='';
     this.rawStocks=[];this.filtered=[];
   }
-  setSort(key,btn){
-    this.sortKey=key;
-    btn.closest('.sort-tabs').querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    if(this.running)this._buildRows();
-  }
+  setSort(key,btn){this.sortKey=key;btn.closest('.sort-tabs').querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(this.running)this._buildRows();}
 }
+/* extra row styles injected via JS since style tag is closed */
+
 const wl=new RaceTab({
   apiUrl:()=>'/api/quotes'+(customTickers.length?'?extra='+customTickers.join(','):''),
   progId:'wl-prog',upId:'wl-up-inner',dnId:'wl-dn-inner',
   upIdleId:'wl-up-idle',dnIdleId:'wl-dn-idle',
   upCountId:'wl-up-count',dnCountId:'wl-dn-count',
   dotId:'wl-dot',lblId:'wl-lbl',badgeId:'wl-badge',countId:'wl-count',
-  btnId:'wl-btn',sortKey:'pct',filters:{},
+  btnId:'wl-btn',sortKey:'pct',filters:{},showAvatar:true,
   barUp:'bar-up',barDn:'bar-dn',fillUp:'fill-up',fillDn:'fill-dn',
   lblUp:'lbl-up',lblDn:'lbl-dn',
   labelFn:s=>pc(s.pct||0),metricFn:s=>Math.abs(s.pct||0),
@@ -456,7 +389,7 @@ const sc=new RaceTab({
   upIdleId:'sc-up-idle',dnIdleId:'sc-dn-idle',
   upCountId:'sc-up-count',dnCountId:'sc-dn-count',
   dotId:'sc-dot',lblId:'sc-lbl',countId:'sc-count',
-  btnId:'sc-btn',sortKey:'relVol',
+  btnId:'sc-btn',sortKey:'relVol',showAvatar:true,
   filters:{minRelVol:1,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
   barUp:'bar-sc-up',barDn:'bar-dn',fillUp:'fill-sc',fillDn:'fill-dn',
   lblUp:'lbl-sc-up',lblDn:'lbl-dn',
@@ -468,7 +401,7 @@ const scm=new RaceTab({
   upIdleId:'scm-up-idle',dnIdleId:'scm-dn-idle',
   upCountId:'scm-up-count',dnCountId:'scm-dn-count',
   dotId:'scm-dot',lblId:'scm-lbl',countId:'scm-count',
-  btnId:'scm-btn',sortKey:'score',
+  btnId:'scm-btn',sortKey:'score',showAvatar:true,
   filters:{minRelVol:2,minPct:2,minPrice:1,maxPrice:11,minDolVol:500000},
   barUp:'bar-scm-up',barDn:'bar-dn',fillUp:'fill-scm',fillDn:'fill-dn',
   lblUp:'lbl-scm-up',lblDn:'lbl-dn',
@@ -477,5 +410,17 @@ const scm=new RaceTab({
 });
 renderTickers();
 </script>
+<style>
+.avatar{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin:0 7px 0 4px;letter-spacing:-.5px}
+.rinfo{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
+.rsym{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap}
+.rname{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rprice{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0;margin-left:6px}
+.lbl{font-size:12px;font-weight:700}
+.lbl-up{color:var(--green)}.lbl-dn{color:var(--red)}
+.lbl-sc-up{color:var(--amber)}.lbl-scm-up{color:var(--purple)}
+.rchg{font-size:10px;color:var(--muted);white-space:nowrap}
+.row{height:48px}
+</style>
 </body>
 </html>
