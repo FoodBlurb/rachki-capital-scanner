@@ -1,71 +1,57 @@
-// Vercel serverless function — GET /api/quotes
-// Accepts optional ?extra=TICKER1,TICKER2 for custom watchlist additions
-const BASE_TICKERS = [
-'CAR','WEN','ASTS','NFLX','MSFT','V','LLY','COIN','OKLO','IREN',
-'AAPL','META','MSTR','BA','PLTR','CRWV','SNOW','MDB','IWM','AMZN',
-'AVGO','TSLA','SPY','QCOM','APP','NBIS','QQQ','HPE','GOOGL','NVDA',
-'SMCI','MRAM','INTC','CRDO','ORCL','AMD','CBRS','DELL','SNDK',
-'AAOI','LITE','MRVL','MU'
-];
+import fetch from 'node-fetch';
 
-const NAMES = {
-CAR:'Avis Budget Group', WEN:"Wendy's Co", ASTS:'AST SpaceMobile',
-NFLX:'Netflix Inc', MSFT:'Microsoft Corp', V:'Visa Inc',
-LLY:'Eli Lilly & Co', COIN:'Coinbase Global', OKLO:'Oklo Inc',
-IREN:'Iris Energy Ltd', AAPL:'Apple Inc', META:'Meta Platforms',
-MSTR:'MicroStrategy Inc', BA:'Boeing Co', PLTR:'Palantir Technologies',
-CRWV:'CoreWeave Inc', SNOW:'Snowflake Inc', MDB:'MongoDB Inc',
-IWM:'iShares Russell 2000 ETF', AMZN:'Amazon.com Inc',
-AVGO:'Broadcom Inc', TSLA:'Tesla Inc', SPY:'S&P 500 ETF',
-QCOM:'Qualcomm Inc', APP:'Applovin Corp', NBIS:'Nebius Group NV',
-QQQ:'Nasdaq 100 ETF', HPE:'HP Enterprise', GOOGL:'Alphabet Inc',
-NVDA:'NVIDIA Corp', SMCI:'Super Micro Computer', MRAM:'Everspin Technologies',
-INTC:'Intel Corp', CRDO:'Credo Technology Group', ORCL:'Oracle Corp',
-AMD:'Advanced Micro Devices', CBRS:'Citizen Broadband Radio',
-DELL:'Dell Technologies', SNDK:'SanDisk Corp',
-AAOI:'Applied Optoelectronics', LITE:'Lumentum Holdings',
-MRVL:'Marvell Technology', MU:'Micron Technology',
-};
+const API_BASE = 'https://api.massive.com';
+const API_KEY = process.env.MASSIVE_API_KEY;
+
+const BASE_TICKERS = ['CAR','WEN','ASTS','NFLX','MSFT','V','LLY','COIN','OKLO','IREN',
+  'AAPL','META','MSTR','BA','PLTR','CRWV','SNOW','MDB','IWM','AMZN',
+  'AVGO','TSLA','SPY','QCOM','APP','NBIS','QQQ','HPE','GOOGL','NVDA',
+  'SMCI','MRAM','INTC','CRDO','ORCL','AMD','CBRS','DELL','SNDK',
+  'AAOI','LITE','MRVL','MU'];
 
 export default async function handler(req, res) {
-res.setHeader('Access-Control-Allow-Origin', '*');
-res.setHeader('Cache-Control', 's-maxage=25, stale-while-revalidate=5');
+  res.setHeader('Cache-Control', 'no-store');
+  const extra = (req.query?.extra || '').split(',').map(s=>s.trim().toUpperCase()).filter(s=>/^[A-Z]{1,5}$/.test(s));
+  const allTickers = [...new Set([...BASE_TICKERS, ...extra])];
 
-const API_KEY = process.env.MASSIVE_API_KEY;
-const API_BASE = (process.env.MASSIVE_API_BASE || 'https://api.massive.com').replace(/\/$/, '');
+  try {
+    // v3/snapshot returns live extended-hours data (pre-market + after-hours)
+    const url = API_BASE+'/v3/snapshot?ticker.any_of='+allTickers.join(',')+'&apiKey='+API_KEY;
+    const r = await fetch(url);
+    const data = await r.json();
+    const results = data.results || [];
 
-if (!API_KEY) {
-  return res.status(500).json({ error: 'MASSIVE_API_KEY not configured' });
-}
+    const tickers = results.map(item => {
+      const s = item.session || {};
+      const ms = item.market_status || '';
+      // Pick the right change for the current session
+      let chg, pct;
+      if (ms === 'late_trading') {
+        chg = s.late_trading_change ?? s.change ?? 0;
+        pct = s.late_trading_change_percent ?? s.change_percent ?? 0;
+      } else if (ms === 'early_trading') {
+        chg = s.early_trading_change ?? s.change ?? 0;
+        pct = s.early_trading_change_percent ?? s.change_percent ?? 0;
+      } else {
+        chg = s.change ?? 0;
+        pct = s.change_percent ?? 0;
+      }
+      return {
+        t: item.ticker,
+        n: item.name || item.ticker,
+        price: s.price ?? s.close ?? 0,
+        chg: Number(chg.toFixed(4)),
+        pct: Number(pct.toFixed(4)),
+        vol: s.volume ?? 0,
+        high: s.high,
+        low: s.low,
+        prevClose: s.previous_close,
+        ms,
+      };
+    }).filter(s => s.price > 0);
 
-// Accept extra tickers via ?extra=TICKER1,TICKER2
-const extra = (req.query?.extra || '').split(',').map(s=>s.trim().toUpperCase()).filter(s=>/^[A-Z]{1,5}$/.test(s));
-const allTickers = extra.length ? BASE_TICKERS.join(',') + ',' + extra.join(',') : BASE_TICKERS.join(',');
-
-try {
-  const url = `${API_BASE}/v2/snapshot/locale/us/markets/stocks/tickers?tickers=${allTickers}&apiKey=${API_KEY}`;
-  const upstream = await fetch(url);
-  const json = await upstream.json();
-
-  if (!json.tickers) {
-    return res.status(502).json({ error: 'Unexpected API response', detail: JSON.stringify(json).slice(0,300) });
+    res.json({ tickers, updatedAt: Date.now() });
+  } catch(e) {
+    res.status(500).json({ error: e.message });
   }
-
-  const quotes = json.tickers.map(tk => ({
-    t: tk.ticker,
-    n: NAMES[tk.ticker] || tk.ticker,
-    price: +(tk.day?.c ?? 0).toFixed(2),
-    chg:   +(tk.todaysChange ?? 0).toFixed(2),
-    pct:   +(tk.todaysChangePerc ?? 0).toFixed(2),
-    vol:   Math.round(tk.day?.v ?? 0),
-    vwap:  +(tk.day?.vw ?? 0).toFixed(2),
-    high:  +(tk.day?.h ?? 0).toFixed(2),
-    low:   +(tk.day?.l ?? 0).toFixed(2),
-    open:  +(tk.day?.o ?? 0).toFixed(2),
-  }));
-
-  return res.status(200).json({ quotes, updatedAt: new Date().toISOString() });
-} catch (err) {
-  return res.status(500).json({ error: err.message });
-}
 }
