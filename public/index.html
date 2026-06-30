@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Rachki Capital Scanner</title>
+<style>
+:root{--bg:#0a0d14;--sidebar:#0d1120;--border:#1e2d45;--teal:#00e5c8;--green:#22c55e;--red:#ef4444;--text:#e2e8f0;--muted:#64748b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);display:flex;height:100vh;overflow:hidden}
+.sidebar{width:72px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:14px 0;flex-shrink:0}
+.logo{width:44px;height:44px;background:linear-gradient(135deg,var(--teal),#0088ff);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;color:#000;box-shadow:0 0 16px rgba(0,229,200,.35);letter-spacing:-1px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:52px;background:var(--sidebar);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0}
+.brand-name{font-size:17px;font-weight:800;letter-spacing:1px}
+.conn-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+.conn-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:background .3s}
+.conn-dot.live{background:var(--green);animation:blink 1.6s infinite}
+.conn-dot.error{background:var(--red)}
+.conn-dot.loading{background:#f59e0b;animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}50%{box-shadow:0 0 0 5px rgba(34,197,94,0)}}
+.content{flex:1;overflow:hidden;display:flex}
+.scanner-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.scanner-head{padding:12px 20px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.scanner-title{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--teal);text-transform:uppercase}
+.scanner-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.head-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.sort-tabs{display:flex;gap:5px}
+.sort-tab{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .15s}
+.sort-tab:hover{color:var(--teal);border-color:var(--teal)}
+.sort-tab.active{background:rgba(0,229,200,.12);border-color:var(--teal);color:var(--teal)}
+.race-btn{padding:5px 14px;border-radius:6px;font-size:11px;font-weight:800;cursor:pointer;border:none;letter-spacing:.5px;transition:all .15s}
+.btn-start{background:var(--green);color:#000}.btn-start:hover{filter:brightness(1.1)}
+.btn-reset{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--border)}
+.race-progress-bar{height:3px;background:var(--border);flex-shrink:0}
+.race-progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--green));width:0%;transition:width .5s linear}
+.race-wrap{flex:1;overflow-y:auto;position:relative}
+.race-wrap::-webkit-scrollbar{width:4px}
+.race-wrap::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.race-inner{position:relative}
+.race-row{position:absolute;left:0;right:0;height:46px;display:flex;align-items:center;border-bottom:1px solid rgba(30,45,69,.5);overflow:hidden;transition:top .45s cubic-bezier(.4,0,.2,1)}
+.race-bar-bg{position:absolute;left:0;top:0;bottom:0;transition:width .4s ease;opacity:.9;z-index:0}
+.race-bar-bg.up{background:linear-gradient(90deg,rgba(34,197,94,.28),rgba(34,197,94,.04))}
+.race-bar-bg.dn{background:linear-gradient(90deg,rgba(239,68,68,.25),rgba(239,68,68,.04))}
+.race-rank{position:relative;z-index:1;width:28px;text-align:center;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0}
+.race-pct-label{position:relative;z-index:1;width:64px;font-size:12px;font-weight:800;flex-shrink:0;padding-left:4px}
+.race-pct-label.up{color:var(--green)}.race-pct-label.dn{color:var(--red)}
+.race-avatar{position:relative;z-index:1;width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0;margin:0 8px 0 2px;letter-spacing:-.5px;color:#fff}
+.race-info{position:relative;z-index:1;flex:1;min-width:0}
+.race-ticker{font-size:13px;font-weight:800}
+.race-name{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.race-price-col{position:relative;z-index:1;text-align:right;padding-right:14px;flex-shrink:0}
+.race-price{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.race-chg{font-size:10px;font-weight:700;margin-top:1px}
+.race-chg.up{color:var(--green)}.race-chg.dn{color:var(--red)}
+@keyframes flashGreen{0%{background:rgba(34,197,94,.3)}100%{background:transparent}}
+@keyframes flashRed{0%{background:rgba(239,68,68,.25)}100%{background:transparent}}
+.flash-up{animation:flashGreen .6s ease-out}.flash-dn{animation:flashRed .6s ease-out}
+.race-idle{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(10,13,20,.75);z-index:10;backdrop-filter:blur(2px)}
+.race-idle-icon{font-size:48px}
+.race-idle-text{font-size:14px;font-weight:600;color:var(--muted);text-align:center;line-height:1.6}
+.btn-start-big{padding:10px 32px;border-radius:8px;font-size:14px;font-weight:800;cursor:pointer;border:none;background:var(--green);color:#000;letter-spacing:1px;box-shadow:0 0 24px rgba(34,197,94,.35);transition:all .15s}
+.btn-start-big:hover{filter:brightness(1.1);transform:scale(1.03)}
+.flag-panel{width:130px;flex-shrink:0;position:relative;overflow:hidden;border-left:1px solid var(--border)}
+.checkered{position:absolute;inset:0;background-image:repeating-conic-gradient(rgba(255,255,255,.14) 0% 25%,rgba(0,0,0,0) 0% 50%);background-size:22px 22px}
+.flag-panel.racing .checkered{animation:scrollFlag 2s linear infinite}
+@keyframes scrollFlag{from{background-position:0 0}to{background-position:0 44px}}
+.flag-top{position:absolute;top:12px;left:0;right:0;text-align:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.45);letter-spacing:1px;line-height:1.5}
+.flag-timer-box{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.75);padding:8px;text-align:center;border-top:1px solid var(--border)}
+.flag-time{font-size:20px;font-weight:900;color:#fff;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.flag-sublabel{font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px}
+.update-badge{font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(0,229,200,.1);color:var(--teal);border:1px solid rgba(0,229,200,.2)}
+.bottom-bar{height:30px;background:var(--sidebar);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;flex-shrink:0;font-size:10px;color:var(--muted)}
+.bottom-bar strong{color:var(--teal)}
+</style>
+</head>
+<body>
+<nav class="sidebar"><div class="logo">RC</div></nav>
+<div class="main">
+  <header class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="brand-name">Rachki Capital</span>
+      <div class="conn-status">
+        <div class="conn-dot loading" id="connDot"></div>
+        <span id="connLabel">Loading…</span>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="update-badge" id="updateBadge">—</span>
+      <span style="font-size:11px;color:var(--muted)" id="clock"></span>
+    </div>
+  </header>
+  <div class="race-progress-bar"><div class="race-progress-fill" id="progressFill"></div></div>
+  <div class="content">
+    <div class="scanner-panel">
+      <div class="scanner-head">
+        <div>
+          <div class="scanner-title">⚡ Rachki Capital Scanner</div>
+          <div class="scanner-sub" id="scanSub">Fetching live data…</div>
+        </div>
+        <div class="head-right">
+          <div class="sort-tabs">
+            <button class="sort-tab active" onclick="setSort('dollar',this)">$ Move</button>
+            <button class="sort-tab" onclick="setSort('pct',this)">% Move</button>
+            <button class="sort-tab" onclick="setSort('vol',this)">Volume</button>
+          </div>
+          <button class="race-btn btn-start" id="btnStart" onclick="startRace()">▶ START</button>
+          <button class="race-btn btn-reset" onclick="resetRace()">↺ RESET</button>
+        </div>
+      </div>
+      <div class="race-wrap" id="raceWrap">
+        <div class="race-inner" id="raceInner"></div>
+        <div class="race-idle" id="raceIdle">
+          <div class="race-idle-icon">📡</div>
+          <div class="race-idle-text" id="idleText">Fetching live data…</div>
+          <button class="btn-start-big" onclick="startRace()">▶ START RACE</button>
+        </div>
+      </div>
+    </div>
+    <div class="flag-panel" id="flagPanel">
+      <div class="checkered"></div>
+      <div class="flag-top">MOMENTUM<br>RACE</div>
+      <div class="flag-timer-box">
+        <div class="flag-time" id="raceTimer">00:00:00</div>
+        <div class="flag-sublabel">SESSION TIMER</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <span>Exchange: <strong>NASDAQ · NYSE · AMEX</strong></span>
+    <span id="tickerCountBar">Tickers: <strong>—</strong></span>
+    <span>Source: <strong>Massive Market Data · Live</strong></span>
+    <span style="margin-left:auto" id="bottomDate"></span>
+  </div>
+</div>
+<script>
+const PALETTE=['#3b82f6','#8b5cf6','#06b6d4','#f59e0b','#10b981','#ef4444','#6366f1','#ec4899','#14b8a6','#f97316','#84cc16','#a855f7','#0ea5e9','#22c55e','#fb923c','#e11d48','#7c3aed','#0d9488','#dc2626','#d97706'];
+const avatarColor=i=>PALETTE[i%PALETTE.length];
+const avatarLabel=t=>t.length<=3?t:t.slice(0,2);
+const fd=n=>'$'+Math.abs(n).toFixed(2);
+const fv=v=>v>=1e9?(v/1e9).toFixed(1)+'B':v>=1e6?(v/1e6).toFixed(1)+'M':v>=1e3?(v/1e3).toFixed(0)+'K':String(v);
+const pad=n=>String(Math.floor(Math.abs(n))).padStart(2,'0');
+const POLL_MS=30000,ROW_H=46,RACE_DUR=45000;
+let STOCKS=[],sortKey='dollar',raceState='idle',raceStart=null,pausedElapsed=0,rafId=null,NOISE=[],curVals=[],rowsBuilt=false;
+
+async function fetchQuotes(){
+  setConn('loading','Refreshing…');
+  try{
+    const res=await fetch('/api/quotes');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.quotes||!data.quotes.length)throw new Error('No quotes');
+    const prev={};STOCKS.forEach(s=>{prev[s.t]=s.price;});
+    STOCKS=data.quotes;
+    STOCKS.forEach(s=>{const old=prev[s.t];if(old!==undefined&&old!==s.price){const row=document.getElementById('row-'+s.t);if(row){row.classList.remove('flash-up','flash-dn');void row.offsetWidth;row.classList.add(s.price>old?'flash-up':'flash-dn');}}});
+    if(!rowsBuilt){initRows();rowsBuilt=true;document.getElementById('idleText').innerHTML=STOCKS.length+' tickers loaded — ready to race';}
+    if(raceState==='running'||raceState==='paused'){STOCKS.forEach(s=>{const el=document.getElementById('price-'+s.t);if(el)el.textContent=fd(s.price);});}
+    const t=data.updatedAt?new Date(data.updatedAt).toLocaleTimeString():new Date().toLocaleTimeString();
+    document.getElementById('updateBadge').textContent='Updated '+t;
+    document.getElementById('tickerCountBar').innerHTML='Tickers: <strong>'+STOCKS.length+'</strong>';
+    document.getElementById('scanSub').textContent=sortLabels[sortKey]+' · '+STOCKS.length+' tickers · Live';
+    setConn('live','Live');
+  }catch(err){setConn('error','Error — retrying');console.error(err);}
+}
+
+function setConn(state,label){
+  document.getElementById('connDot').className='conn-dot'+(state==='live'?' live':state==='error'?' error':state==='loading'?' loading':'');
+  document.getElementById('connLabel').textContent=label;
+}
+function easeOut(t){return 1-Math.pow(1-t,2.5)}
+function tickProgress(elapsed){
+  const raw=Math.min(elapsed/RACE_DUR,1);
+  STOCKS.forEach((s,i)=>{const n=NOISE[i]||{a:.3,b:0};const adj=Math.max(0,(raw-n.a*.2)/(1-n.a*.2));const t=easeOut(Math.min(adj,1));const osc=Math.sin(elapsed*.003+n.b)*.015*t;curVals[i]=s.chg*Math.min(t+osc,1);});
+  return raw;
+}
+function getSortedIndices(){
+  return STOCKS.map((_,i)=>i).sort((a,b)=>{
+    if(sortKey==='dollar')return Math.abs(curVals[b]||0)-Math.abs(curVals[a]||0);
+    if(sortKey==='pct')return Math.abs(STOCKS[b].pct)-Math.abs(STOCKS[a].pct);
+    return(STOCKS[b].vol||0)-(STOCKS[a].vol||0);
+  });
+}
+function initRows(){
+  const inner=document.getElementById('raceInner');
+  inner.innerHTML='';inner.style.height=(STOCKS.length*ROW_H)+'px';
+  curVals=STOCKS.map(()=>0);NOISE=STOCKS.map(()=>({a:.3+Math.random()*.4,b:Math.random()*Math.PI*2}));
+  STOCKS.forEach((s,i)=>{
+    const up=s.chg>=0,row=document.createElement('div');
+    row.className='race-row';row.id='row-'+s.t;row.style.top=(i*ROW_H)+'px';
+    row.innerHTML='<div class="race-bar-bg '+(up?'up':'dn')+'" id="bar-'+s.t+'" style="width:0%"></div><div class="race-rank" id="rank-'+s.t+'">—</div><div class="race-pct-label '+(up?'up':'dn')+'" id="pct-'+s.t+'">0.00%</div><div class="race-avatar" style="background:'+avatarColor(i)+'">'+avatarLabel(s.t)+'</div><div class="race-info"><div class="race-ticker">'+s.t+'</div><div class="race-name">'+s.n+'</div></div><div class="race-price-col"><div class="race-price" id="price-'+s.t+'">'+fd(s.price)+'</div><div class="race-chg '+(up?'up':'dn')+'" id="chg-'+s.t+'">— —</div></div>';
+    inner.appendChild(row);
+  });
+}
+function updateDOM(progress){
+  if(!STOCKS.length)return;
+  const sorted=getSortedIndices(),maxAbs=Math.max(...curVals.map(Math.abs),.0001);
+  sorted.forEach((si,rank)=>{
+    const s=STOCKS[si],val=curVals[si]||0,pct=(Math.abs(val)/maxAbs*100);
+    const dispPct=sortKey==='vol'?fv(s.vol):pct.toFixed(2)+'%';
+    const row=document.getElementById('row-'+s.t);if(!row)return;
+    row.style.top=(rank*ROW_H)+'px';
+    document.getElementById('bar-'+s.t).style.width=pct.toFixed(1)+'%';
+    document.getElementById('rank-'+s.t).textContent=rank+1;
+    document.getElementById('pct-'+s.t).textContent=dispPct;
+    document.getElementById('price-'+s.t).textContent=fd(s.price);
+    const chgEl=document.getElementById('chg-'+s.t),arrow=val>=0?'▲':'▼';
+    chgEl.textContent=Math.abs(val)<.005?'—':arrow+' '+fd(val)+' ('+(s.pct>=0?'+':'')+( s.pct*(Math.abs(val)/(Math.abs(s.chg)||1))).toFixed(2)+'%)';
+    chgEl.className='race-chg '+(val>=0?'up':'dn');
+  });
+  document.getElementById('progressFill').style.width=(Math.min(progress,1)*100).toFixed(1)+'%';
+}
+function raceLoop(){const elapsed=pausedElapsed+(Date.now()-raceStart);updateDOM(tickProgress(elapsed));rafId=requestAnimationFrame(raceLoop);}
+function startRace(){
+  if(!STOCKS.length){alert('Waiting for live data…');return;}
+  if(raceState==='idle'){document.getElementById('raceIdle').style.display='none';initRows();raceState='running';raceStart=Date.now();pausedElapsed=0;document.getElementById('btnStart').textContent='⏸ PAUSE';document.getElementById('flagPanel').classList.add('racing');rafId=requestAnimationFrame(raceLoop);}
+  else if(raceState==='running'){cancelAnimationFrame(rafId);pausedElapsed+=Date.now()-raceStart;raceState='paused';document.getElementById('btnStart').textContent='▶ RESUME';document.getElementById('flagPanel').classList.remove('racing');}
+  else if(raceState==='paused'){raceStart=Date.now();raceState='running';document.getElementById('btnStart').textContent='⏸ PAUSE';document.getElementById('flagPanel').classList.add('racing');rafId=requestAnimationFrame(raceLoop);}
+}
+function resetRace(){
+  cancelAnimationFrame(rafId);raceState='idle';raceStart=null;pausedElapsed=0;rowsBuilt=false;
+  document.getElementById('progressFill').style.width='0%';document.getElementById('btnStart').textContent='▶ START';
+  document.getElementById('flagPanel').classList.remove('racing');document.getElementById('raceIdle').style.display='flex';
+  document.getElementById('idleText').textContent=STOCKS.length?STOCKS.length+' tickers loaded — ready to race':'Fetching live data…';
+  if(STOCKS.length){initRows();rowsBuilt=true;}
+}
+const sortLabels={dollar:'Ranked by dollar move',pct:'Ranked by % move',vol:'Ranked by volume'};
+function setSort(key,btn){sortKey=key;document.querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('scanSub').textContent=sortLabels[key]+' · '+STOCKS.length+' tickers · Live';}
+function tick(){const now=new Date();document.getElementById('clock').textContent=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});document.getElementById('bottomDate').textContent=now.toLocaleDateString()+' '+now.toLocaleTimeString();const open=new Date(now);open.setHours(9,30,0,0);const diff=Math.max(0,Math.floor((now-open)/1e3));document.getElementById('raceTimer').textContent=pad(diff/3600)+':'+pad((diff%3600)/60)+':'+pad(diff%60);}
+tick();setInterval(tick,1000);
+fetchQuotes();setInterval(fetchQuotes,POLL_MS);
+</script>
+</body>
+</html>
