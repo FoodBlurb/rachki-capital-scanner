@@ -1,0 +1,11 @@
+{
+  "name": "rachki-capital-scanner",
+  "version": "1.0.0",
+  "description": "Rachki Capital live momentum scanner — deployed on Vercel",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
