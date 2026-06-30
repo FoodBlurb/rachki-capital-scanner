@@ -187,13 +187,13 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
       <div class="fsb-header"><span class="fsb-title">Filters</span><button class="fsb-toggle" onclick="toggleFSB('scm')">&#9664;</button></div>
       <div class="fsb-body">
         <div class="fsb-group"><label class="fsb-label">Min Rel Vol</label>
-          <div class="fsb-row"><input type="range" id="f-scm-rv" min="0" max="5" step="0.5" value="2" oninput="document.getElementById('f-scm-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-scm-rv-v">2x</span></div></div>
+          <div class="fsb-row"><input type="range" id="f-scm-rv" min="0" max="5" step="0.5" value="1.5" oninput="document.getElementById('f-scm-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-scm-rv-v">2x</span></div></div>
         <div class="fsb-group"><label class="fsb-label">Min % Change</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pct" value="2" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
+          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pct" value="1" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
         <div class="fsb-group"><label class="fsb-label">Price Range ($)</label>
           <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pmin" value="1" min="0" max="50" step="0.5" style="width:52px"><span style="font-size:11px;color:var(--muted)">&#8211;</span><input type="number" class="num-inp" id="f-scm-pmax" value="11" min="0" max="50" step="0.5" style="width:52px"></div></div>
         <div class="fsb-group"><label class="fsb-label">Min $ Volume</label>
-          <select class="sel-inp" id="f-scm-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="500000" selected>$500K</option><option value="1000000">$1M</option></select></div>
+          <select class="sel-inp" id="f-scm-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="250000" selected>$250K</option><option value="1000000">$1M</option></select></div>
         <button class="apply-btn" onclick="applyFSB('scm')">Apply Filters</button>
       </div>
     </div>
@@ -292,7 +292,7 @@ class RaceTab{
   }
   _buildCol(cId,iId,stocks,isUp){
     const c=document.getElementById(cId),idle=document.getElementById(iId);
-    idle.style.display=stocks.length?'none':'';
+    const noFilter=this.rawStocks.length>0&&!stocks.length;idle.textContent=noFilter?'No stocks match — loosen filters':'Click START to begin';idle.style.display=stocks.length?'none':'';
     if(!stocks.length){c.style.height='0';return;}
     const bCls=isUp?this.barUp:this.barDn,fCls=isUp?this.fillUp:this.fillDn,lCls=isUp?this.lblUp:this.lblDn;
     const rows=isUp?this.upRows:this.dnRows;
@@ -402,7 +402,7 @@ const scm=new RaceTab({
   upCountId:'scm-up-count',dnCountId:'scm-dn-count',
   dotId:'scm-dot',lblId:'scm-lbl',countId:'scm-count',
   btnId:'scm-btn',sortKey:'score',showAvatar:true,
-  filters:{minRelVol:2,minPct:2,minPrice:1,maxPrice:11,minDolVol:500000},
+  filters:{minRelVol:1.5,minPct:1,minPrice:1,maxPrice:11,minDolVol:250000},
   barUp:'bar-scm-up',barDn:'bar-dn',fillUp:'fill-scm',fillDn:'fill-dn',
   lblUp:'lbl-scm-up',lblDn:'lbl-dn',
   labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',
