@@ -394,7 +394,7 @@ class RaceTab{
       const r=await fetch(this.getUrl());
       if(!r.ok)throw new Error(r.status);
       const d=await r.json();
-      this.rawStocks=d.tickers||d.stocks||d||[];
+      this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
       this.applyFilters();
       document.getElementById(this.dotId).className='conn-dot live';
       document.getElementById(this.lblId).textContent='Live \u00b7 '+new Date().toLocaleTimeString();
