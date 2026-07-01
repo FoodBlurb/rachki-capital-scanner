@@ -314,29 +314,29 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     </div>
   </div>
 
-  <!-- EMA 13 (price vs EMA 13) -->
+  <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
-    <div class="race-area">
+    <div class="e12-wrap">
       <div class="prog-bar"><div class="prog-fill" id="e13-prog" style="background:linear-gradient(90deg,var(--purple),var(--blue));width:0%"></div></div>
       <div class="ctrl-bar">
         <span class="conn-dot" id="e13-dot"></span>
         <span class="conn-lbl" id="e13-lbl">Ready</span>
         <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted)">Price vs EMA 13 · 10 min · Watchlist tickers</span>
+        <span style="font-size:11px;color:var(--muted)">Price vs EMA 13 · Daily · Weekly · Monthly</span>
         <button class="race-btn" style="background:var(--purple);color:#fff" id="e13-btn" onclick="e13tab.toggle()">&#9654; START</button>
       </div>
-      <div class="cols">
-        <div class="col">
-          <div class="col-hdr up-hdr">&#9650; BULLISH CROSS &nbsp;· Price crossed above EMA 13</div>
-          <div class="col-inner" id="e13-up-inner">
-            <div class="idle-msg">Click START to scan watchlist</div>
-          </div>
+      <div class="e12-cols">
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--purple)">Daily 13 EMA</div>
+          <div class="e12-col-body" id="e13-day"><div class="e12-idle">Click START to scan</div></div>
         </div>
-        <div class="col">
-          <div class="col-hdr dn-hdr">&#9660; BEARISH CROSS &nbsp;· Price crossed below EMA 13</div>
-          <div class="col-inner" id="e13-dn-inner">
-            <div class="idle-msg"></div>
-          </div>
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--blue)">Weekly 13 EMA</div>
+          <div class="e12-col-body" id="e13-week"><div class="e12-idle">Click START to scan</div></div>
+        </div>
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--amber)">Monthly 13 EMA</div>
+          <div class="e12-col-body" id="e13-month"><div class="e12-idle">Click START to scan</div></div>
         </div>
       </div>
     </div>
@@ -732,12 +732,10 @@ class Ema13Tab{
   constructor(){this.running=false;this.timer=null;}
   toggle(){this.running?this.stop():this.start();}
   start(){
-    if(!customTickers.length){document.getElementById('e13-lbl').textContent='Add tickers to Watchlist first';return;}
     this.running=true;
     const btn=document.getElementById('e13-btn');
     btn.textContent='STOP';btn.classList.add('btn-stop');
-    this.scan();
-    this.timer=setInterval(()=>this.scan(),60000);
+    this.scan();this.timer=setInterval(()=>this.scan(),300000);
   }
   stop(){
     this.running=false;clearInterval(this.timer);
@@ -747,86 +745,46 @@ class Ema13Tab{
     document.getElementById('e13-lbl').textContent='Stopped';
     const p=document.getElementById('e13-prog');p.style.transition='none';p.style.width='0%';
   }
-  calcEMA(prices,period){
-    if(prices.length<period)return[];
-    const k=2/(period+1);
-    const out=new Array(prices.length).fill(null);
-    let e=prices.slice(0,period).reduce((a,b)=>a+b,0)/period;
-    out[period-1]=e;
-    for(let i=period;i<prices.length;i++){e=prices[i]*k+e*(1-k);out[i]=e;}
-    return out;
-  }
   async scan(){
-    const tks=[...customTickers];
-    document.getElementById('e13-lbl').textContent='Scanning '+tks.length+' tickers...';
+    const wlStr=customTickers.join(',');
+    document.getElementById('e13-lbl').textContent='Scanning 3 timeframes...';
     document.getElementById('e13-dot').className='conn-dot';
-    const bull=[],bear=[],abv=[],blw=[];
-    const fetched=await Promise.allSettled(
-      tks.map(tk=>fetch('/api/bars?ticker='+encodeURIComponent(tk)).then(r=>r.json()).then(d=>({tk,results:d.results||[]})))
-    );
-    for(const res of fetched){
-      if(res.status!=='fulfilled')continue;
-      const{tk,results}=res.value;
-      if(!results||results.length<15)continue;
-      const cls=results.map(b=>b.c);
-      const e13=this.calcEMA(cls,13);
-      const n=cls.length;
-      let crossed=false;
-      for(let i=n-1;i>=Math.max(n-3,13);i--){
-        if(e13[i]==null||e13[i-1]==null)continue;
-        const pv=cls[i-1]-e13[i-1],cv=cls[i]-e13[i];
-        const bar=results[i];
-        const t=new Date(bar.t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
-        const mAgo=(n-1-i)*10;
-        if(pv<0&&cv>=0){bull.push({tk,price:bar.c,e13:e13[i],t,mAgo});crossed=true;break;}
-        if(pv>0&&cv<=0){bear.push({tk,price:bar.c,e13:e13[i],t,mAgo});crossed=true;break;}
-      }
-      if(!crossed&&e13[n-1]!=null){
-        const lb=results[n-1],lt=new Date(lb.t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
-        if(cls[n-1]>e13[n-1])abv.push({tk,price:lb.c,e13:e13[n-1],t:lt});
-        else blw.push({tk,price:lb.c,e13:e13[n-1],t:lt});
-      }
-    }
+    const prog=document.getElementById('e13-prog');
+    prog.style.transition='width 10s linear';prog.style.width='85%';
     try{
-      const sq=await fetch('/api/quotes?extra='+tks.join(',')).then(r=>r.json());
-      const sm={};
-      (sq.tickers||sq.stocks||sq.quotes||[]).forEach(s=>{sm[s.t]=s;});
-      [...bull,...bear,...abv,...blw].forEach(x=>{
-        const s=sm[x.tk];
-        if(s){x.dayPct=s.pct;x.relVol=s.relVol;x.vol=s.vol;x.livePrice=s.price;}
-      });
-    }catch(e){console.warn('snap',e);}
-    document.getElementById('e13-dot').className='conn-dot live';
-    document.getElementById('e13-lbl').textContent='Live · '+new Date().toLocaleTimeString();
-    this.render(bull,bear,abv,blw);
+      const [day,week,month]=await Promise.all([
+        fetch('/api/ema13?tf=day&wl='+wlStr).then(r=>r.json()),
+        fetch('/api/ema13?tf=week&wl='+wlStr).then(r=>r.json()),
+        fetch('/api/ema13?tf=month&wl='+wlStr).then(r=>r.json()),
+      ]);
+      prog.style.transition='none';prog.style.width='100%';
+      setTimeout(()=>{prog.style.width='0%';},600);
+      this.renderCol('e13-day',day.results||[]);
+      this.renderCol('e13-week',week.results||[]);
+      this.renderCol('e13-month',month.results||[]);
+      document.getElementById('e13-dot').className='conn-dot live';
+      document.getElementById('e13-lbl').textContent='Updated · '+new Date().toLocaleTimeString();
+    }catch(err){
+      const pg=document.getElementById('e13-prog');pg.style.transition='none';pg.style.width='0%';
+      document.getElementById('e13-dot').className='conn-dot';
+      document.getElementById('e13-lbl').textContent='Error – retrying...';
+    }
   }
-  render(bull,bear,alreadyAbove,alreadyBelow){
-    if(!alreadyAbove)alreadyAbove=[];
-    if(!alreadyBelow)alreadyBelow=[];
-    const ms=x=>Math.abs(x.dayPct||0)*(x.relVol||1);
-    alreadyAbove.sort((a,b)=>ms(b)-ms(a));
-    alreadyBelow.sort((a,b)=>ms(b)-ms(a));
-    bull.sort((a,b)=>a.mAgo-b.mAgo);
-    bear.sort((a,b)=>a.mAgo-b.mAgo);
-    const ago=m=>m===0?'just now':m+'m ago';
-    const spr=(s,up)=>((up?s.price-s.e13:s.e13-s.price)/s.e13*100).toFixed(2);
-    const mom=x=>{
-      if(x.dayPct==null)return '';
-      const ps=(x.dayPct>=0?'+':'')+x.dayPct.toFixed(2)+'%';
-      const rv=x.relVol!=null?' · '+x.relVol.toFixed(1)+'x vol':'';
-      const col=x.dayPct>=0?'var(--green)':'var(--red)';
-      return '<div class="ec-mom"><span style="color:'+col+';font-weight:700">'+ps+'</span>'+rv+'</div>';
+  renderCol(id,results){
+    const el=document.getElementById(id);
+    if(!results.length){el.innerHTML='<div class="e12-idle">No data</div>';return;}
+    const wlItems=results.filter(r=>r.isWL);
+    const scItems=results.filter(r=>r.isSC&&!r.isWL);
+    const rank=r=>r.crossedAbove?3:r.above?2:r.crossedBelow?1:0;
+    const sortFn=(a,b)=>{const d=rank(b)-rank(a);return d!==0?d:b.pct-a.pct;};
+    const card=r=>{
+      const cls=r.crossedAbove?'e12-cross-up':r.crossedBelow?'e12-cross-dn':r.above?'e12-above':'e12-below';
+      const bcls=(r.crossedAbove||r.above)?'bull':'bear';
+      const bdg=r.crossedAbove?'crossed up':r.crossedBelow?'crossed dn':(r.pct>=0?'+':'')+r.pct+'%';
+      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
     };
-    const card=(s,up)=>'<div class="ec-card"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">Price '+(up?'crossed above':'crossed below')+' EMA 13 · '+s.t+(s.mAgo>0?' ('+ago(s.mAgo)+')':'')+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+'</div></div></div>';
-    const dv=l=>'<div class="ec-divider">'+l+'</div>';
-    const ac=(s,up)=>'<div class="ec-card ec-already"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">Price '+(up?'above':'below')+' EMA 13 · '+spr(s,up)+'% spread · '+s.t+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+'</div></div></div>';
-    const idle=msg=>'<div class="idle-msg">'+msg+'</div>';
-    const upMain=bull.length?'<div class="ec-list">'+bull.map(s=>card(s,true)).join('')+'</div>':idle('No recent bullish crosses (last 30 min)');
-    const dnMain=bear.length?'<div class="ec-list">'+bear.map(s=>card(s,false)).join('')+'</div>':idle('No recent bearish crosses (last 30 min)');
-    const upRest=alreadyAbove.length?dv('Price Already Above EMA 13 — by momentum')+'<div class="ec-list">'+alreadyAbove.map(s=>ac(s,true)).join('')+'</div>':'';
-    const dnRest=alreadyBelow.length?dv('Price Already Below EMA 13 — by momentum')+'<div class="ec-list">'+alreadyBelow.map(s=>ac(s,false)).join('')+'</div>':'';
-    document.getElementById('e13-up-inner').innerHTML=upMain+upRest;
-    document.getElementById('e13-dn-inner').innerHTML=dnMain+dnRest;
+    const sec=(title,items)=>items.length?'<div class="e12-sec-title">'+title+'</div>'+items.sort(sortFn).map(card).join(''):'';
+    el.innerHTML=sec('Watchlist',wlItems)+sec('Small Cap',scItems);
   }
 }
 const e12tab=new Ema120Tab();
