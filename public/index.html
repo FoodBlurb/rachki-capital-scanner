@@ -572,4 +572,12 @@ const sc=new RaceTab({
     pct:{
       metricFn:s=>Math.abs(s.pct||0),
       labelFn:s=>pc(s.pct||0),
-      subFn
+      subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol · $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2),
+    },
+  },
+});
+
+renderTickers();
+</script>
+</body>
+</html>
