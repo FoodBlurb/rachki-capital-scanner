@@ -23,6 +23,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .nav-item.wl.active{color:var(--green)}
 .nav-item.sc.active{color:var(--amber)}
 .nav-item.scm.active{color:var(--purple)}
+.nav-item.ema.active{color:var(--teal)}
 .nav-icon{font-size:15px;flex-shrink:0}
 
 /* ── MAIN ── */
@@ -60,6 +61,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .prog-wl{background:linear-gradient(90deg,var(--green),var(--teal))}
 .prog-sc{background:linear-gradient(90deg,var(--amber),#fbbf24)}
 .prog-scm{background:linear-gradient(90deg,var(--purple),#ec4899)}
+.prog-ema{background:linear-gradient(90deg,var(--teal),var(--blue))}
 
 /* controls bar */
 .ctrl-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap}
@@ -79,6 +81,8 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .btn-wl{background:var(--green);color:#000}
 .btn-sc{background:var(--amber);color:#000}
 .btn-scm{background:var(--purple);color:#fff}
+.btn-ema{background:var(--teal);color:#000}
+.btn-stop{background:var(--muted)!important;color:#fff!important}
 
 /* add ticker bar */
 .add-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap}
@@ -128,6 +132,20 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .lbl-sc-up{color:var(--amber)}
 .lbl-scm-up{color:var(--purple)}
 .sub{font-size:10px;color:var(--muted);white-space:nowrap}
+
+/* ── EMA cross cards ── */
+.ec-list{display:flex;flex-direction:column;gap:5px;padding:4px}
+.ec-card{display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;transition:border-color .2s}
+.ec-card:hover{border-color:var(--teal)}
+.ec-av{width:32px;height:32px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.ec-body{flex:1;min-width:0}
+.ec-sym{font-size:13px;font-weight:700;color:var(--text)}
+.ec-sub{font-size:10px;color:var(--muted);margin-top:2px;white-space:nowrap}
+.ec-right{text-align:right;flex-shrink:0;min-width:80px}
+.ec-price{font-size:13px;font-weight:700}
+.ec-ema{font-size:10px;color:var(--muted);margin-top:2px}
+.bull{color:var(--green)}
+.bear{color:var(--red)}
 </style>
 </head>
 <body>
@@ -140,6 +158,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   </button>
   <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')">
     <span class="nav-icon">⚡</span><span>Small Cap</span>
+  </button>
+  <button class="nav-item ema" id="nav-ema" onclick="showPanel('ema')">
+    <span class="nav-icon">〜</span><span>EMA Cross</span>
   </button>
 </nav>
 
@@ -255,6 +276,34 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
             <div class="col-inner" id="sc-dn-inner">
               <div class="idle-msg" id="sc-dn-idle"></div>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EMA CROSS ── -->
+  <div class="panel" id="panel-ema">
+    <div class="race-area">
+      <div class="prog-bar"><div class="prog-fill prog-ema" id="ema-prog" style="width:0%"></div></div>
+      <div class="ctrl-bar">
+        <span class="conn-dot" id="ema-dot"></span>
+        <span class="conn-lbl" id="ema-lbl">Ready</span>
+        <div style="flex:1"></div>
+        <span style="font-size:11px;color:var(--muted)">13 × 120 EMA · 10 min · Watchlist tickers</span>
+        <button class="race-btn btn-ema" id="ema-btn" onclick="ema.toggle()">▶ START</button>
+      </div>
+      <div class="cols">
+        <div class="col">
+          <div class="col-hdr up-hdr">▲ BULLISH CROSS &nbsp;· 13 EMA crossed above 120 EMA</div>
+          <div class="col-inner" id="ema-up-inner">
+            <div class="idle-msg">Click ▶ START to scan watchlist</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="col-hdr dn-hdr">▼ BEARISH CROSS &nbsp;· 13 EMA crossed below 120 EMA</div>
+          <div class="col-inner" id="ema-dn-inner">
+            <div class="idle-msg"></div>
           </div>
         </div>
       </div>
@@ -577,6 +626,87 @@ const sc=new RaceTab({
   },
 });
 
+// ── EmaTab ────────────────────────────────────────────────────────────────────────────
+class EmaTab{
+  constructor(){this.running=false;this.timer=null;}
+  toggle(){this.running?this.stop():this.start();}
+  start(){
+    if(!customTickers.length){document.getElementById('ema-lbl').textContent='Add tickers to Watchlist first';return;}
+    this.running=true;
+    const btn=document.getElementById('ema-btn');
+    btn.textContent='⏹ STOP';btn.classList.add('btn-stop');
+    this.scan();
+    this.timer=setInterval(()=>this.scan(),60000);
+  }
+  stop(){
+    this.running=false;clearInterval(this.timer);
+    const btn=document.getElementById('ema-btn');
+    btn.textContent='▶ START';btn.classList.remove('btn-stop');
+    document.getElementById('ema-dot').className='conn-dot';
+    document.getElementById('ema-lbl').textContent='Stopped';
+    const p=document.getElementById('ema-prog');
+    p.style.transition='none';p.style.width='0%';
+  }
+  calcEMA(prices,period){
+    if(prices.length<period)return[];
+    const k=2/(period+1);
+    const out=new Array(prices.length).fill(null);
+    let e=prices.slice(0,period).reduce((a,b)=>a+b,0)/period;
+    out[period-1]=e;
+    for(let i=period;i<prices.length;i++){e=prices[i]*k+e*(1-k);out[i]=e;}
+    return out;
+  }
+  async scan(){
+    const tickers=[...customTickers];
+    document.getElementById('ema-lbl').textContent=`Scanning ${tickers.length} ticker${tickers.length!==1?'s':''}…`;
+    document.getElementById('ema-dot').className='conn-dot';
+    const bull=[],bear=[];
+    for(const tk of tickers){
+      try{
+        const {results}=await fetch(`/api/bars?ticker=${encodeURIComponent(tk)}`).then(r=>r.json());
+        if(!results||results.length<125)continue;
+        const closes=results.map(b=>b.c);
+        const e13=this.calcEMA(closes,13),e120=this.calcEMA(closes,120);
+        const n=closes.length;
+        for(let i=n-1;i>=Math.max(n-3,120);i--){
+          if(e13[i]==null||e120[i]==null||e13[i-1]==null||e120[i-1]==null)continue;
+          const prev=e13[i-1]-e120[i-1],curr=e13[i]-e120[i];
+          const bar=results[i];
+          const t=new Date(bar.t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+          const mAgo=(n-1-i)*10;
+          if(prev<0&&curr>=0){bull.push({tk,price:bar.c,e13:e13[i],e120:e120[i],t,mAgo});break;}
+          if(prev>0&&curr<=0){bear.push({tk,price:bar.c,e13:e13[i],e120:e120[i],t,mAgo});break;}
+        }
+      }catch(err){console.error('EmaTab',tk,err);}
+    }
+    this.render(bull,bear);
+    const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    document.getElementById('ema-lbl').textContent=`Live · ${now} · ${tickers.length} tickers scanned`;
+    document.getElementById('ema-dot').className='conn-dot live';
+    const prog=document.getElementById('ema-prog');
+    prog.style.transition='none';prog.style.width='0%';
+    requestAnimationFrame(()=>{prog.style.transition='width 60s linear';prog.style.width='100%';});
+  }
+  render(bull,bear){
+    const ago=m=>m===0?'just now':`${m}m ago`;
+    const card=(s,up)=>`
+      <div class="ec-card">
+        <div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div>
+        <div class="ec-body">
+          <div class="ec-sym">${s.tk}</div>
+          <div class="ec-sub">13 EMA ${up?'▲ crossed above':'▼ crossed below'} 120 EMA · ${s.t}${s.mAgo>0?' ('+ago(s.mAgo)+')':''}</div>
+        </div>
+        <div class="ec-right">
+          <div class="ec-price ${up?'bull':'bear'}">$${s.price.toFixed(2)}</div>
+          <div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div>
+        </div>
+      </div>`;
+    const idle=msg=>`<div class="idle-msg">${msg}</div>`;
+    document.getElementById('ema-up-inner').innerHTML=bull.length?`<div class="ec-list">${bull.map(s=>card(s,true)).join('')}</div>`:idle('No bullish crosses in last 30 min');
+    document.getElementById('ema-dn-inner').innerHTML=bear.length?`<div class="ec-list">${bear.map(s=>card(s,false)).join('')}</div>`:idle('No bearish crosses in last 30 min');
+  }
+}
+const ema=new EmaTab();
 renderTickers();
 </script>
 </body>
