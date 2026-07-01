@@ -183,9 +183,12 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
 
 /* EMA 13 layout */.e13-wrap{display:flex;flex-direction:column;height:100%}
-.e13-tf-tabs{display:flex;gap:4px;margin-left:auto}
+.e13-tf-tabs{display:flex;gap:4px}
 .e13-tf-btn{background:#2a2a2a;color:#aaa;border:1px solid #444;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px}
 .e13-tf-btn.active{background:#0070f3;color:#fff;border-color:#0070f3}
+.e13-add-bar{display:flex;gap:4px;margin-left:auto}
+.e13-add-bar input{background:#1e1e1e;border:1px solid #444;color:#eee;padding:3px 8px;border-radius:4px;font-size:12px;width:110px}
+.e13-add-bar button{background:#333;color:#eee;border:1px solid #555;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:14px}
 .e13-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;box-sizing:border-box}
 .e13-col{min-width:0}
 .e13-col-hdr{font-weight:bold;padding:6px 8px;border-radius:4px 4px 0 0}
@@ -389,13 +392,17 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
   <div class="e13-wrap">
-    <div class="ctrl-bar">
+    <div class="ctrl-bar" style="flex-wrap:wrap;gap:6px">
       <span id="e13-dot" class="conn-dot"></span>
       <span id="e13-lbl" class="conn-lbl">EMA 13 Scanner</span>
       <div class="e13-tf-tabs">
         <button class="e13-tf-btn active" data-tf="daily" onclick="ema13.setTf('daily')">Daily</button>
         <button class="e13-tf-btn" data-tf="weekly" onclick="ema13.setTf('weekly')">Weekly</button>
         <button class="e13-tf-btn" data-tf="monthly" onclick="ema13.setTf('monthly')">Monthly</button>
+      </div>
+      <div class="e13-add-bar">
+        <input id="e13-add-inp" placeholder="Add ticker..." onkeydown="if(event.key==='Enter')ema13.addTicker()">
+        <button onclick="ema13.addTicker()">+</button>
       </div>
     </div>
     <div id="e13-body" style="overflow-y:auto;flex:1;padding:8px 0"></div>
@@ -792,16 +799,19 @@ class Ema120Tab{
 }
 
 class Ema13Tab {
-  constructor() { this.tf = 'daily'; }
+  constructor() { this.tf = 'daily'; this.extra = []; }
+  getTickers() {
+    const saved = JSON.parse(localStorage.getItem('rc_tickers_v2') || '[]');
+    return [...new Set([...saved, ...this.extra])];
+  }
   load() {
-    const wl = (window.watchlist||[]).join(',');
-    const sc = (window.scTickers||[]).join(',');
-    if (!wl && !sc) {
-      document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Add tickers to watchlist or SC list first.</p>';
+    const tickers = this.getTickers();
+    if (!tickers.length) {
+      document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">No tickers in watchlist. Add tickers in Watchlist tab.</p>';
       return;
     }
-    document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Loading...</p>';
-    fetch('/api/ema13?tf='+this.tf+'&wl='+wl+'&sc='+sc)
+    document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Loading '+tickers.length+' tickers...</p>';
+    fetch('/api/ema13?tf='+this.tf+'&wl='+tickers.join(','))
       .then(r=>r.json())
       .then(d=>this.render(d))
       .catch(e=>{document.getElementById('e13-body').innerHTML='<p style="color:#f55;padding:8px">Error: '+e.message+'</p>';});
@@ -811,14 +821,22 @@ class Ema13Tab {
     document.querySelectorAll('.e13-tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
     this.load();
   }
+  addTicker() {
+    const inp = document.getElementById('e13-add-inp');
+    const val = inp.value.trim().toUpperCase();
+    if (!val) return;
+    inp.value = '';
+    if (!this.extra.includes(val)) this.extra.push(val);
+    this.load();
+  }
   render(d) {
     const body = document.getElementById('e13-body');
     if (d.error) { body.innerHTML = '<p style="color:#f55;padding:8px">'+d.error+'</p>'; return; }
-    const row = r => '<div class="e13-row'+(r.isWL?' wl':'')+'"><span class="e13-tk">'+r.t+'</span><span>$'+r.price+'</span><span>'+r.ema13+'</span><span style="color:'+(r.pct>=0?'#4f4':'#f55')+';">'+(r.pct>0?'+':'')+r.pct+'%</span></div>';
+    const row = r => '<div class="e13-row"><span class="e13-tk">'+r.t+'</span><span>$'+r.price+'</span><span>'+r.ema13+'</span><span style="color:'+(r.pct>=0?'#4f4':'#f55')+';">'+(r.pct>0?'+':'')+r.pct+'%</span></div>';
     body.innerHTML = '<div class="e13-cols"><div class="e13-col e13-col-above"><div class="e13-col-hdr">&#9650; ABOVE EMA 13 ('+d.above.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.above.map(row).join('')+'</div><div class="e13-col e13-col-below"><div class="e13-col-hdr">&#9660; BELOW EMA 13 ('+d.below.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.below.map(row).join('')+'</div></div>';
   }
 }
-const ema13 = new Ema13Tab();const ema=new EmaTab();
+const ema13 = new Ema13Tab();const ema13 = new Ema13Tab();const ema=new EmaTab();
 renderTickers();
 
 class OpexPlanner{
