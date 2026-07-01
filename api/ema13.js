@@ -73,8 +73,9 @@ export default async function handler(req, res) {
   if (tf === 'snap') {
     const wlTickers2 = (req.query.wl || '').split(',').filter(Boolean);
     const allTickers2 = [...new Set([...wlTickers2, ...SC_TICKERS])];
-    const toDate2 = now.toISOString().slice(0, 10);
-    const from2 = new Date(now); from2.setDate(from2.getDate() - 3);
+    const snapNow = new Date();
+    const toDate2 = snapNow.toISOString().slice(0, 10);
+    const from2 = new Date(snapNow); from2.setDate(from2.getDate() - 3);
     const fromDate2 = from2.toISOString().slice(0, 10);
     const snaps = [];
     for (let i = 0; i < allTickers2.length; i += 40) {
