@@ -182,8 +182,19 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e12-cross-dn{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)!important}
 .e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
 
-/* EMA 13 layout */
-.e13-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+/* EMA 13 layout */.e13-wrap{display:flex;flex-direction:column;height:100%}
+.e13-tf-tabs{display:flex;gap:4px;margin-left:auto}
+.e13-tf-btn{background:#2a2a2a;color:#aaa;border:1px solid #444;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:12px}
+.e13-tf-btn.active{background:#0070f3;color:#fff;border-color:#0070f3}
+.e13-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;box-sizing:border-box}
+.e13-col{min-width:0}
+.e13-col-hdr{font-weight:bold;padding:6px 8px;border-radius:4px 4px 0 0}
+.e13-col-above .e13-col-hdr{background:#1a3a1a;color:#4f4}
+.e13-col-below .e13-col-hdr{background:#3a1a1a;color:#f55}
+.e13-col-sub{font-size:10px;color:#777;padding:2px 8px;border-bottom:1px solid #333;margin-bottom:2px}
+.e13-row{display:grid;grid-template-columns:70px 60px 60px 65px;padding:3px 8px;border-bottom:1px solid #1e1e1e;font-size:12px}
+.e13-row.wl{background:#1a1a2e}
+.e13-tk{font-weight:bold}
 .e13-subtabs{display:flex;align-items:center;gap:4px;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--bg2);}
 .e13-stab{padding:4px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
 .e13-stab:hover{color:var(--fg);background:var(--bg3);}
@@ -226,7 +237,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   </button>
   
 <button class="nav-item opex" id="nav-opex" onclick="showPanel('opex')">
-  <span class="nav-icon">🎯</span><span>Opex Planner</span>
+  <span class="nav-icon">ð¯</span><span>Opex Planner</span>
 </button>
 </nav>
 
@@ -355,18 +366,18 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
         <span class="conn-dot" id="ema-dot"></span>
         <span class="conn-lbl" id="ema-lbl">Ready</span>
         <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted)">13 x 120 EMA · 10 min · Watchlist tickers</span>
+        <span style="font-size:11px;color:var(--muted)">13 x 120 EMA Â· 10 min Â· Watchlist tickers</span>
         <button class="race-btn btn-ema" id="ema-btn" onclick="ema.toggle()">&#9654; START</button>
       </div>
       <div class="cols">
         <div class="col">
-          <div class="col-hdr up-hdr">&#9650; BULLISH CROSS &nbsp;· 13 EMA crossed above 120 EMA</div>
+          <div class="col-hdr up-hdr">&#9650; BULLISH CROSS &nbsp;Â· 13 EMA crossed above 120 EMA</div>
           <div class="col-inner" id="ema-up-inner">
             <div class="idle-msg">Click START to scan watchlist</div>
           </div>
         </div>
         <div class="col">
-          <div class="col-hdr dn-hdr">&#9660; BEARISH CROSS &nbsp;· 13 EMA crossed below 120 EMA</div>
+          <div class="col-hdr dn-hdr">&#9660; BEARISH CROSS &nbsp;Â· 13 EMA crossed below 120 EMA</div>
           <div class="col-inner" id="ema-dn-inner">
             <div class="idle-msg"></div>
           </div>
@@ -378,10 +389,14 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
   <div class="e13-wrap">
-    <div class="prog-bar"><div id="e13-prog" class="prog-fill"></div></div>
     <div class="ctrl-bar">
       <span id="e13-dot" class="conn-dot"></span>
-      <span id="e13-lbl" class="conn-lbl">EMA 13/14 Cross Ranker</span>
+      <span id="e13-lbl" class="conn-lbl">EMA 13 Scanner</span>
+      <div class="e13-tf-tabs">
+        <button class="e13-tf-btn active" data-tf="daily" onclick="ema13.setTf('daily')">Daily</button>
+        <button class="e13-tf-btn" data-tf="weekly" onclick="ema13.setTf('weekly')">Weekly</button>
+        <button class="e13-tf-btn" data-tf="monthly" onclick="ema13.setTf('monthly')">Monthly</button>
+      </div>
     </div>
     <div id="e13-body" style="overflow-y:auto;flex:1;padding:8px 0"></div>
   </div>
@@ -392,9 +407,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     <div class="prog-bar"><div class="prog-fill" id="opex-prog" style="width:0%;background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
     <div class="ctrl-bar">
       <span class="conn-dot" id="opex-dot"></span>
-      <span class="conn-lbl" id="opex-lbl">Enter chart levels → Analyze</span>
+      <span class="conn-lbl" id="opex-lbl">Enter chart levels â Analyze</span>
       <div style="flex:1"></div>
-      <button class="btn-start" id="opex-btn" onclick="opexPlanner.analyze()">🔍 ANALYZE</button>
+      <button class="btn-start" id="opex-btn" onclick="opexPlanner.analyze()">ð ANALYZE</button>
     </div>
     <div class="opex-form-bar">
       <div class="opex-fld"><label>Ticker</label><input id="ox-ticker" class="wide" value="SPY"></div>
@@ -536,7 +551,7 @@ class RaceTab{
       this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
       this.applyFilters();
       document.getElementById(this.dotId).className='conn-dot live';
-      document.getElementById(this.lblId).textContent='Live · '+new Date().toLocaleTimeString();
+      document.getElementById(this.lblId).textContent='Live Â· '+new Date().toLocaleTimeString();
       if(this.badgeId)document.getElementById(this.badgeId).style.display='';
       if(this.sessId){
         const statMap={};
@@ -547,7 +562,7 @@ class RaceTab{
         if(el){el.className='sess-badge';if(sess==='early_trading'){el.textContent='PRE-MARKET';el.classList.add('sess-pre');}else if(sess==='late_trading'){el.textContent='AFTER-HRS';el.classList.add('sess-post');}else{el.textContent='REGULAR';el.classList.add('sess-reg');}el.style.display='inline-block';}
       }
       if(this.countId)document.getElementById(this.countId).textContent=this.rawStocks.length+' stocks';
-    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error – retrying...';}
+    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error â retrying...';}
     this.lastFetch=Date.now();
   }
   _loop(ts){
@@ -593,7 +608,7 @@ const wl=new RaceTab({
   badgeId:'wl-badge',sessId:'wl-sess',countId:'wl-count',btnId:'wl-btn',sortKey:'pct',filters:{},
   barUp:'bar-up',barDn:'bar-dn',fillUp:'fill-up',fillDn:'fill-dn',lblUp:'lbl-up',lblDn:'lbl-dn',
   labelFn:s=>pc(s.pct||0),
-  subFn:s=>(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' · ':'')+'$'+(s.price||0).toFixed(2),
+  subFn:s=>(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' Â· ':'')+'$'+(s.price||0).toFixed(2),
   metricFn:s=>Math.abs(s.pct||0),
 });
 
@@ -604,9 +619,9 @@ const sc=new RaceTab({
   btnId:'sc-btn',sortKey:'score',filters:{minRelVol:0,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
   barUp:'bar-sc-up',barDn:'bar-dn',fillUp:'fill-sc',fillDn:'fill-dn',lblUp:'lbl-sc-up',lblDn:'lbl-dn',
   sortModes:{
-    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' · '+s.relVol.toFixed(1)+'x vol':'')},
-    relVol:{metricFn:s=>s.relVol||0,labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'--',subFn:s=>pc(s.pct||0)+' · $'+(s.price||0).toFixed(2)},
-    pct:{metricFn:s=>Math.abs(s.pct||0),labelFn:s=>pc(s.pct||0),subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol · $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2)},
+    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' Â· '+s.relVol.toFixed(1)+'x vol':'')},
+    relVol:{metricFn:s=>s.relVol||0,labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'--',subFn:s=>pc(s.pct||0)+' Â· $'+(s.price||0).toFixed(2)},
+    pct:{metricFn:s=>Math.abs(s.pct||0),labelFn:s=>pc(s.pct||0),subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol Â· $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2)},
   },
 });
 
@@ -683,7 +698,7 @@ class EmaTab{
     }catch(e){console.warn('snap',e);}
 
     document.getElementById('ema-dot').className='conn-dot live';
-    document.getElementById('ema-lbl').textContent='Live · '+new Date().toLocaleTimeString();
+    document.getElementById('ema-lbl').textContent='Live Â· '+new Date().toLocaleTimeString();
     this.render(bull,bear,abv,blw);
   }
   render(bull,bear,alreadyAbove,alreadyBelow){
@@ -699,18 +714,18 @@ class EmaTab{
     const mom=x=>{
       if(x.dayPct==null)return '';
       const ps=(x.dayPct>=0?'+':'')+x.dayPct.toFixed(2)+'%';
-      const rv=x.relVol!=null?' · '+x.relVol.toFixed(1)+'x vol':'';
+      const rv=x.relVol!=null?' Â· '+x.relVol.toFixed(1)+'x vol':'';
       const col=x.dayPct>=0?'var(--green)':'var(--red)';
       return '<div class="ec-mom"><span style="color:'+col+';font-weight:700">'+ps+'</span>'+rv+'</div>';
     };
-    const card=(s,up)=>'<div class="ec-card"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'crossed above':'crossed below')+' 120 EMA · '+s.t+(s.mAgo>0?' ('+ago(s.mAgo)+')':'')+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' · EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
+    const card=(s,up)=>'<div class="ec-card"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'crossed above':'crossed below')+' 120 EMA Â· '+s.t+(s.mAgo>0?' ('+ago(s.mAgo)+')':'')+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' Â· EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
     const dv=l=>'<div class="ec-divider">'+l+'</div>';
-    const ac=(s,up)=>'<div class="ec-card ec-already"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'above':'below')+' 120 EMA · '+spr(s,up)+'% spread · '+s.t+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' · EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
+    const ac=(s,up)=>'<div class="ec-card ec-already"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'above':'below')+' 120 EMA Â· '+spr(s,up)+'% spread Â· '+s.t+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' Â· EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
     const idle=msg=>'<div class="idle-msg">'+msg+'</div>';
     const upMain=bull.length?'<div class="ec-list">'+bull.map(s=>card(s,true)).join('')+'</div>':idle('No recent bullish crosses (last 30 min)');
     const dnMain=bear.length?'<div class="ec-list">'+bear.map(s=>card(s,false)).join('')+'</div>':idle('No recent bearish crosses (last 30 min)');
-    const upRest=alreadyAbove.length?dv('Already Crossed Above — by momentum')+'<div class="ec-list">'+alreadyAbove.map(s=>ac(s,true)).join('')+'</div>':'';
-    const dnRest=alreadyBelow.length?dv('Already Crossed Below — by momentum')+'<div class="ec-list">'+alreadyBelow.map(s=>ac(s,false)).join('')+'</div>':'';
+    const upRest=alreadyAbove.length?dv('Already Crossed Above â by momentum')+'<div class="ec-list">'+alreadyAbove.map(s=>ac(s,true)).join('')+'</div>':'';
+    const dnRest=alreadyBelow.length?dv('Already Crossed Below â by momentum')+'<div class="ec-list">'+alreadyBelow.map(s=>ac(s,false)).join('')+'</div>':'';
     document.getElementById('ema-up-inner').innerHTML=upMain+upRest;
     document.getElementById('ema-dn-inner').innerHTML=dnMain+dnRest;
   }
@@ -751,11 +766,11 @@ class Ema120Tab{
       this.renderCol('e12-week',week.results||[]);
       this.renderCol('e12-month',month.results||[]);
       document.getElementById('e12-dot').className='conn-dot live';
-      document.getElementById('e12-lbl').textContent='Updated · '+new Date().toLocaleTimeString();
+      document.getElementById('e12-lbl').textContent='Updated Â· '+new Date().toLocaleTimeString();
     }catch(err){
       const pg=document.getElementById('e12-prog');pg.style.transition='none';pg.style.width='0%';
       document.getElementById('e12-dot').className='conn-dot';
-      document.getElementById('e12-lbl').textContent='Error – retrying...';
+      document.getElementById('e12-lbl').textContent='Error â retrying...';
     }
   }
   renderCol(id,results){
@@ -769,69 +784,41 @@ class Ema120Tab{
       const cls=r.crossedAbove?'e12-cross-up':r.crossedBelow?'e12-cross-dn':r.above?'e12-above':'e12-below';
       const bcls=(r.crossedAbove||r.above)?'bull':'bear';
       const bdg=r.crossedAbove?'crossed up':r.crossedBelow?'crossed dn':(r.pct>=0?'+':'')+r.pct+'%';
-      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' · EMA $'+r.ema120+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
+      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' Â· EMA $'+r.ema120+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
     };
     const sec=(title,items)=>items.length?'<div class="e12-sec-title">'+title+'</div>'+items.sort(sortFn).map(card).join(''):'';
     el.innerHTML=sec('Watchlist',wlItems)+sec('Small Cap',scItems);
   }
 }
 
-class Ema13Tab{
-  constructor(){this.data=null;this.mode='cross';}
-  fmtTime(ms){
-    if(!ms) return '--';
-    const d=new Date(ms);
-    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    const h=d.getHours(),m=d.getMinutes();
-    const ampm=h>=12?'PM':'AM';
-    const hh=h%12||12;
-    const mm=String(m).padStart(2,'0');
-    return days[d.getDay()]+' '+hh+':'+mm+ampm;
-  }
-  async load(){
-    const dot=document.getElementById('e13-dot');
-    const lbl=document.getElementById('e13-lbl');
-    const pg=document.getElementById('e13-prog');
-    const tbody=document.getElementById('e13-body');
-    dot.className='conn-dot conn-live';
-    lbl.textContent='Scanning EMA 13/14 crossovers since Monday…';
-    pg.style.width='20%';
-    tbody.innerHTML='<tr><td colspan="6" class="e12-idle">Loading…</td></tr>';
-    try{
-      const wl=(window._wlTickers||[]).join(',');
-      const d=await fetch('/api/ema13?tf=cross'+(wl?'&wl='+wl:'')).then(r=>r.json());
-      if(d.error) throw new Error(d.error);
-      this.data=d;
-      pg.style.width='100%';
-      const crossed=d.results.filter(r=>r.crossedThisWeek).length;
-      lbl.textContent='EMA13/14 cross rank · '+crossed+' crossed since Mon · '+d.results.length+' tickers · '+d.monday;
-      this.render(d.results);
-    }catch(err){
-      dot.className='conn-dot conn-err';
-      lbl.textContent='Error: '+err.message;
-      tbody.innerHTML='<tr><td colspan="6" class="e12-idle" style="color:var(--red)">'+err.message+'</td></tr>';
+class Ema13Tab {
+  constructor() { this.tf = 'daily'; }
+  load() {
+    const wl = (window.watchlist||[]).join(',');
+    const sc = (window.scTickers||[]).join(',');
+    if (!wl && !sc) {
+      document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Add tickers to watchlist or SC list first.</p>';
+      return;
     }
+    document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Loading...</p>';
+    fetch('/api/ema13?tf='+this.tf+'&wl='+wl+'&sc='+sc)
+      .then(r=>r.json())
+      .then(d=>this.render(d))
+      .catch(e=>{document.getElementById('e13-body').innerHTML='<p style="color:#f55;padding:8px">Error: '+e.message+'</p>';});
   }
-  render(rows){
-    const tbody=document.getElementById('e13-body');
-    if(!tbody)return;
-    if(!rows||!rows.length){tbody.innerHTML='<div style="padding:20px;color:var(--muted)">No data</div>';return;}
-    const hdr='<div style="display:grid;grid-template-columns:40px 80px 80px 90px 110px 80px;gap:0;padding:6px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px"><span>#</span><span>Ticker</span><span>Price</span><span>Direction</span><span>Cross Time</span><span style=\"text-align:right\">EMA Spd%</span></div>';
-    const rowsHtml=rows.map((r,i)=>{
-      const rank=i+1;
-      const dir=r.crossDir==='above'?'<span style="color:var(--green)">&#9650; above</span>':r.crossDir==='below'?'<span style="color:var(--red)">&#9660; below</span>':'<span style="color:var(--muted)">&#8212;</span>';
-      const ct=r.crossedThisWeek?(r.crossTs?this.fmtTime(r.crossTs):'&#8212;'):'<span style="color:var(--muted)">no cross</span>';
-      const pct=r.pct!==undefined?(r.pct>=0?'+':'')+r.pct.toFixed(3)+'%':'&#8212;';
-      const pc=r.pct>0?'var(--green)':r.pct<0?'var(--red)':'var(--muted)';
-      const op=r.crossedThisWeek?'1':'0.45';
-      const tc=r.isWL?'var(--green)':r.isSC?'var(--amber)':'var(--text)';
-      return '<div style="display:grid;grid-template-columns:40px 80px 80px 90px 110px 80px;gap:0;padding:7px 12px;border-bottom:1px solid var(--border);font-size:13px;opacity:'+op+';align-items:center"><span style="color:var(--muted)">'+rank+'</span><span style="font-weight:600;color:'+tc+'">'+r.t+'</span><span>$'+r.price+'</span><span>'+dir+'</span><span style="font-size:12px">'+ct+'</span><span style="text-align:right;color:'+pc+'">'+pct+'</span></div>';
-    }).join('');
-    tbody.innerHTML=hdr+rowsHtml;
+  setTf(tf) {
+    this.tf = tf;
+    document.querySelectorAll('.e13-tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
+    this.load();
+  }
+  render(d) {
+    const body = document.getElementById('e13-body');
+    if (d.error) { body.innerHTML = '<p style="color:#f55;padding:8px">'+d.error+'</p>'; return; }
+    const row = r => '<div class="e13-row'+(r.isWL?' wl':'')+'"><span class="e13-tk">'+r.t+'</span><span>$'+r.price+'</span><span>'+r.ema13+'</span><span style="color:'+(r.pct>=0?'#4f4':'#f55')+';">'+(r.pct>0?'+':'')+r.pct+'%</span></div>';
+    body.innerHTML = '<div class="e13-cols"><div class="e13-col e13-col-above"><div class="e13-col-hdr">&#9650; ABOVE EMA 13 ('+d.above.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.above.map(row).join('')+'</div><div class="e13-col e13-col-below"><div class="e13-col-hdr">&#9660; BELOW EMA 13 ('+d.below.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.below.map(row).join('')+'</div></div>';
   }
 }
-const ema13=new Ema13Tab();
-const ema=new EmaTab();
+const ema13 = new Ema13Tab();const ema=new EmaTab();
 renderTickers();
 
 class OpexPlanner{
@@ -857,15 +844,15 @@ class OpexPlanner{
       pctMonthly:document.getElementById('ox-pct-m').value,
     });
     dot.className='conn-dot conn-live';
-    lbl.textContent='Fetching options chains for 6 OPEX dates…';
+    lbl.textContent='Fetching options chains for 6 OPEX datesâ¦';
     pg.style.width='15%';
-    res.innerHTML='<div class="e12-idle" style="grid-column:1/-1">Scanning options chains…</div>';
+    res.innerHTML='<div class="e12-idle" style="grid-column:1/-1">Scanning options chainsâ¦</div>';
     try{
       const t0=Date.now();
       const d=await fetch('/api/opex?'+params.toString()).then(r=>r.json());
       if(d.error){throw new Error(d.error);}
       pg.style.width='100%';
-      lbl.textContent='Done in '+(Date.now()-t0)+'ms · HV≈'+d.hvAnn+'% · Scale: '+d.scale+' · '+ticker+' @'+d.tickerPrice;
+      lbl.textContent='Done in '+(Date.now()-t0)+'ms Â· HVâ'+d.hvAnn+'% Â· Scale: '+d.scale+' Â· '+ticker+' @'+d.tickerPrice;
       dot.className='conn-dot conn-live';
       this.render(d);
     }catch(err){
