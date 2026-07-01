@@ -836,7 +836,7 @@ class Ema13Tab {
     body.innerHTML = '<div class="e13-cols"><div class="e13-col e13-col-above"><div class="e13-col-hdr">&#9650; ABOVE EMA 13 ('+d.above.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.above.map(row).join('')+'</div><div class="e13-col e13-col-below"><div class="e13-col-hdr">&#9660; BELOW EMA 13 ('+d.below.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.below.map(row).join('')+'</div></div>';
   }
 }
-const ema13 = new Ema13Tab();const ema13 = new Ema13Tab();const ema=new EmaTab();
+window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();const ema=new EmaTab();
 renderTickers();
 
 class OpexPlanner{
