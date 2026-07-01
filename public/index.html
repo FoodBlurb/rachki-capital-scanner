@@ -189,15 +189,21 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e13-add-bar{display:flex;gap:4px;margin-left:auto}
 .e13-add-bar input{background:#1e1e1e;border:1px solid #444;color:#eee;padding:3px 8px;border-radius:4px;font-size:12px;width:110px}
 .e13-add-bar button{background:#333;color:#eee;border:1px solid #555;padding:3px 8px;border-radius:4px;cursor:pointer;font-size:14px}
-.e13-cols{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:8px;box-sizing:border-box}
-.e13-col{min-width:0}
-.e13-col-hdr{font-weight:bold;padding:6px 8px;border-radius:4px 4px 0 0}
-.e13-col-above .e13-col-hdr{background:#1a3a1a;color:#4f4}
+.e13-cols{display:grid;grid-template-columns:1fr 1fr;gap:0;height:100%}
+.e13-col{min-width:0;overflow-y:auto;border-right:1px solid #2a2a2a}
+.e13-col-hdr{font-weight:bold;padding:6px 10px;position:sticky;top:0;z-index:1;font-size:12px;letter-spacing:.5px}
+.e13-col-above .e13-col-hdr{background:#1a3a1a;color:#3d3}
 .e13-col-below .e13-col-hdr{background:#3a1a1a;color:#f55}
-.e13-col-sub{font-size:10px;color:#777;padding:2px 8px;border-bottom:1px solid #333;margin-bottom:2px}
-.e13-row{display:grid;grid-template-columns:70px 60px 60px 65px;padding:3px 8px;border-bottom:1px solid #1e1e1e;font-size:12px}
-.e13-row.wl{background:#1a1a2e}
-.e13-tk{font-weight:bold}
+.e13-card{padding:7px 10px;border-bottom:1px solid #1a1a1a;cursor:default}
+.e13-card:hover{background:#1a1a1a}
+.e13-card-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.e13-tk{font-weight:700;font-size:13px;color:#eee}
+.e13-card-pct{font-size:13px;font-weight:700}
+.e13-card-vals{display:flex;gap:10px;margin-bottom:4px}
+.e13-price{font-size:12px;color:#ccc;font-weight:600}
+.e13-ema-val{font-size:11px;color:#666}
+.e13-bar-bg{background:#111;height:4px;border-radius:2px;overflow:hidden}
+.e13-bar{height:4px;border-radius:2px;width:0;transition:width .9s cubic-bezier(.4,0,.2,1)}
 .e13-subtabs{display:flex;align-items:center;gap:4px;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--bg2);}
 .e13-stab{padding:4px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
 .e13-stab:hover{color:var(--fg);background:var(--bg3);}
@@ -807,10 +813,10 @@ class Ema13Tab {
   load() {
     const tickers = this.getTickers();
     if (!tickers.length) {
-      document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">No tickers in watchlist. Add tickers in Watchlist tab.</p>';
+      document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">No tickers in watchlist.</p>';
       return;
     }
-    document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:8px">Loading '+tickers.length+' tickers...</p>';
+    document.getElementById('e13-body').innerHTML = '<p style="color:#888;padding:16px">Loading '+tickers.length+' tickers...</p>';
     fetch('/api/ema13?tf='+this.tf+'&wl='+tickers.join(','))
       .then(r=>r.json())
       .then(d=>this.render(d))
@@ -832,11 +838,32 @@ class Ema13Tab {
   render(d) {
     const body = document.getElementById('e13-body');
     if (d.error) { body.innerHTML = '<p style="color:#f55;padding:8px">'+d.error+'</p>'; return; }
-    const row = r => '<div class="e13-row"><span class="e13-tk">'+r.t+'</span><span>$'+r.price+'</span><span>'+r.ema13+'</span><span style="color:'+(r.pct>=0?'#4f4':'#f55')+';">'+(r.pct>0?'+':'')+r.pct+'%</span></div>';
-    body.innerHTML = '<div class="e13-cols"><div class="e13-col e13-col-above"><div class="e13-col-hdr">&#9650; ABOVE EMA 13 ('+d.above.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.above.map(row).join('')+'</div><div class="e13-col e13-col-below"><div class="e13-col-hdr">&#9660; BELOW EMA 13 ('+d.below.length+')</div><div class="e13-col-sub">Ticker | Price | EMA13 | Spread%</div>'+d.below.map(row).join('')+'</div></div>';
+    const maxPct = Math.max(...d.above.map(r=>r.pct), ...d.below.map(r=>Math.abs(r.pct)), 1);
+    const card = (r, side) => {
+      const barW = (Math.abs(r.pct) / maxPct * 100).toFixed(1);
+      const col = side==='above' ? '#3d3' : '#f55';
+      return '<div class="e13-card" data-bar="'+barW+'" data-col="'+col+'">'
+        +'<div class="e13-card-top"><span class="e13-tk">'+r.t+'</span>'
+        +'<span class="e13-card-pct" style="color:'+col+'">'+(r.pct>0?'+':'')+r.pct+'%</span></div>'
+        +'<div class="e13-card-vals"><span class="e13-price">$'+r.price+'</span>'
+        +'<span class="e13-ema-val">EMA13: '+r.ema13+'</span></div>'
+        +'<div class="e13-bar-bg"><div class="e13-bar" style="background:'+col+'"></div></div>'
+        +'</div>';
+    };
+    body.innerHTML = '<div class="e13-cols">'
+      +'<div class="e13-col e13-col-above"><div class="e13-col-hdr">&#9650; ABOVE EMA 13 ('+d.above.length+')</div>'
+      +d.above.map(r=>card(r,'above')).join('')+'</div>'
+      +'<div class="e13-col e13-col-below"><div class="e13-col-hdr">&#9660; BELOW EMA 13 ('+d.below.length+')</div>'
+      +d.below.map(r=>card(r,'below')).join('')+'</div></div>';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll('.e13-card').forEach(c=>{
+        const bar = c.querySelector('.e13-bar');
+        bar.style.width = c.dataset.bar+'%';
+      });
+    }));
   }
 }
-window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();const ema=new EmaTab();
+window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();const ema=new EmaTab();
 renderTickers();
 
 class OpexPlanner{
