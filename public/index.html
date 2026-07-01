@@ -147,23 +147,29 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e12-cross-dn{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)!important}
 .e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
 
-/* EMA 13 split layout */
+/* EMA 13 sub-tab layout */
 .e13-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;}
-.e13-sections{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
-.e13-tf-block{border:1px solid var(--border);border-top-width:2px;border-radius:8px;overflow:hidden;}
-.e13-tf-hdr{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--border);}
-.e13-split-row{display:flex;height:220px;}
+.e13-subtabs{display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.e13-stab{padding:5px 18px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.e13-stab:hover{color:var(--fg);background:var(--bg3);}
+.e13-stab-active{background:var(--purple)!important;color:#fff!important;border-color:var(--purple)!important;}
+.e13-stab-hint{margin-left:auto;font-size:10px;color:var(--amber);font-weight:600;}
+.e13-pages{flex:1;overflow:hidden;}
+.e13-page{height:100%;display:none;}
+.e13-page:first-child{display:block;}
+.e13-split-row{display:flex;height:100%;}
 .e13-side{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
-.e13-side-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:5px 8px;border-bottom:1px solid var(--border);}
+.e13-side-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:6px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
 .e13-up-hdr{color:var(--green);background:rgba(74,222,128,.07);}
 .e13-dn-hdr{color:var(--red);background:rgba(248,113,113,.07);}
-.e13-side-body{flex:1;overflow-y:auto;padding:4px;}
+.e13-side-body{flex:1;overflow-y:auto;padding:6px;}
 .e13-mid-bar{width:34px;min-width:34px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--bg2);}
-.e13-mid-bar span{writing-mode:vertical-rl;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:center;}
-.e13-count{font-weight:400;color:var(--muted);font-size:9px;margin-left:3px;}
-.e13-xtag{font-size:8px;border-radius:3px;padding:1px 3px;margin-left:3px;}
-.e13-xtag-up{background:rgba(74,222,128,.2);color:var(--green);}
-.e13-xtag-dn{background:rgba(248,113,113,.2);color:var(--red);}
+.e13-mid-bar span{writing-mode:vertical-rl;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
+.e13-count{font-weight:400;color:var(--muted);font-size:9px;}
+.e13-cross-badge{font-size:9px;border-radius:3px;padding:1px 5px;margin-left:4px;font-weight:700;}
+.e13-cross-up{background:rgba(74,222,128,.25);color:var(--green);}
+.e13-cross-dn{background:rgba(248,113,113,.25);color:var(--red);}
+.e13-card-glow{box-shadow:0 0 0 1px rgba(250,204,21,.4);background:rgba(250,204,21,.04)!important;}
 </style>
 </head>
 <body>
@@ -340,14 +346,19 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
       <span class="conn-dot" id="e13-dot"></span>
       <span class="conn-lbl" id="e13-lbl">Ready</span>
       <div style="flex:1"></div>
-      <span style="font-size:11px;color:var(--muted)">Price vs EMA 13 · Daily · Weekly · Monthly</span>
-      <span style="font-size:10px;color:var(--green);background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);border-radius:4px;padding:2px 7px;margin-left:8px">&#128257; Refreshes every 5 min</span>
+      <span style="font-size:10px;color:var(--green);background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);border-radius:4px;padding:2px 7px">&#128257; Refreshes every 5 min</span>
       <button class="race-btn" style="background:var(--purple);color:#fff" id="e13-btn" onclick="e13tab.toggle()">&#9654; START</button>
     </div>
-    <div class="e13-sections">
-      <div class="e13-tf-block" style="border-top-color:var(--purple)"><div class="e13-tf-hdr"><span style="color:var(--purple)">Daily EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-side-body" id="e13-day-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-side-body" id="e13-day-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
-      <div class="e13-tf-block" style="border-top-color:var(--blue)"><div class="e13-tf-hdr"><span style="color:var(--blue)">Weekly EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-side-body" id="e13-week-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-side-body" id="e13-week-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
-      <div class="e13-tf-block" style="border-top-color:var(--amber)"><div class="e13-tf-hdr"><span style="color:var(--amber)">Monthly EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-side-body" id="e13-month-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-side-body" id="e13-month-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+    <div class="e13-subtabs">
+      <button class="e13-stab e13-stab-active" id="e13-stab-day" onclick="e13tab.switchTf('day')">Daily</button>
+      <button class="e13-stab" id="e13-stab-week" onclick="e13tab.switchTf('week')">Weekly</button>
+      <button class="e13-stab" id="e13-stab-month" onclick="e13tab.switchTf('month')">Monthly</button>
+      <div class="e13-stab-hint" id="e13-stab-hint"></div>
+    </div>
+    <div class="e13-pages">
+      <div class="e13-page" id="e13-day-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-side-body" id="e13-day-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-side-body" id="e13-day-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+      <div class="e13-page" id="e13-week-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-side-body" id="e13-week-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-side-body" id="e13-week-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+      <div class="e13-page" id="e13-month-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-side-body" id="e13-month-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-side-body" id="e13-month-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
     </div>
   </div>
 </div>
@@ -739,8 +750,17 @@ class Ema120Tab{
 }
 
 class Ema13Tab{
-  constructor(){this.running=false;this.timer=null;}
+  constructor(){this.running=false;this.timer=null;this.tf='day';this.cache={};}
   toggle(){this.running?this.stop():this.start();}
+  switchTf(tf){
+    this.tf=tf;
+    ['day','week','month'].forEach(t=>{
+      document.getElementById('e13-stab-'+t).classList.toggle('e13-stab-active',t===tf);
+      const pg=document.getElementById('e13-'+t+'-page');
+      if(pg)pg.style.display=t===tf?'block':'none';
+    });
+    if(this.cache[tf])this.renderSplit('e13-'+tf,this.cache[tf]);
+  }
   start(){
     this.running=true;
     const btn=document.getElementById('e13-btn');
@@ -767,31 +787,55 @@ class Ema13Tab{
         fetch('/api/ema13?tf=month&wl='+wlStr).then(r=>r.json()),
       ]);
       if(pg)pg.style.width='100%';
-      this.renderSplit('e13-day',day.results||[]);
-      this.renderSplit('e13-week',week.results||[]);
-      this.renderSplit('e13-month',month.results||[]);
+      this.cache={day:day.results||[],week:week.results||[],month:month.results||[]};
+      this.renderSplit('e13-day',this.cache.day);
+      this.renderSplit('e13-week',this.cache.week);
+      this.renderSplit('e13-month',this.cache.month);
+      this.switchTf(this.tf);
+      const crossed=[...this.cache.day,...this.cache.week,...this.cache.month].filter(r=>r.crossedAbove||r.crossedBelow);
+      const hint=document.getElementById('e13-stab-hint');
+      if(hint)hint.textContent=crossed.length?'&#128293; '+crossed.length+' cross event'+(crossed.length>1?'s':'')+' detected':'';
       lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
     }catch(err){
       dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
     }
   }
   renderSplit(pfx,results){
-    const upItems=results.filter(r=>r.above).sort((a,b)=>b.pct-a.pct);
-    const dnItems=results.filter(r=>!r.above).sort((a,b)=>a.pct-b.pct);
+    // Momentum sort: crossed first, then sorted by absolute % from EMA
+    const upItems=results.filter(r=>r.above).sort((a,b)=>{
+      if(b.crossedAbove&&!a.crossedAbove)return 1;
+      if(a.crossedAbove&&!b.crossedAbove)return -1;
+      return b.pct-a.pct;
+    });
+    const dnItems=results.filter(r=>!r.above).sort((a,b)=>{
+      if(b.crossedBelow&&!a.crossedBelow)return 1;
+      if(a.crossedBelow&&!b.crossedBelow)return -1;
+      return a.pct-b.pct;
+    });
     const card=r=>{
       const isUp=r.above;
-      const xTag=r.crossedAbove?'<span class="e13-xtag e13-xtag-up">&#9650;crossed</span>':r.crossedBelow?'<span class="e13-xtag e13-xtag-dn">&#9660;crossed</span>':''; 
+      const isCross=r.crossedAbove||r.crossedBelow;
+      const crossBadge=r.crossedAbove?'<span class="e13-cross-badge e13-cross-up">⚡ Crossed Above</span>':
+        r.crossedBelow?'<span class="e13-cross-badge e13-cross-dn">⚡ Crossed Below</span>':''; 
       const pctColor=isUp?'var(--green)':' var(--red)';
       const sign=r.pct>=0?'+':'';
       const src=r.isWL?'WL':'SC';
-      return '<div class="e12-card" style="margin-bottom:3px;border-left:3px solid '+(isUp?'var(--green)':' var(--red)')+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+xTag+'<span style="font-size:9px;color:var(--muted);margin-left:4px">'+src+'</span></div><div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div></div><div class="e12-badge" style="background:transparent;color:'+pctColor+';font-weight:700;font-size:11px">'+sign+r.pct+'%</div></div>';
+      const glow=isCross?' e13-card-glow':'';
+      return '<div class="e12-card'+ glow +'" style="margin-bottom:4px;border-left:3px solid '+(isUp?'var(--green)':' var(--red)')+'">'+ 
+        '<div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div>'+ 
+        '<div class="e12-info">'+ 
+          '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:5px">'+src+'</span>'+crossBadge+'</div>'+ 
+          '<div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div>'+ 
+        '</div>'+ 
+        '<div style="text-align:right">'+ 
+          '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
+        '</div>'+ 
+      '</div>';
     };
-    const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html||'<div class="e12-idle">None</div>';};
+    const set=(id,items)=>{const el=document.getElementById(id);if(el)el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">None</div>';};
     const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent='('+n+')';};
-    set(pfx+'-up',upItems.map(card).join(''));
-    set(pfx+'-dn',dnItems.map(card).join(''));
-    cnt(pfx+'-up-count',upItems.length);
-    cnt(pfx+'-dn-count',dnItems.length);
+    set(pfx+'-up',upItems);set(pfx+'-dn',dnItems);
+    cnt(pfx+'-up-count',upItems.length);cnt(pfx+'-dn-count',dnItems.length);
   }
 }
 const e13tab=new Ema13Tab();
