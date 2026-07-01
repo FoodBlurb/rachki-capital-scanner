@@ -325,7 +325,7 @@ function avatarColor(t){let h=0;for(const c of t)h=(h*31+c.charCodeAt(0))&0x7fff
 
 // ── custom tickers ───────────────────────────────────────────────────────────
 const DEFAULT_TICKERS=['CAR','WEN','ASTS','NFLX','MSFT','V','LLY','COIN','OKLO','IREN','AAPL','META','MSTR','BA','PLTR','CRWV','SNOW','MDB','IWM','AMZN','AVGO','TSLA','SPY','QCOM','APP','NBIS','QQQ','HPE','GOOGL','NVDA','SMCI','MRAM','INTC','CRDO','ORCL','AMD','CBRS','DELL','SNDK','AAOI','LITE','MRVL','MU','BTCUSD','ES1!','SPX','NQ1!'];
-let customTickers=(()=>{const s=JSON.parse(localStorage.getItem('rc_tickers')||'[]');return s.length?s:[...DEFAULT_TICKERS];})();
+let customTickers=[...new Set([...DEFAULT_TICKERS,...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]')])];
 function renderTickers(){
   document.getElementById('wl-tags').innerHTML=
     customTickers.map(t=>`<span class="ticker-tag">${t}<button onclick="removeTicker('${t}')">✕</button></span>`).join('');
@@ -335,7 +335,7 @@ function addTicker(){
   const t=inp.value.trim().toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);
   if(t&&!customTickers.includes(t)){
     customTickers.push(t);
-    localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
+    localStorage.setItem('rc_tickers_v2',JSON.stringify(customTickers));
     renderTickers();
     if(wl.running) wl.reset();
   }
@@ -343,7 +343,7 @@ function addTicker(){
 }
 function removeTicker(t){
   customTickers=customTickers.filter(x=>x!==t);
-  localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
+  localStorage.setItem('rc_tickers_v2',JSON.stringify(customTickers));
   renderTickers();
   if(wl.running) wl.reset();
 }
