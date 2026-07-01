@@ -87,7 +87,7 @@ export default async function handler(req, res) {
 
     const quotes = all
       .map(s => {
-        const price  = +(s.lastTrade?.p || s.day?.c  || 0).toFixed(2);
+        const price  = +(s.lastTrade?.p || s.min?.c || s.day?.c  || 0).toFixed(2);
         const vol    = Math.round(s.min?.av || s.day?.v || 0);
         const avg    = Math.round(_avgVol[s.ticker] || 0);
         const relVol = avg > 0 ? +(vol / avg).toFixed(2) : 0;
@@ -99,7 +99,7 @@ export default async function handler(req, res) {
           vol, avgVol: avg, relVol,
         };
       })
-      .filter(q => q.price >= 1 && q.price <= 11 && q.vol > q.avgVol)
+      .filter(q => q.price >= 1 && q.price <= 11 && q.vol > 0 && (q.vol > q.avgVol || (q.vol > 1000 && Math.abs(q.pct) >= 0.5)))
       .sort((a, b) => b.relVol - a.relVol);
 
     return res.status(200).json({ quotes, updatedAt: new Date().toISOString() });
