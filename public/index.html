@@ -378,57 +378,15 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
   <div class="e13-wrap">
-    <div class="prog-bar"><div class="prog-fill" id="e13-prog" style="background:linear-gradient(90deg,var(--purple),var(--blue));width:0%"></div></div>
+    <div class="prog-bar"><div id="e13-prog" class="prog-fill"></div></div>
     <div class="ctrl-bar">
-      <span class="conn-dot" id="e13-dot"></span>
-      <span class="conn-lbl" id="e13-lbl">Ready</span>
-      <div style="flex:1"></div>
-      <span style="font-size:10px;color:var(--green);background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);border-radius:4px;padding:2px 7px">&#128257; Prices every 30s · EMA every 5 min</span>
-      <button class="race-btn" style="background:var(--purple);color:#fff" id="e13-btn" onclick="e13tab.toggle()">&#9654; START</button>
+      <span id="e13-dot" class="conn-dot"></span>
+      <span id="e13-lbl" class="conn-lbl">EMA 13/14 Cross Ranker</span>
     </div>
-    <div class="e13-subtabs">
-      <button class="e13-stab e13-stab-active" id="e13-stab-day" onclick="e13tab.switchTf('day')">Daily</button>
-      <button class="e13-stab" id="e13-stab-week" onclick="e13tab.switchTf('week')">Weekly</button>
-      <button class="e13-stab" id="e13-stab-month" onclick="e13tab.switchTf('month')">Monthly</button>
-      <div class="e13-stab-hint" id="e13-stab-hint"></div>
-    </div>
-    <div class="e13-pages">
-      <div class="e13-page" id="e13-day-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-day-jup-count"></span></div><div class="e13-col-body" id="e13-day-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-col-body" id="e13-day-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-col-body" id="e13-day-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-day-jdn-count"></span></div><div class="e13-col-body" id="e13-day-jdn"><div class="e12-idle">–</div></div></div></div></div>
-      <div class="e13-page" id="e13-week-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-week-jup-count"></span></div><div class="e13-col-body" id="e13-week-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-col-body" id="e13-week-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-col-body" id="e13-week-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-week-jdn-count"></span></div><div class="e13-col-body" id="e13-week-jdn"><div class="e12-idle">–</div></div></div></div></div>
-      <div class="e13-page" id="e13-month-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-month-jup-count"></span></div><div class="e13-col-body" id="e13-month-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-col-body" id="e13-month-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-col-body" id="e13-month-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-month-jdn-count"></span></div><div class="e13-col-body" id="e13-month-jdn"><div class="e12-idle">–</div></div></div></div></div>
-    </div>
+    <div id="e13-body" style="overflow-y:auto;flex:1;padding:8px 0"></div>
   </div>
 </div>
 
-  <!-- EMA 120 -->
-  <div class="panel" id="panel-e12">
-    <div class="e12-wrap">
-      <div class="prog-bar"><div class="prog-fill" id="e12-prog" style="background:linear-gradient(90deg,var(--blue),var(--teal));width:0%"></div></div>
-      <div class="ctrl-bar">
-        <span class="conn-dot" id="e12-dot"></span>
-        <span class="conn-lbl" id="e12-lbl">Ready</span>
-        <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted)">Price vs EMA · Daily(120) · Weekly(120) · Monthly(50)</span>
-        <button class="race-btn btn-ema" id="e12-btn" onclick="e12tab.toggle()">&#9654; START</button>
-      </div>
-      <div class="e12-cols">
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--teal)">Daily 120 EMA</div>
-          <div class="e12-col-body" id="e12-day"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--purple)">Weekly 120 EMA</div>
-          <div class="e12-col-body" id="e12-week"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--amber)">Monthly 50 EMA</div>
-          <div class="e12-col-body" id="e12-month"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- OPTIONS FLOW -->
-  
 <div class="panel" id="panel-opex">
   <div class="opex-wrap">
     <div class="prog-bar"><div class="prog-fill" id="opex-prog" style="width:0%;background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
