@@ -146,6 +146,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .ec-ema{font-size:10px;color:var(--muted);margin-top:2px}
 .bull{color:var(--green)}
 .bear{color:var(--red)}
+.ec-divider{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:6px 4px 3px;margin-top:4px;border-top:1px solid var(--border)}
+.ec-already{opacity:.65;border-style:dashed}
+.ec-already:hover{opacity:1;border-color:var(--muted)}
 </style>
 </head>
 <body>
@@ -660,7 +663,7 @@ class EmaTab{
     const tickers=[...customTickers];
     document.getElementById('ema-lbl').textContent=`Scanning ${tickers.length} ticker${tickers.length!==1?'s':''}…`;
     document.getElementById('ema-dot').className='conn-dot';
-    const bull=[],bear=[];
+    const bull=[],bear=[],alreadyAbove=[],alreadyBelow=[];
     for(const tk of tickers){
       try{
         const {results}=await fetch(`/api/bars?ticker=${encodeURIComponent(tk)}`).then(r=>r.json());
@@ -677,9 +680,15 @@ class EmaTab{
           if(prev<0&&curr>=0){bull.push({tk,price:bar.c,e13:e13[i],e120:e120[i],t,mAgo});break;}
           if(prev>0&&curr<=0){bear.push({tk,price:bar.c,e13:e13[i],e120:e120[i],t,mAgo});break;}
         }
+        const crossed=bull.some(x=>x.tk===tk)||bear.some(x=>x.tk===tk);
+        if(!crossed&&e13[n-1]!=null&&e120[n-1]!=null){
+          const lb=results[n-1],lt=new Date(lb.t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+          if(e13[n-1]>e120[n-1])alreadyAbove.push({tk,price:lb.c,e13:e13[n-1],e120:e120[n-1],t:lt});
+          else alreadyBelow.push({tk,price:lb.c,e13:e13[n-1],e120:e120[n-1],t:lt});
+        }
       }catch(err){console.error('EmaTab',tk,err);}
     }
-    this.render(bull,bear);
+    this.render(bull,bear,alreadyAbove,alreadyBelow);
     const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
     document.getElementById('ema-lbl').textContent=`Live · ${now} · ${tickers.length} tickers scanned`;
     document.getElementById('ema-dot').className='conn-dot live';
@@ -687,7 +696,7 @@ class EmaTab{
     prog.style.transition='none';prog.style.width='0%';
     requestAnimationFrame(()=>{prog.style.transition='width 60s linear';prog.style.width='100%';});
   }
-  render(bull,bear){
+  render(bull,bear,alreadyAbove=[],alreadyBelow=[]){
     const ago=m=>m===0?'just now':`${m}m ago`;
     const card=(s,up)=>`
       <div class="ec-card">
@@ -702,8 +711,14 @@ class EmaTab{
         </div>
       </div>`;
     const idle=msg=>`<div class="idle-msg">${msg}</div>`;
-    document.getElementById('ema-up-inner').innerHTML=bull.length?`<div class="ec-list">${bull.map(s=>card(s,true)).join('')}</div>`:idle('No bullish crosses in last 30 min');
-    document.getElementById('ema-dn-inner').innerHTML=bear.length?`<div class="ec-list">${bear.map(s=>card(s,false)).join('')}</div>`:idle('No bearish crosses in last 30 min');
+    const dv=l=>`<div class="ec-divider">${l}</div>`;
+    const ac=(s,up)=>`<div class="ec-card ec-already"><div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div><div class="ec-body"><div class="ec-sym">${s.tk}</div><div class="ec-sub">13 EMA ${up?'already above':'already below'} 120 EMA · ${s.t}</div></div><div class="ec-right"><div class="ec-price ${up?'bull':'bear'}">$${s.price.toFixed(2)}</div><div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div></div></div>`;
+    const upMain=bull.length?`<div class="ec-list">${bull.map(s=>card(s,true)).join('')}</div>`:idle('No recent bullish crosses (last 30 min)');
+    const dnMain=bear.length?`<div class="ec-list">${bear.map(s=>card(s,false)).join('')}</div>`:idle('No recent bearish crosses (last 30 min)');
+    const upRest=alreadyAbove.length?dv('Already Crossed Above')+`<div class="ec-list">${alreadyAbove.map(s=>ac(s,true)).join('')}</div>`:'';
+    const dnRest=alreadyBelow.length?dv('Already Crossed Below')+`<div class="ec-list">${alreadyBelow.map(s=>ac(s,false)).join('')}</div>`:'';
+    document.getElementById('ema-up-inner').innerHTML=upMain+upRest;
+    document.getElementById('ema-dn-inner').innerHTML=dnMain+dnRest;
   }
 }
 const ema=new EmaTab();
