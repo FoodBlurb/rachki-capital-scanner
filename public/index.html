@@ -146,6 +146,24 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e12-cross-up{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.5)!important}
 .e12-cross-dn{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)!important}
 .e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
+
+/* EMA 13 split layout */
+.e13-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;}
+.e13-sections{flex:1;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
+.e13-tf-block{border:1px solid var(--border);border-top-width:2px;border-radius:8px;overflow:hidden;}
+.e13-tf-hdr{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--border);}
+.e13-split-row{display:flex;height:220px;}
+.e13-side{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.e13-side-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:5px 8px;border-bottom:1px solid var(--border);}
+.e13-up-hdr{color:var(--green);background:rgba(74,222,128,.07);}
+.e13-dn-hdr{color:var(--red);background:rgba(248,113,113,.07);}
+.e13-side-body{flex:1;overflow-y:auto;padding:4px;}
+.e13-mid-bar{width:34px;min-width:34px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--bg2);}
+.e13-mid-bar span{writing-mode:vertical-rl;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);text-align:center;}
+.e13-count{font-weight:400;color:var(--muted);font-size:9px;margin-left:3px;}
+.e13-xtag{font-size:8px;border-radius:3px;padding:1px 3px;margin-left:3px;}
+.e13-xtag-up{background:rgba(74,222,128,.2);color:var(--green);}
+.e13-xtag-dn{background:rgba(248,113,113,.2);color:var(--red);}
 </style>
 </head>
 <body>
@@ -316,31 +334,23 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
-    <div class="e12-wrap">
-      <div class="prog-bar"><div class="prog-fill" id="e13-prog" style="background:linear-gradient(90deg,var(--purple),var(--blue));width:0%"></div></div>
-      <div class="ctrl-bar">
-        <span class="conn-dot" id="e13-dot"></span>
-        <span class="conn-lbl" id="e13-lbl">Ready</span>
-        <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted)">Price vs EMA 13 · Daily · Weekly · Monthly</span>
-        <button class="race-btn" style="background:var(--purple);color:#fff" id="e13-btn" onclick="e13tab.toggle()">&#9654; START</button>
-      </div>
-      <div class="e12-cols">
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--purple)">Daily 13 EMA</div>
-          <div class="e12-col-body" id="e13-day"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--blue)">Weekly 13 EMA</div>
-          <div class="e12-col-body" id="e13-week"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-        <div class="e12-col">
-          <div class="e12-col-hdr" style="color:var(--amber)">Monthly 13 EMA</div>
-          <div class="e12-col-body" id="e13-month"><div class="e12-idle">Click START to scan</div></div>
-        </div>
-      </div>
+  <div class="e13-wrap">
+    <div class="prog-bar"><div class="prog-fill" id="e13-prog" style="background:linear-gradient(90deg,var(--purple),var(--blue));width:0%"></div></div>
+    <div class="ctrl-bar">
+      <span class="conn-dot" id="e13-dot"></span>
+      <span class="conn-lbl" id="e13-lbl">Ready</span>
+      <div style="flex:1"></div>
+      <span style="font-size:11px;color:var(--muted)">Price vs EMA 13 · Daily · Weekly · Monthly</span>
+      <span style="font-size:10px;color:var(--green);background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);border-radius:4px;padding:2px 7px;margin-left:8px">&#128257; Refreshes every 5 min</span>
+      <button class="race-btn" style="background:var(--purple);color:#fff" id="e13-btn" onclick="e13tab.toggle()">&#9654; START</button>
+    </div>
+    <div class="e13-sections">
+      <div class="e13-tf-block" style="border-top-color:var(--purple)"><div class="e13-tf-hdr"><span style="color:var(--purple)">Daily EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-side-body" id="e13-day-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-side-body" id="e13-day-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+      <div class="e13-tf-block" style="border-top-color:var(--blue)"><div class="e13-tf-hdr"><span style="color:var(--blue)">Weekly EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-side-body" id="e13-week-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-side-body" id="e13-week-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+      <div class="e13-tf-block" style="border-top-color:var(--amber)"><div class="e13-tf-hdr"><span style="color:var(--amber)">Monthly EMA 13</span></div><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-side-body" id="e13-month-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-side-body" id="e13-month-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
     </div>
   </div>
+</div>
 
   <!-- EMA 120 -->
   <div class="panel" id="panel-e12">
@@ -734,60 +744,56 @@ class Ema13Tab{
   start(){
     this.running=true;
     const btn=document.getElementById('e13-btn');
-    btn.textContent='STOP';btn.classList.add('btn-stop');
+    btn.innerHTML='&#9646;&#9646; STOP';btn.classList.add('btn-stop');
     this.scan();this.timer=setInterval(()=>this.scan(),300000);
   }
   stop(){
-    this.running=false;clearInterval(this.timer);
+    this.running=false;clearInterval(this.timer);this.timer=null;
     const btn=document.getElementById('e13-btn');
-    btn.textContent='START';btn.classList.remove('btn-stop');
+    btn.innerHTML='&#9654; START';btn.classList.remove('btn-stop');
+    const pg=document.getElementById('e13-prog');if(pg)pg.style.width='0%';
     document.getElementById('e13-dot').className='conn-dot';
     document.getElementById('e13-lbl').textContent='Stopped';
-    const p=document.getElementById('e13-prog');p.style.transition='none';p.style.width='0%';
   }
   async scan(){
+    const dot=document.getElementById('e13-dot'),lbl=document.getElementById('e13-lbl'),pg=document.getElementById('e13-prog');
+    dot.className='conn-dot conn-live';lbl.textContent='Scanning…';
     const wlStr=customTickers.join(',');
-    document.getElementById('e13-lbl').textContent='Scanning 3 timeframes...';
-    document.getElementById('e13-dot').className='conn-dot';
-    const prog=document.getElementById('e13-prog');
-    prog.style.transition='width 10s linear';prog.style.width='85%';
+    const t0=Date.now();
     try{
       const [day,week,month]=await Promise.all([
         fetch('/api/ema13?tf=day&wl='+wlStr).then(r=>r.json()),
         fetch('/api/ema13?tf=week&wl='+wlStr).then(r=>r.json()),
         fetch('/api/ema13?tf=month&wl='+wlStr).then(r=>r.json()),
       ]);
-      prog.style.transition='none';prog.style.width='100%';
-      setTimeout(()=>{prog.style.width='0%';},600);
-      this.renderCol('e13-day',day.results||[]);
-      this.renderCol('e13-week',week.results||[]);
-      this.renderCol('e13-month',month.results||[]);
-      document.getElementById('e13-dot').className='conn-dot live';
-      document.getElementById('e13-lbl').textContent='Updated · '+new Date().toLocaleTimeString();
+      if(pg)pg.style.width='100%';
+      this.renderSplit('e13-day',day.results||[]);
+      this.renderSplit('e13-week',week.results||[]);
+      this.renderSplit('e13-month',month.results||[]);
+      lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
     }catch(err){
-      const pg=document.getElementById('e13-prog');pg.style.transition='none';pg.style.width='0%';
-      document.getElementById('e13-dot').className='conn-dot';
-      document.getElementById('e13-lbl').textContent='Error – retrying...';
+      dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
     }
   }
-  renderCol(id,results){
-    const el=document.getElementById(id);
-    if(!results.length){el.innerHTML='<div class="e12-idle">No data</div>';return;}
-    const wlItems=results.filter(r=>r.isWL);
-    const scItems=results.filter(r=>r.isSC&&!r.isWL);
-    const rank=r=>r.crossedAbove?3:r.above?2:r.crossedBelow?1:0;
-    const sortFn=(a,b)=>{const d=rank(b)-rank(a);return d!==0?d:b.pct-a.pct;};
+  renderSplit(pfx,results){
+    const upItems=results.filter(r=>r.above).sort((a,b)=>b.pct-a.pct);
+    const dnItems=results.filter(r=>!r.above).sort((a,b)=>a.pct-b.pct);
     const card=r=>{
-      const cls=r.crossedAbove?'e12-cross-up':r.crossedBelow?'e12-cross-dn':r.above?'e12-above':'e12-below';
-      const bcls=(r.crossedAbove||r.above)?'bull':'bear';
-      const bdg=r.crossedAbove?'crossed up':r.crossedBelow?'crossed dn':(r.pct>=0?'+':'')+r.pct+'%';
-      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
+      const isUp=r.above;
+      const xTag=r.crossedAbove?'<span class="e13-xtag e13-xtag-up">&#9650;crossed</span>':r.crossedBelow?'<span class="e13-xtag e13-xtag-dn">&#9660;crossed</span>':''; 
+      const pctColor=isUp?'var(--green)':' var(--red)';
+      const sign=r.pct>=0?'+':'';
+      const src=r.isWL?'WL':'SC';
+      return '<div class="e12-card" style="margin-bottom:3px;border-left:3px solid '+(isUp?'var(--green)':' var(--red)')+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+xTag+'<span style="font-size:9px;color:var(--muted);margin-left:4px">'+src+'</span></div><div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div></div><div class="e12-badge" style="background:transparent;color:'+pctColor+';font-weight:700;font-size:11px">'+sign+r.pct+'%</div></div>';
     };
-    const sec=(title,items)=>items.length?'<div class="e12-sec-title">'+title+'</div>'+items.sort(sortFn).map(card).join(''):'';
-    el.innerHTML=sec('Watchlist',wlItems)+sec('Small Cap',scItems);
+    const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html||'<div class="e12-idle">None</div>';};
+    const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent='('+n+')';};
+    set(pfx+'-up',upItems.map(card).join(''));
+    set(pfx+'-dn',dnItems.map(card).join(''));
+    cnt(pfx+'-up-count',upItems.length);
+    cnt(pfx+'-dn-count',dnItems.length);
   }
 }
-const e12tab=new Ema120Tab();
 const e13tab=new Ema13Tab();
 const ema=new EmaTab();
 renderTickers();
