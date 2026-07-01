@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+—<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -149,6 +149,29 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .ec-divider{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:6px 4px 3px;margin-top:4px;border-top:1px solid var(--border)}
 .ec-already{opacity:.65;border-style:dashed}
 .ec-already:hover{opacity:1;border-color:var(--muted)}
+/* ── EMA 120 tab ── */
+.nav-item.e12.active{color:var(--blue)}
+.e12-wrap{display:flex;flex:1;flex-direction:column;overflow:hidden;padding:10px 12px;gap:8px}
+.e12-cols{display:flex;gap:8px;flex:1;overflow:hidden;min-height:0}
+.e12-col{flex:1;display:flex;flex-direction:column;overflow:hidden;border:1px solid var(--border);border-radius:8px}
+.e12-col-hdr{font-size:11px;font-weight:700;padding:7px 10px;text-align:center;text-transform:uppercase;letter-spacing:.6px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0}
+.e12-col-body{flex:1;overflow-y:auto;padding:6px}
+.e12-col-body::-webkit-scrollbar{width:3px}
+.e12-col-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.e12-sec-title{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:5px 4px 3px;border-top:1px solid var(--border);margin-top:4px}
+.e12-sec-title:first-child{border-top:none;margin-top:0}
+.e12-card{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:6px;border:1px solid transparent;margin-bottom:3px;cursor:default;transition:border-color .15s}
+.e12-card:hover{border-color:var(--border)}
+.e12-av{width:26px;height:26px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0}
+.e12-info{flex:1;min-width:0}
+.e12-sym{font-size:11px;font-weight:700;color:var(--text)}
+.e12-detail{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.e12-badge{font-size:10px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.e12-above{background:rgba(16,185,129,.07)}
+.e12-below{background:rgba(239,68,68,.07)}
+.e12-cross-up{background:rgba(16,185,129,.18);border-color:rgba(16,185,129,.5)!important}
+.e12-cross-dn{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)!important}
+.e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -164,6 +187,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   </button>
   <button class="nav-item ema" id="nav-ema" onclick="showPanel('ema')">
     <span class="nav-icon">〜</span><span>EMA Cross</span>
+  </button>
+  <button class="nav-item e12" id="nav-e12" onclick="showPanel('e12')">
+    <span class="nav-icon">〰</span><span>EMA 120</span>
   </button>
 </nav>
 
@@ -313,6 +339,35 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     </div>
   </div>
 
+
+
+  <!-- ── EMA 120 ── -->
+  <div class="panel" id="panel-e12">
+    <div class="e12-wrap">
+      <div class="prog-bar"><div class="prog-fill" id="e12-prog" style="background:linear-gradient(90deg,var(--blue),var(--teal));width:0%"></div></div>
+      <div class="ctrl-bar">
+        <span class="conn-dot" id="e12-dot"></span>
+        <span class="conn-lbl" id="e12-lbl">Ready</span>
+        <div style="flex:1"></div>
+        <span style="font-size:11px;color:var(--muted)">Price vs 120 EMA · Daily · Weekly · Monthly</span>
+        <button class="race-btn btn-ema" id="e12-btn" onclick="e12tab.toggle()">▶ START</button>
+      </div>
+      <div class="e12-cols">
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--teal)">Daily 120 EMA</div>
+          <div class="e12-col-body" id="e12-day"><div class="e12-idle">Click ▶ START to scan</div></div>
+        </div>
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--purple)">Weekly 120 EMA</div>
+          <div class="e12-col-body" id="e12-week"><div class="e12-idle">Click ▶ START to scan</div></div>
+        </div>
+        <div class="e12-col">
+          <div class="e12-col-hdr" style="color:var(--amber)">Monthly 120 EMA</div>
+          <div class="e12-col-body" id="e12-month"><div class="e12-idle">Click ▶ START to scan</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div><!-- /main-content -->
 
 <script>
@@ -710,6 +765,70 @@ class EmaTab{
     document.getElementById('ema-dn-inner').innerHTML=dnMain+dnRest;
   }
 }
+
+// ── Ema120Tab ─────────────────────────────────────────────────────────────────────────────
+class Ema120Tab{
+  constructor(){this.running=false;this.timer=null;}
+  toggle(){this.running?this.stop():this.start();}
+  start(){
+    this.running=true;
+    const btn=document.getElementById('e12-btn');
+    btn.textContent='⏹ STOP';btn.classList.add('btn-stop');
+    this.scan();
+    this.timer=setInterval(()=>this.scan(),300000);
+  }
+  stop(){
+    this.running=false;clearInterval(this.timer);
+    const btn=document.getElementById('e12-btn');
+    btn.textContent='▶ START';btn.classList.remove('btn-stop');
+    document.getElementById('e12-dot').className='conn-dot';
+    document.getElementById('e12-lbl').textContent='Stopped';
+    const p=document.getElementById('e12-prog');p.style.transition='none';p.style.width='0%';
+  }
+  async scan(){
+    const wl=customTickers.join(',');
+    document.getElementById('e12-lbl').textContent='Scanning 3 timeframes…';
+    document.getElementById('e12-dot').className='conn-dot';
+    const prog=document.getElementById('e12-prog');
+    prog.style.transition='width 10s linear';prog.style.width='85%';
+    try{
+      const [day,week,month]=await Promise.all([
+        fetch('/api/ema120?tf=day&wl='+wl).then(r=>r.json()),
+        fetch('/api/ema120?tf=week&wl='+wl).then(r=>r.json()),
+        fetch('/api/ema120?tf=month&wl='+wl).then(r=>r.json()),
+      ]);
+      prog.style.transition='none';prog.style.width='100%';
+      setTimeout(()=>{prog.style.width='0%';},600);
+      this.renderCol('e12-day',day.results||[]);
+      this.renderCol('e12-week',week.results||[]);
+      this.renderCol('e12-month',month.results||[]);
+      document.getElementById('e12-dot').className='conn-dot live';
+      document.getElementById('e12-lbl').textContent='Updated · '+new Date().toLocaleTimeString();
+    }catch(err){
+      const pg=document.getElementById('e12-prog');
+      pg.style.transition='none';pg.style.width='0%';
+      document.getElementById('e12-dot').className='conn-dot';
+      document.getElementById('e12-lbl').textContent='Error – retrying…';
+    }
+  }
+  renderCol(id,results){
+    const el=document.getElementById(id);
+    if(!results.length){el.innerHTML='<div class="e12-idle">No data</div>';return;}
+    const wlItems=results.filter(r=>r.isWL);
+    const scItems=results.filter(r=>r.isSC&&!r.isWL);
+    const rank=r=>r.crossedAbove?3:r.above?2:r.crossedBelow?1:0;
+    const sortFn=(a,b)=>{const d=rank(b)-rank(a);return d!==0?d:b.pct-a.pct;};
+    const card=r=>{
+      const cls=r.crossedAbove?'e12-cross-up':r.crossedBelow?'e12-cross-dn':r.above?'e12-above':'e12-below';
+      const bcls=(r.crossedAbove||r.above)?'bull':'bear';
+      const bdg=r.crossedAbove?'▲ crossed':r.crossedBelow?'▼ crossed':(r.pct>=0?'+':'')+r.pct+'%';
+      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' · EMA $'+r.ema120+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
+    };
+    const sec=(title,items)=>items.length?'<div class="e12-sec-title">'+title+'</div>'+items.sort(sortFn).map(card).join(''):'';
+    el.innerHTML=sec('⊙ Watchlist',wlItems)+sec('⚡ Small Cap',scItems);
+  }
+}
+const e12tab=new Ema120Tab();
 const ema=new EmaTab();
 renderTickers();
 </script>
