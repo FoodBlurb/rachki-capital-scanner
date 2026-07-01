@@ -69,6 +69,13 @@ async function fetchUnusual(base, key, ticker) {
 
       const ratio    = oi > 0 ? vol / oi : 99;
       if (ratio < MIN_RATIO) continue;
+      // Skip ITM options (delta > 0.5 for calls, < -0.5 for puts)
+      const delta_v = c.greeks?.delta ?? null;
+      const ctype = c.details?.contract_type ?? 'call';
+      if (delta_v !== null) {
+        if (ctype === 'call' && delta_v > 0.5) continue;
+        if (ctype === 'put' && delta_v < -0.5) continue;
+      }
 
       const notional = vol * 100 * price;
       if (notional < MIN_NOTIONAL) continue;
