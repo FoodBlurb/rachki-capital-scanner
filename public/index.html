@@ -689,7 +689,9 @@ class EmaTab{
         }
       }catch(err){console.error('EmaTab',tk,err);}
     }
-    this.render(bull,bear,alreadyAbove=[],alreadyBelow=[]){
+    this.render(bull,bear,alreadyAbove,alreadyBelow);
+  }
+  render(bull,bear,alreadyAbove=[],alreadyBelow=[]){
     alreadyAbove.sort((a,b)=>(b.e13-b.e120)/b.e120-(a.e13-a.e120)/a.e120);
     alreadyBelow.sort((a,b)=>(b.e120-b.e13)/b.e120-(a.e120-a.e13)/a.e120);
     bull.sort((a,b)=>a.mAgo-b.mAgo);
