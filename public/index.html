@@ -943,7 +943,9 @@ class OptFlowTab{
     document.getElementById('opt-lbl').textContent='Stopped';
   }
   async scan(){
-    const dot=document.getElementById('opt-dot'),lbl=document.getElementById('opt-lbl'),pg=document.getElementById('opt-prog');
+    const dot=document.getElementById('opt-dot');
+    const lbl=document.getElementById('opt-lbl');
+    const pg=document.getElementById('opt-prog');
     dot.className='conn-dot conn-live';lbl.textContent='Scanning options…';
     const wlStr=customTickers.join(',');
     const t0=Date.now();
@@ -951,59 +953,57 @@ class OptFlowTab{
       const d=await fetch('/api/options?wl='+wlStr).then(r=>r.json());
       if(pg)pg.style.width='100%';
       this.render(d.calls||[],d.puts||[]);
-      lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+( Date.now()-t0)+'ms)';
+      lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
       dot.className='conn-dot conn-live';
     }catch(err){
       dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
     }
   }
-  fmt(n){if(n>=1e6)return'
-</body>
-</html>
-+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'
-</body>
-</html>
-+(n/1e3).toFixed(0)+'K';return'
-</body>
-</html>
-+n;}
+  fmt(n){
+    if(n>=1e6)return'$'+(n/1e6).toFixed(1)+'M';
+    if(n>=1e3)return'$'+(n/1e3).toFixed(0)+'K';
+    return'$'+n;
+  }
   render(calls,puts){
     const maxN=Math.max(...[...calls,...puts].map(c=>c.notional),1);
     const card=(c)=>{
       const isCall=c.type==='call';
-      const color=isCall?'var(--green)':'var(--red)';
-      const barBg=isCall?'rgba(74,222,128,.15)':'rgba(248,113,113,.15)';
+      const clr=isCall?'var(--green)':'var(--red)';
+      const bg=isCall?'rgba(74,222,128,.15)':'rgba(248,113,113,.15)';
       const bw=(c.notional/maxN*100).toFixed(1);
-      const expShort=c.expiry?c.expiry.slice(5):'?';
-      return '<div class="opt-card" style="border-left:3px solid '+color+'">'+
-        '<div class="opt-card-bar" data-w="'+bw+'" style="width:0%;background:'+barBg+'"></div>'+
-        '<div class="opt-card-inner">'+
-          '<div class="e12-av" style="background:'+avatarColor(c.ticker)+';width:28px;height:28px;min-width:28px;font-size:10px">'+c.ticker.slice(0,2)+'</div>'+
-          '<div class="opt-card-meta">'+
-            '<div class="opt-card-sym">'+c.ticker+' 
-</body>
-</html>
-+c.strike+' '+(isCall?'C':'P')+'</div>'+
-            '<div class="opt-card-sub">Exp '+expShort+' &middot; IV '+(c.iv!=null?c.iv+'%':'&mdash;')+' &middot; &delta; '+(c.delta!=null?c.delta:'&mdash;')+'</div>'+
-          '</div>'+
-          '<div class="opt-card-right">'+
-            '<div class="opt-card-notional" style="color:'+color+'">'+this.fmt(c.notional)+'</div>'+
-            '<div class="opt-card-ratio">'+c.vol.toLocaleString()+' vol &middot; '+c.ratio+'x OI</div>'+
-          '</div>'+
-        '</div>'+
-      '</div>';
+      const exp=c.expiry?c.expiry.slice(5):'?';
+      const iv=c.iv!=null?c.iv+'%':'--';
+      const dl=c.delta!=null?c.delta:'--';
+      const sym=c.ticker+' $'+c.strike+(isCall?' C':' P');
+      const notional=this.fmt(c.notional);
+      return [
+        '<div class="opt-card" style="border-left:3px solid '+clr+'">',
+          '<div class="opt-card-bar" data-w="'+bw+'" style="width:0%;background:'+bg+'"></div>',
+          '<div class="opt-card-inner">',
+            '<div class="e12-av" style="background:'+avatarColor(c.ticker)+';width:28px;height:28px;min-width:28px;font-size:10px">'+c.ticker.slice(0,2)+'</div>',
+            '<div class="opt-card-meta">',
+              '<div class="opt-card-sym">'+sym+'</div>',
+              '<div class="opt-card-sub">Exp '+exp+' &middot; IV '+iv+' &middot; &delta; '+dl+'</div>',
+            '</div>',
+            '<div class="opt-card-right">',
+              '<div class="opt-card-notional" style="color:'+clr+'">'+notional+'</div>',
+              '<div class="opt-card-ratio">'+c.vol.toLocaleString()+' vol &middot; '+c.ratio+'x OI</div>',
+            '</div>',
+          '</div>',
+        '</div>'
+      ].join('');
     };
-    const setCol=(id,items,cntId,fallback)=>{
+    const setCol=(id,items,cid,fb)=>{
       const el=document.getElementById(id);if(!el)return;
-      el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">'+fallback+'</div>';
-      const cnt=document.getElementById(cntId);if(cnt)cnt.textContent=items.length?'('+items.length+')':'';
+      el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">'+fb+'</div>';
+      const ct=document.getElementById(cid);if(ct)ct.textContent=items.length?'('+items.length+')':'';
     };
     setCol('opt-calls',calls,'opt-call-count','No unusual calls');
     setCol('opt-puts',puts,'opt-put-count','No unusual puts');
     requestAnimationFrame(()=>{
       ['opt-calls','opt-puts'].forEach(colId=>{
         const col=document.getElementById(colId);if(!col)return;
-        col.querySelectorAll('.opt-card-bar[data-w]').forEach((bar,i)=>setTimeout(()=>bar.style.width=bar.dataset.w+'%',i*40));
+        col.querySelectorAll('.opt-card-bar[data-w]').forEach((bar,i)=>setTimeout(()=>{bar.style.width=bar.dataset.w+'%';},i*40));
       });
     });
   }
