@@ -801,41 +801,46 @@ class Ema13Tab{
     }
   }
   renderSplit(pfx,results){
-    // Momentum sort: crossed first, then sorted by absolute % from EMA
-    const upItems=results.filter(r=>r.above).sort((a,b)=>{
-      if(b.crossedAbove&&!a.crossedAbove)return 1;
-      if(a.crossedAbove&&!b.crossedAbove)return -1;
-      return b.pct-a.pct;
-    });
-    const dnItems=results.filter(r=>!r.above).sort((a,b)=>{
-      if(b.crossedBelow&&!a.crossedBelow)return 1;
-      if(a.crossedBelow&&!b.crossedBelow)return -1;
-      return a.pct-b.pct;
-    });
-    const card=r=>{
+    const crossed=results.filter(r=>r.crossedAbove||r.crossedBelow);
+    const upCrossed=results.filter(r=>r.crossedAbove);
+    const upSteady=results.filter(r=>r.above&&!r.crossedAbove).sort((a,b)=>b.pct-a.pct);
+    const dnCrossed=results.filter(r=>r.crossedBelow);
+    const dnSteady=results.filter(r=>!r.above&&!r.crossedBelow).sort((a,b)=>a.pct-b.pct);
+    const card=(r,isCross)=>{
       const isUp=r.above;
-      const isCross=r.crossedAbove||r.crossedBelow;
-      const crossBadge=r.crossedAbove?'<span class="e13-cross-badge e13-cross-up">⚡ Crossed Above</span>':
-        r.crossedBelow?'<span class="e13-cross-badge e13-cross-dn">⚡ Crossed Below</span>':''; 
       const pctColor=isUp?'var(--green)':' var(--red)';
       const sign=r.pct>=0?'+':'';
       const src=r.isWL?'WL':'SC';
-      const glow=isCross?' e13-card-glow':'';
-      return '<div class="e12-card'+ glow +'" style="margin-bottom:4px;border-left:3px solid '+(isUp?'var(--green)':' var(--red)')+'">'+ 
+      const border=isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.3)':' rgba(248,113,113,.3)');
+      const bg=isCross?(isUp?'rgba(74,222,128,.06)':' rgba(248,113,113,.06)'):'';
+      return '<div class="e12-card" style="margin-bottom:3px;border-left:3px solid '+border+';'+(bg?'background:'+bg:'')+'">'+ 
         '<div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div>'+ 
         '<div class="e12-info">'+ 
-          '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:5px">'+src+'</span>'+crossBadge+'</div>'+ 
+          '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:5px">'+src+'</span></div>'+ 
           '<div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div>'+ 
         '</div>'+ 
-        '<div style="text-align:right">'+ 
-          '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
-        '</div>'+ 
+        '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
       '</div>';
     };
-    const set=(id,items)=>{const el=document.getElementById(id);if(el)el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">None</div>';};
+    const sectionHdr=(label,color,count)=>
+      '<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:'+color+';'+ 
+      'padding:4px 6px 3px;margin-top:4px;border-bottom:1px solid var(--border);margin-bottom:3px">'+ 
+      label+' <span style="font-weight:400;color:var(--muted)">('+ count +')</span></div>';
+    const buildCol=(crossed,steady,crossColor,steadyLabel,steadyColor)=>{
+      let h='';
+      if(crossed.length)h+=sectionHdr('&#9889; Just Crossed',crossColor,crossed.length)+crossed.map(r=>card(r,true)).join('');
+      if(steady.length)h+=(crossed.length?'<div style="height:6px"></div>':'')+sectionHdr(steadyLabel,steadyColor,steady.length)+steady.map(r=>card(r,false)).join('');
+      return h||'<div class="e12-idle">None</div>';
+    };
+    const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html;};
     const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent='('+n+')';};
-    set(pfx+'-up',upItems);set(pfx+'-dn',dnItems);
-    cnt(pfx+'-up-count',upItems.length);cnt(pfx+'-dn-count',dnItems.length);
+    set(pfx+'-up',buildCol(upCrossed,upSteady,'var(--green)','&#9650; Already Above','var(--green)'));
+    set(pfx+'-dn',buildCol(dnCrossed,dnSteady,'var(--red)','&#9660; Already Below','var(--red)'));
+    cnt(pfx+'-up-count',upCrossed.length+upSteady.length);
+    cnt(pfx+'-dn-count',dnCrossed.length+dnSteady.length);
+    // Update cross hint in subtab bar
+    const hint=document.getElementById('e13-stab-hint');
+    if(hint&&crossed.length)hint.textContent='&#128293; '+crossed.length+' new crossing'+(crossed.length>1?'s':'')
   }
 }
 const e13tab=new Ema13Tab();
