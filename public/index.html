@@ -609,7 +609,7 @@ const sc=new RaceTab({
   btnId:'sc-btn',sortKey:'score',filters:{minRelVol:0,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
   barUp:'bar-sc-up',barDn:'bar-dn',fillUp:'fill-sc',fillDn:'fill-dn',lblUp:'lbl-sc-up',lblDn:'lbl-dn',
   sortModes:{
-    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' Â· '+s.relVol.toFixed(1)+'x vol':'')},
+    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' Â· '+s.relVol.toFixed(1)+'x vol':'')+' · $'+(s.price||0).toFixed(2)},
     relVol:{metricFn:s=>s.relVol||0,labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'--',subFn:s=>pc(s.pct||0)+' Â· $'+(s.price||0).toFixed(2)},
     pct:{metricFn:s=>Math.abs(s.pct||0),labelFn:s=>pc(s.pct||0),subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol Â· $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2)},
   },
