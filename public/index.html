@@ -32,32 +32,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .opt-col-hdr{padding:8px 10px;font-size:12px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:6px;background:var(--bg2);border-radius:6px 6px 0 0}
 .opt-count{font-size:10px;font-weight:500;color:var(--muted);margin-left:auto}
 .opt-col-body{flex:1;overflow-y:auto;padding:4px 6px;display:flex;flex-direction:column;gap:4px}
-.nav-item.opex.active{color:#06b6d4}
-.opex-wrap{display:flex;flex:1;flex-direction:column;overflow:hidden;padding:8px 12px;gap:6px}
-.opex-form-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;background:var(--bg2);border-radius:6px;padding:8px 10px;border:1px solid var(--bg3)}
-.opex-fld{display:flex;flex-direction:column;gap:2px}
-.opex-fld label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
-.opex-fld input{background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:4px;color:var(--fg);font-size:11px;padding:4px 6px;width:70px}
-.opex-fld input.wide{width:90px}
-.opex-fld input:focus{outline:none;border-color:#06b6d4}
-.opex-divider{width:1px;background:var(--bg3);align-self:stretch;margin:0 4px}
-.opex-results{flex:1;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px 0;align-content:start}
-.opex-card{background:var(--bg2);border-radius:6px;border:1px solid var(--bg3);overflow:hidden;font-size:10px}
-.opex-card-hdr{padding:5px 8px;display:flex;align-items:center;gap:6px;background:rgba(6,182,212,.08);border-bottom:1px solid rgba(6,182,212,.15)}
-.opex-card-title{font-size:11px;font-weight:700;color:#06b6d4}
-.opex-card-days{font-size:9px;color:var(--muted);margin-left:auto}
-.opex-tbl{width:100%;border-collapse:collapse}
-.opex-tbl th{font-size:8px;font-weight:700;color:var(--muted);text-transform:uppercase;padding:3px 6px;text-align:left;background:rgba(255,255,255,.02)}
-.opex-tbl td{font-size:10px;padding:3px 6px;border-bottom:1px solid rgba(255,255,255,.03)}
-.opex-tbl tr:last-child td{border-bottom:none}
-.opex-tbl tr:hover td{background:rgba(255,255,255,.03)}
-.opex-lvl{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;font-weight:700}
-.opex-verd{display:inline-block;padding:1px 4px;border-radius:3px;font-size:8px;font-weight:700}
-.verd-under{background:rgba(74,222,128,.15);color:#4ade80}
-.verd-fair{background:rgba(251,191,36,.15);color:#fbbf24}
-.verd-over{background:rgba(248,113,113,.15);color:#f87171}
-.opex-reach-ok{color:#4ade80}
-.opex-reach-no{color:var(--muted)}
 .nav-icon{font-size:15px;flex-shrink:0}
 .main-content{flex:1;display:flex;overflow:hidden}
 .panel{display:none;flex:1;flex-direction:column;overflow:hidden}
@@ -233,15 +207,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   
   <button class="nav-item e12" id="nav-e12" onclick="showPanel('e12');window.ema120.load()">
     <span class="nav-icon">&#12336;</span><span>EMA 120</span>
-  </button>
-  <button class="nav-item e13" id="nav-e13" onclick="showPanel('e13');ema13.load()">
-    <span class="nav-icon">&#12336;</span><span>EMA 13</span>
-  </button>
-  
-<button class="nav-item opex" id="nav-opex" onclick="showPanel('opex')">
-  <span class="nav-icon">ð¯</span><span>Opex Planner</span>
-</button>
-</nav>
+  </button></nav>
 
 <div class="main-content">
 
@@ -396,37 +362,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     <div id="e12-body" style="flex:1;overflow:hidden"></div>
   </div>
 </div>
-<div class="panel" id="panel-opex">
-  <div class="opex-wrap">
-    <div class="prog-bar"><div class="prog-fill" id="opex-prog" style="width:0%;background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
-    <div class="ctrl-bar">
-      <span class="conn-dot" id="opex-dot"></span>
-      <span class="conn-lbl" id="opex-lbl">Enter chart levels â Analyze</span>
-      <div style="flex:1"></div>
-      <button class="btn-start" id="opex-btn" onclick="opexPlanner.analyze()">ð ANALYZE</button>
-    </div>
-    <div class="opex-form-bar">
-      <div class="opex-fld"><label>Ticker</label><input id="ox-ticker" class="wide" value="SPY"></div>
-      <div class="opex-fld"><label>Chart Price</label><input id="ox-price" class="wide" type="number" placeholder="7509.11"></div>
-      <div class="opex-divider"></div>
-      <div class="opex-fld"><label>R1</label><input id="ox-r1" type="number" placeholder="7668"></div>
-      <div class="opex-fld"><label>R2</label><input id="ox-r2" type="number" placeholder="7836"></div>
-      <div class="opex-fld"><label>R3</label><input id="ox-r3" type="number" placeholder="8051"></div>
-      <div class="opex-fld"><label>R4</label><input id="ox-r4" type="number" placeholder="8265"></div>
-      <div class="opex-fld"><label>R5</label><input id="ox-r5" type="number" placeholder="8480"></div>
-      <div class="opex-fld"><label>R6</label><input id="ox-r6" type="number" placeholder="8695"></div>
-      <div class="opex-divider"></div>
-      <div class="opex-fld"><label>Daily ATR</label><input id="ox-atr-d" type="number" placeholder="94.23"></div>
-      <div class="opex-fld"><label>Daily Used %</label><input id="ox-pct-d" type="number" placeholder="76.6"></div>
-      <div class="opex-fld"><label>Monthly ATR</label><input id="ox-atr-m" type="number" placeholder="355.59"></div>
-      <div class="opex-fld"><label>Monthly Used %</label><input id="ox-pct-m" type="number" placeholder="20.3"></div>
-    </div>
-    <div class="opex-results" id="opex-results">
-      <div class="e12-idle" style="grid-column:1/-1">Enter chart levels above and click ANALYZE</div>
-    </div>
-  </div>
-</div>
-</div>
+
 
 <script>
 const ROW_H=50,RACE_DUR=45000,POLL_MS=3000,LERP=0.07;
@@ -869,93 +805,6 @@ class Ema13Tab {
   }
 }
 window.ema13=new Ema13Tab();
-renderTickers();
-
-class OpexPlanner{
-  async analyze(){
-    const dot=document.getElementById('opex-dot');
-    const lbl=document.getElementById('opex-lbl');
-    const pg=document.getElementById('opex-prog');
-    const res=document.getElementById('opex-results');
-    const ticker=(document.getElementById('ox-ticker').value||'SPY').trim().toUpperCase();
-    const price=document.getElementById('ox-price').value;
-    if(!price){lbl.textContent='Enter chart price first';return;}
-    const params=new URLSearchParams({
-      ticker,chartPrice:price,
-      r1:document.getElementById('ox-r1').value,
-      r2:document.getElementById('ox-r2').value,
-      r3:document.getElementById('ox-r3').value,
-      r4:document.getElementById('ox-r4').value,
-      r5:document.getElementById('ox-r5').value,
-      r6:document.getElementById('ox-r6').value,
-      atrDaily:document.getElementById('ox-atr-d').value,
-      pctDaily:document.getElementById('ox-pct-d').value,
-      atrMonthly:document.getElementById('ox-atr-m').value,
-      pctMonthly:document.getElementById('ox-pct-m').value,
-    });
-    dot.className='conn-dot conn-live';
-    lbl.textContent='Fetching options chains for 6 OPEX datesâ¦';
-    pg.style.width='15%';
-    res.innerHTML='<div class="e12-idle" style="grid-column:1/-1">Scanning options chainsâ¦</div>';
-    try{
-      const t0=Date.now();
-      const d=await fetch('/api/opex?'+params.toString()).then(r=>r.json());
-      if(d.error){throw new Error(d.error);}
-      pg.style.width='100%';
-      lbl.textContent='Done in '+(Date.now()-t0)+'ms Â· HVâ'+d.hvAnn+'% Â· Scale: '+d.scale+' Â· '+ticker+' @'+d.tickerPrice;
-      dot.className='conn-dot conn-live';
-      this.render(d);
-    }catch(err){
-      dot.className='conn-dot conn-err';
-      lbl.textContent='Error: '+err.message;
-      res.innerHTML='<div class="e12-idle" style="grid-column:1/-1;color:var(--red)">'+err.message+'</div>';
-    }
-  }
-  lvlColor(level){
-    const n=parseInt(level.replace(/[^0-9]/g,''))||1;
-    const c=['#22c55e','#4ade80','#86efac','#fbbf24','#fb923c','#f97316'];
-    return c[Math.min(n-1,c.length-1)];
-  }
-  render(data){
-    const res=document.getElementById('opex-results');
-    if(!data.opexResults||!data.opexResults.length){
-      res.innerHTML='<div class="e12-idle" style="grid-column:1/-1">No results</div>';
-      return;
-    }
-    res.innerHTML=data.opexResults.map(op=>{
-      const dt=new Date(op.expiry+'T12:00:00');
-      const label=dt.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-      if(!op.levels||!op.levels.length){
-        return '<div class="opex-card"><div class="opex-card-hdr"><span class="opex-card-title">'+label+' OPEX</span><span class="opex-card-days">'+op.daysToExpiry+'d</span></div><div style="padding:8px;color:var(--muted);font-size:10px">No data</div></div>';
-      }
-      const rows=op.levels.map(lv=>{
-        const clr=this.lvlColor(lv.level);
-        const vClass=lv.verdict==='UNDERVALUED'?'verd-under':lv.verdict==='OVERPRICED'?'verd-over':'verd-fair';
-        const vLabel=lv.undervalPct>0?'UV '+lv.undervalPct+'%':lv.undervalPct<-5?'OP '+Math.abs(lv.undervalPct)+'%':'FAIR';
-        const rClass=lv.feasible?'opex-reach-ok':'opex-reach-no';
-        return '<tr>'
-          +'<td><span class="opex-lvl" style="background:'+clr+'22;color:'+clr+'">'+lv.level+'</span></td>'
-          +'<td>'+lv.strike+'</td>'
-          +'<td><b>$'+lv.premium+'</b><br><span style="font-size:8px;color:var(--muted)">$'+lv.premiumPerContract+'</span></td>'
-          +'<td>'+lv.delta+'</td>'
-          +'<td>'+lv.iv+'%<br><span style="font-size:8px;color:var(--muted)">HV:'+lv.hvPct+'%</span></td>'
-          +'<td class="'+rClass+'">'+lv.estimatedReach+'<br><span style="font-size:8px;color:var(--muted)">'+lv.daysToReach+'d</span></td>'
-          +'<td><span class="opex-verd '+vClass+'">'+vLabel+'</span></td>'
-          +'<td>'+((lv.oi||0)>=1000?((lv.oi/1000).toFixed(1)+'K'):lv.oi)+'</td>'
-          +'</tr>';
-      }).join('');
-      return '<div class="opex-card">'
-        +'<div class="opex-card-hdr">'
-        +'<span class="opex-card-title">'+label+' OPEX</span>'
-        +'<span class="opex-card-days">'+op.daysToExpiry+' days</span>'
-        +'</div>'
-        +'<table class="opex-tbl"><thead><tr>'
-        +'<th>Level</th><th>Strike</th><th>Premium</th><th>Delta</th><th>IV/HV</th><th>Est.Reach</th><th>Verdict</th><th>OI</th>'
-        +'</tr></thead><tbody>'+rows+'</tbody></table>'
-        +'</div>';
-    }).join('');
-  }
-}
-const opexPlanner=new OpexPlanner();</script>
+renderTickers();</script>
 </body>
 </html>
