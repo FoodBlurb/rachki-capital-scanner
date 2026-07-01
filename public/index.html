@@ -702,7 +702,7 @@ class Ema120Tab{
     this.running=true;
     const btn=document.getElementById('e12-btn');
     btn.textContent='STOP';btn.classList.add('btn-stop');
-    this.scan();this.timer=setInterval(()=>this.scan(),300000);
+    this.scan();this.timer=setInterval(()=>this.scan(),300000);this.priceTimer=setInterval(()=>this.priceTick(),30000);
   }
   stop(){
     this.running=false;clearInterval(this.timer);
@@ -756,7 +756,7 @@ class Ema120Tab{
 }
 
 class Ema13Tab{
-  constructor(){this.running=false;this.timer=null;this.tf='day';this.cache={};}
+  constructor(){this.running=false;this.timer=null;this.priceTimer=null;this.tf='day';this.cache={};}
   toggle(){this.running?this.stop():this.start();}
   switchTf(tf){
     this.tf=tf;
@@ -774,7 +774,7 @@ class Ema13Tab{
     this.scan();this.timer=setInterval(()=>this.scan(),300000);
   }
   stop(){
-    this.running=false;clearInterval(this.timer);this.timer=null;
+    this.running=false;clearInterval(this.timer);this.timer=null;clearInterval(this.priceTimer);this.priceTimer=null;
     const btn=document.getElementById('e13-btn');
     btn.innerHTML='&#9654; START';btn.classList.remove('btn-stop');
     const pg=document.getElementById('e13-prog');if(pg)pg.style.width='0%';
@@ -804,6 +804,33 @@ class Ema13Tab{
       lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
     }catch(err){
       dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
+    }
+  }
+  async priceTick(){
+    if(!this.cache||!Object.keys(this.cache).length)return;
+    const lbl=document.getElementById('e13-lbl');
+    try{
+      const wlStr=customTickers.join(',');
+      const d=await fetch('/api/ema13?tf=snap&wl='+wlStr).then(r=>r.json());
+      if(!d.snaps)return;
+      const priceMap={};
+      d.snaps.forEach(s=>priceMap[s.t]=s.price);
+      // Update cached results with new prices & recompute pct
+      ['day','week','month'].forEach(tf=>{
+        if(!this.cache[tf])return;
+        this.cache[tf].forEach(r=>{
+          if(priceMap[r.t]!=null){
+            r.price=priceMap[r.t];
+            r.pct=+((r.price-r.ema13)/r.ema13*100).toFixed(2);
+            r.above=r.price>r.ema13;
+          }
+        });
+        this.renderSplit('e13-'+tf,this.cache[tf]);
+      });
+      this.switchTf(this.tf);
+      if(lbl)lbl.textContent='&#128257; '+new Date().toLocaleTimeString();
+    }catch(err){
+      if(lbl)lbl.textContent='Snap error: '+err.message;
     }
   }
   renderSplit(pfx,results){
