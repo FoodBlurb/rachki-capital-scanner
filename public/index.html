@@ -221,7 +221,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
           <div class="fsb-group">
             <label class="fsb-label">Min Rel Vol</label>
             <div class="fsb-row">
-              <input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="1" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'">
+              <input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="0" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'">
               <span class="fsb-val" id="f-sc-rv-v">1x</span>
             </div>
           </div>
@@ -607,7 +607,7 @@ const sc=new RaceTab({
   upCountId:'sc-up-count', dnCountId:'sc-dn-count',
   dotId:'sc-dot', lblId:'sc-lbl', sessId:'sc-sess', countId:'sc-count',
   btnId:'sc-btn', sortKey:'score',
-  filters:{minRelVol:1,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
+  filters:{minRelVol:0,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
   barUp:'bar-sc-up', barDn:'bar-dn',
   fillUp:'fill-sc', fillDn:'fill-dn',
   lblUp:'lbl-sc-up', lblDn:'lbl-dn',
