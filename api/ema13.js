@@ -69,6 +69,29 @@ export default async function handler(req, res) {
   const key  = process.env.MASSIVE_API_KEY;
   if (!key) return res.status(500).json({ error: 'MASSIVE_API_KEY not set' });
   const tf = req.query.tf || 'day';
+  // Snap mode: just return latest prices (no EMA calc) for frequent price ticks
+  if (tf === 'snap') {
+    const wlTickers2 = (req.query.wl || '').split(',').filter(Boolean);
+    const allTickers2 = [...new Set([...wlTickers2, ...SC_TICKERS])];
+    const toDate2 = now.toISOString().slice(0, 10);
+    const from2 = new Date(now); from2.setDate(from2.getDate() - 3);
+    const fromDate2 = from2.toISOString().slice(0, 10);
+    const snaps = [];
+    for (let i = 0; i < allTickers2.length; i += 40) {
+      const batch = allTickers2.slice(i, i + 40);
+      const rows = await Promise.all(batch.map(async t => {
+        try {
+          const url = `${base}/v2/aggs/ticker/${encodeURIComponent(t)}/range/1/day/${fromDate2}/${toDate2}?adjusted=true&sort=desc&limit=1&apiKey=${key}`;
+          const d = await fetch(url).then(r => r.json());
+          const price = d.results?.[0]?.c;
+          return price != null ? { t, price: +price.toFixed(2) } : null;
+        } catch { return null; }
+      }));
+      snaps.push(...rows.filter(Boolean));
+    }
+    return res.status(200).json({ snaps, updatedAt: new Date().toISOString() });
+  }
+
   const cfg = TF[tf];
   if (!cfg) return res.status(400).json({ error: 'Invalid tf' });
   const wlTickers = (req.query.wl || '').split(',').filter(Boolean);
