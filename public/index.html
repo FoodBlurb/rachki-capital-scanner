@@ -147,35 +147,27 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e12-cross-dn{background:rgba(239,68,68,.18);border-color:rgba(239,68,68,.5)!important}
 .e12-idle{display:flex;align-items:center;justify-content:center;height:80px;font-size:12px;color:var(--muted)}
 
-/* EMA 13 sub-tab layout */
+/* EMA 13 layout */
 .e13-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden;}
-.e13-subtabs{display:flex;align-items:center;gap:4px;padding:8px 12px;border-bottom:1px solid var(--border);background:var(--bg2);}
-.e13-stab{padding:5px 18px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.e13-subtabs{display:flex;align-items:center;gap:4px;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--bg2);}
+.e13-stab{padding:4px 16px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
 .e13-stab:hover{color:var(--fg);background:var(--bg3);}
 .e13-stab-active{background:var(--purple)!important;color:#fff!important;border-color:var(--purple)!important;}
 .e13-stab-hint{margin-left:auto;font-size:10px;color:var(--amber);font-weight:600;}
 .e13-pages{flex:1;overflow:hidden;}
 .e13-page{height:100%;display:none;}
 .e13-page:first-child{display:block;}
-.e13-split-row{display:flex;height:100%;}
-.e13-side{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
-.e13-side-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:6px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;}
-.e13-up-hdr{color:var(--green);background:rgba(74,222,128,.07);}
-.e13-dn-hdr{color:var(--red);background:rgba(248,113,113,.07);}
-.e13-side-body{flex:1;overflow-y:auto;padding:6px;}
-.e13-mid-bar{width:34px;min-width:34px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--bg2);}
-.e13-mid-bar span{writing-mode:vertical-rl;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);}
-.e13-count{font-weight:400;color:var(--muted);font-size:9px;}
-.e13-cross-badge{font-size:9px;border-radius:3px;padding:1px 5px;margin-left:4px;font-weight:700;}
-.e13-cross-up{background:rgba(74,222,128,.25);color:var(--green);}
-.e13-cross-dn{background:rgba(248,113,113,.25);color:var(--red);}
-.e13-card-glow{box-shadow:0 0 0 1px rgba(250,204,21,.4);background:rgba(250,204,21,.04)!important;}
+.e13-4cols{display:flex;height:100%;}
+.e13-col{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;}
+.e13-col-hdr{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;padding:5px 8px;}
+.e13-col-body{flex:1;overflow-y:auto;padding:3px;}
+.e13-col-div{width:1px;background:var(--border);flex-shrink:0;}
+.e13-count{font-weight:400;font-size:8px;color:var(--muted);margin-left:2px;}
 
 /* EMA 13 race cards */
-.e13-rc{position:relative;overflow:hidden;margin-bottom:3px;border-radius:5px;border-left:3px solid transparent;background:var(--bg2);}
+.e13-rc{position:relative;overflow:hidden;margin-bottom:2px;border-radius:4px;border-left:3px solid transparent;background:var(--bg2);}
 .e13-rc-bar{position:absolute;top:0;left:0;bottom:0;transition:width .7s cubic-bezier(.25,.46,.45,.94);border-radius:0 3px 3px 0;pointer-events:none;}
-.e13-rc-inner{position:relative;display:flex;align-items:center;gap:7px;padding:5px 8px;z-index:1;}
-.e13-sec-hdr{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;padding:4px 6px 3px;border-bottom:1px solid var(--border);margin-bottom:2px;}
+.e13-rc-inner{position:relative;display:flex;align-items:center;gap:5px;padding:4px 6px;z-index:1;}
 </style>
 </head>
 <body>
@@ -362,9 +354,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
       <div class="e13-stab-hint" id="e13-stab-hint"></div>
     </div>
     <div class="e13-pages">
-      <div class="e13-page" id="e13-day-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-side-body" id="e13-day-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-side-body" id="e13-day-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
-      <div class="e13-page" id="e13-week-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-side-body" id="e13-week-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-side-body" id="e13-week-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
-      <div class="e13-page" id="e13-month-page"><div class="e13-split-row"><div class="e13-side"><div class="e13-side-hdr e13-up-hdr">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-side-body" id="e13-month-up"><div class="e12-idle">Click START to scan</div></div></div><div class="e13-mid-bar"><span>EMA 13</span></div><div class="e13-side"><div class="e13-side-hdr e13-dn-hdr">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-side-body" id="e13-month-dn"><div class="e12-idle">Click START to scan</div></div></div></div></div>
+      <div class="e13-page" id="e13-day-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-day-jup-count"></span></div><div class="e13-col-body" id="e13-day-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-day-up-count"></span></div><div class="e13-col-body" id="e13-day-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-day-dn-count"></span></div><div class="e13-col-body" id="e13-day-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-day-jdn-count"></span></div><div class="e13-col-body" id="e13-day-jdn"><div class="e12-idle">–</div></div></div></div></div>
+      <div class="e13-page" id="e13-week-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-week-jup-count"></span></div><div class="e13-col-body" id="e13-week-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-week-up-count"></span></div><div class="e13-col-body" id="e13-week-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-week-dn-count"></span></div><div class="e13-col-body" id="e13-week-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-week-jdn-count"></span></div><div class="e13-col-body" id="e13-week-jdn"><div class="e12-idle">–</div></div></div></div></div>
+      <div class="e13-page" id="e13-month-page"><div class="e13-4cols"><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#9889; Crossed &#9650; <span class="e13-count" id="e13-month-jup-count"></span></div><div class="e13-col-body" id="e13-month-jup"><div class="e12-idle">–</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--green);border-bottom:1px solid rgba(74,222,128,.3)">&#9650; Above EMA 13 <span class="e13-count" id="e13-month-up-count"></span></div><div class="e13-col-body" id="e13-month-up"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:1px solid rgba(248,113,113,.3)">&#9660; Below EMA 13 <span class="e13-count" id="e13-month-dn-count"></span></div><div class="e13-col-body" id="e13-month-dn"><div class="e12-idle">Click START</div></div></div><div class="e13-col-div"></div><div class="e13-col"><div class="e13-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#9889; Crossed &#9660; <span class="e13-count" id="e13-month-jdn-count"></span></div><div class="e13-col-body" id="e13-month-jdn"><div class="e12-idle">–</div></div></div></div></div>
     </div>
   </div>
 </div>
@@ -836,12 +828,10 @@ class Ema13Tab{
   renderSplit(pfx,results){
     const upCrossed=results.filter(r=>r.crossedAbove);
     const upSteady=results.filter(r=>r.above&&!r.crossedAbove).sort((a,b)=>b.pct-a.pct);
-    const dnCrossed=results.filter(r=>r.crossedBelow);
     const dnSteady=results.filter(r=>!r.above&&!r.crossedBelow).sort((a,b)=>a.pct-b.pct);
-    const allUp=[...upCrossed,...upSteady], allDn=[...dnCrossed,...dnSteady];
-    const maxUp=Math.max(...allUp.map(r=>Math.abs(r.pct)),1);
-    const maxDn=Math.max(...allDn.map(r=>Math.abs(r.pct)),1);
-    const card=(r,isCross,maxPct)=>{
+    const dnCrossed=results.filter(r=>r.crossedBelow);
+    const maxPct=Math.max(...results.map(r=>Math.abs(r.pct)),1);
+    const card=(r,isCross)=>{
       const isUp=r.above;
       const pctColor=isUp?'var(--green)':' var(--red)';
       const barColor=isUp?'rgba(74,222,128,.18)':' rgba(248,113,113,.18)';
@@ -849,49 +839,41 @@ class Ema13Tab{
       const sign=r.pct>=0?'+':'';
       const src=r.isWL?'WL':'SC';
       const arrow=isCross?(isUp?'&#9650;&#9650;':'&#9660;&#9660;'):(isUp?'&#9650;':'&#9660;');
-      const borderColor=isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.4)':' rgba(248,113,113,.4)');
-      return '<div class="e13-rc" style="border-left:3px solid '+borderColor+'">'+ 
+      return '<div class="e13-rc" style="border-left:3px solid '+(isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.4)':' rgba(248,113,113,.4)'))+'">'+ 
         '<div class="e13-rc-bar" data-w="'+barW+'" style="width:0%;background:'+barColor+'"></div>'+ 
         '<div class="e13-rc-inner">'+ 
-          '<div class="e12-av" style="background:'+avatarColor(r.t)+';width:28px;height:28px;min-width:28px;font-size:10px">'+r.t.slice(0,2)+'</div>'+ 
-          '<div class="e12-info">'+ 
-            '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:4px">'+src+'</span></div>'+ 
-            '<div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div>'+ 
+          '<div class="e12-av" style="background:'+avatarColor(r.t)+';width:26px;height:26px;min-width:26px;font-size:10px">'+r.t.slice(0,2)+'</div>'+ 
+          '<div class="e12-info" style="min-width:0">'+ 
+            '<div class="e12-sym" style="font-size:11px">'+r.t+'<span style="font-size:8px;color:var(--muted);margin-left:3px">'+src+'</span></div>'+ 
+            '<div class="e12-detail" style="font-size:9px">$'+r.price+' / $'+r.ema13+'</div>'+ 
           '</div>'+ 
-          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">'+ 
-            '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0px;margin-left:auto">'+ 
+            '<div style="color:'+pctColor+';font-weight:800;font-size:12px;white-space:nowrap">'+sign+r.pct+'%</div>'+ 
             '<div style="font-size:9px;color:'+pctColor+'">'+arrow+'</div>'+ 
           '</div>'+ 
         '</div>'+ 
       '</div>';
     };
-    const hdr=(label,color,n)=>
-      '<div class="e13-sec-hdr" style="color:'+color+'">'+label+' <span style="font-weight:400;color:var(--muted)">('+n+')</span></div>';
-    const buildCol=(crossed,steady,maxPct,crossColor,steadyLabel,steadyColor)=>{
-      let h='';
-      if(crossed.length)h+=hdr('&#9889; Just Crossed',crossColor,crossed.length)+crossed.map(r=>card(r,true,maxPct)).join('');
-      if(steady.length)h+=(crossed.length?'<div style="height:5px"></div>':'')+hdr(steadyLabel,steadyColor,steady.length)+steady.map(r=>card(r,false,maxPct)).join('');
-      return h||'<div class="e12-idle">None</div>';
+    const set=(id,items,fallback)=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.innerHTML=items.length?items.map(r=>card(r,id.includes('jup')||id.includes('jdn'))).join(''): '<div class="e12-idle">'+(fallback||'None')+'</div>';
     };
-    const set=(id,html)=>{const el=document.getElementById(id);if(el){el.innerHTML=html;}};
-    const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent='('+n+')';};
-    set(pfx+'-up',buildCol(upCrossed,upSteady,maxUp,'var(--green)','&#9650; Already Above','var(--green)'));
-    set(pfx+'-dn',buildCol(dnCrossed,dnSteady,maxDn,'var(--red)','&#9660; Already Below','var(--red)'));
-    cnt(pfx+'-up-count',allUp.length);cnt(pfx+'-dn-count',allDn.length);
-    // Animate race bars from 0 → target width
+    const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent=n?'('+n+')':''; };
+    set(pfx+'-jup',upCrossed,'–');set(pfx+'-up',upSteady,'None');
+    set(pfx+'-dn',dnSteady,'None');set(pfx+'-jdn',dnCrossed,'–');
+    cnt(pfx+'-jup-count',upCrossed.length);cnt(pfx+'-up-count',upSteady.length);
+    cnt(pfx+'-dn-count',dnSteady.length);cnt(pfx+'-jdn-count',dnCrossed.length);
     requestAnimationFrame(()=>{
-      const pfxEl=document.getElementById(pfx+'-up');
-      const dnEl=document.getElementById(pfx+'-dn');
-      [pfxEl,dnEl].forEach(col=>{
+      ['jup','up','dn','jdn'].forEach(colId=>{
+        const col=document.getElementById(pfx+'-'+colId);
         if(!col)return;
-        col.querySelectorAll('.e13-rc-bar[data-w]').forEach((bar,i)=>{
-          setTimeout(()=>{bar.style.width=bar.dataset.w+'%';},i*40);
-        });
+        col.querySelectorAll('.e13-rc-bar[data-w]').forEach((bar,i)=>setTimeout(()=>bar.style.width=bar.dataset.w+'%',i*35));
       });
     });
-    const hint=document.getElementById('e13-stab-hint');
     const allCrossed=[...upCrossed,...dnCrossed];
-    if(hint)hint.textContent=allCrossed.length?'&#128293; '+allCrossed.length+' crossing'+(allCrossed.length>1?'s':'')+' now':''; 
+    const hint=document.getElementById('e13-stab-hint');
+    if(hint)hint.textContent=allCrossed.length?'&#128293; '+allCrossed.length+' crossing'+(allCrossed.length!==1?'s':'')+' now':''; 
   }
 }
 const e13tab=new Ema13Tab();
