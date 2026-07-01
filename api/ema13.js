@@ -69,28 +69,22 @@ export default async function handler(req, res) {
   const key  = process.env.MASSIVE_API_KEY;
   if (!key) return res.status(500).json({ error: 'MASSIVE_API_KEY not set' });
   const tf = req.query.tf || 'day';
-  // Snap mode: just return latest prices (no EMA calc) for frequent price ticks
+  // Snap mode: batch snapshot for fast price-only refresh (one API call)
   if (tf === 'snap') {
     const wlTickers2 = (req.query.wl || '').split(',').filter(Boolean);
     const allTickers2 = [...new Set([...wlTickers2, ...SC_TICKERS])];
-    const snapNow = new Date();
-    const toDate2 = snapNow.toISOString().slice(0, 10);
-    const from2 = new Date(snapNow); from2.setDate(from2.getDate() - 3);
-    const fromDate2 = from2.toISOString().slice(0, 10);
-    const snaps = [];
-    for (let i = 0; i < allTickers2.length; i += 40) {
-      const batch = allTickers2.slice(i, i + 40);
-      const rows = await Promise.all(batch.map(async t => {
-        try {
-          const url = `${base}/v2/aggs/ticker/${encodeURIComponent(t)}/range/1/day/${fromDate2}/${toDate2}?adjusted=true&sort=desc&limit=1&apiKey=${key}`;
-          const d = await fetch(url).then(r => r.json());
-          const price = d.results?.[0]?.c;
-          return price != null ? { t, price: +price.toFixed(2) } : null;
-        } catch { return null; }
-      }));
-      snaps.push(...rows.filter(Boolean));
+    const tickerStr = allTickers2.map(t => encodeURIComponent(t)).join(',');
+    try {
+      const snapUrl = `${base}/v2/snapshot/locale/us/markets/stocks/tickers?tickers=${tickerStr}&apiKey=${key}`;
+      const snapData = await fetch(snapUrl).then(r => r.json());
+      const snaps = (snapData.tickers || []).map(item => ({
+        t: item.ticker,
+        price: +(item.day?.c ?? item.prevDay?.c ?? 0).toFixed(2)
+      })).filter(s => s.price > 0);
+      return res.status(200).json({ snaps, updatedAt: new Date().toISOString() });
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
     }
-    return res.status(200).json({ snaps, updatedAt: new Date().toISOString() });
   }
 
   const cfg = TF[tf];
