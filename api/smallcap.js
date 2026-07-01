@@ -87,8 +87,8 @@ export default async function handler(req, res) {
 
     const quotes = all
       .map(s => {
-        const price  = +(s.day?.c  || s.lastTrade?.p || 0).toFixed(2);
-        const vol    = Math.round(s.day?.v || 0);
+        const price  = +(s.lastTrade?.p || s.day?.c  || 0).toFixed(2);
+        const vol    = Math.round(s.min?.av || s.day?.v || 0);
         const avg    = Math.round(_avgVol[s.ticker] || 0);
         const relVol = avg > 0 ? +(vol / avg).toFixed(2) : 0;
         return {
