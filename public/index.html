@@ -814,25 +814,20 @@ class Ema13Tab{
   }
   render(rows){
     const tbody=document.getElementById('e13-body');
-    if(!rows||!rows.length){tbody.innerHTML='<tr><td colspan="6" class="e12-idle">No data</td></tr>';return;}
-    let rank=0;
-    tbody.innerHTML=rows.map(r=>{
-      const hasCross=r.crossedThisWeek;
-      const dirColor=r.crossDir==='above'?'var(--green)':'var(--red)';
-      const dirLabel=r.crossDir==='above'?'▲ above':'▼ below';
-      const pctColor=r.pct>0?'var(--green)':r.pct<0?'var(--red)':'var(--muted)';
-      const rowCls=hasCross?'':'opacity:0.45';
-      if(hasCross) rank++;
-      return '<tr style="'+rowCls+'">'
-        +'<td style="color:var(--muted);font-size:10px;text-align:center">'+(hasCross?rank:'–')+'</td>'
-        +'<td><b style="color:'+(r.isWL?'var(--green)':'var(--fg)')+'">'+r.t+'</b></td>'
-        +'<td style="text-align:right">$'+r.price+'</td>'
-        +'<td style="text-align:center;color:'+(hasCross?dirColor:'var(--muted)')+'">'+
-          (hasCross?('<b>'+dirLabel+'</b>'):'no cross')+'</td>'
-        +'<td style="text-align:center;color:var(--amber)">'+this.fmtTime(r.crossTs)+'</td>'
-        +'<td style="text-align:right;color:'+pctColor+'">'+(r.pct!=null?(r.pct>0?'+':'')+r.pct+'%':'--')+'</td>'
-        +'</tr>';
+    if(!tbody)return;
+    if(!rows||!rows.length){tbody.innerHTML='<div style="padding:20px;color:var(--muted)">No data</div>';return;}
+    const hdr='<div style="display:grid;grid-template-columns:40px 80px 80px 90px 110px 80px;gap:0;padding:6px 12px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.5px"><span>#</span><span>Ticker</span><span>Price</span><span>Direction</span><span>Cross Time</span><span style=\"text-align:right\">EMA Spd%</span></div>';
+    const rowsHtml=rows.map((r,i)=>{
+      const rank=i+1;
+      const dir=r.crossDir==='above'?'<span style="color:var(--green)">&#9650; above</span>':r.crossDir==='below'?'<span style="color:var(--red)">&#9660; below</span>':'<span style="color:var(--muted)">&#8212;</span>';
+      const ct=r.crossedThisWeek?(r.crossTs?this.fmtTime(r.crossTs):'&#8212;'):'<span style="color:var(--muted)">no cross</span>';
+      const pct=r.pct!==undefined?(r.pct>=0?'+':'')+r.pct.toFixed(3)+'%':'&#8212;';
+      const pc=r.pct>0?'var(--green)':r.pct<0?'var(--red)':'var(--muted)';
+      const op=r.crossedThisWeek?'1':'0.45';
+      const tc=r.isWL?'var(--green)':r.isSC?'var(--amber)':'var(--text)';
+      return '<div style="display:grid;grid-template-columns:40px 80px 80px 90px 110px 80px;gap:0;padding:7px 12px;border-bottom:1px solid var(--border);font-size:13px;opacity:'+op+';align-items:center"><span style="color:var(--muted)">'+rank+'</span><span style="font-weight:600;color:'+tc+'">'+r.t+'</span><span>$'+r.price+'</span><span>'+dir+'</span><span style="font-size:12px">'+ct+'</span><span style="text-align:right;color:'+pc+'">'+pct+'</span></div>';
     }).join('');
+    tbody.innerHTML=hdr+rowsHtml;
   }
 }
 const ema13=new Ema13Tab();
