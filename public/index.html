@@ -32,15 +32,11 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .opt-col-hdr{padding:8px 10px;font-size:12px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:6px;background:var(--bg2);border-radius:6px 6px 0 0}
 .opt-count{font-size:10px;font-weight:500;color:var(--muted);margin-left:auto}
 .opt-col-body{flex:1;overflow-y:auto;padding:4px 6px;display:flex;flex-direction:column;gap:4px}
-.opt-card{position:relative;border-radius:6px;overflow:hidden;border:1px solid var(--bg3);background:var(--bg2)}
-.opt-card-bar{position:absolute;left:0;top:0;bottom:0;transition:width .6s ease;z-index:0}
-.opt-card-inner{position:relative;z-index:1;display:flex;align-items:center;gap:8px;padding:7px 10px}
-.opt-card-meta{display:flex;flex-direction:column;min-width:0;flex:1}
-.opt-card-sym{font-size:12px;font-weight:700}
-.opt-card-sub{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.opt-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:1px;margin-left:auto}
-.opt-card-notional{font-size:12px;font-weight:800;white-space:nowrap}
-.opt-card-ratio{font-size:9px;color:var(--muted)}
+.opt-card{display:flex;align-items:center;gap:8px;padding:3px 8px;height:26px;border-bottom:1px solid rgba(255,255,255,.04)}
+.opt-card-lbl{width:110px;min-width:110px;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.opt-card-track{flex:1;height:12px;background:var(--bg3);border-radius:2px;position:relative;overflow:hidden}
+.opt-card-bar{position:absolute;left:0;top:0;bottom:0;transition:width .6s ease}
+.opt-card-val{width:65px;min-width:65px;text-align:right;font-size:11px;font-weight:800;white-space:nowrap}
 .nav-icon{font-size:15px;flex-shrink:0}
 .main-content{flex:1;display:flex;overflow:hidden}
 .panel{display:none;flex:1;flex-direction:column;overflow:hidden}
@@ -969,27 +965,21 @@ class OptFlowTab{
     const card=(c)=>{
       const isCall=c.type==='call';
       const clr=isCall?'var(--green)':'var(--red)';
-      const bg=isCall?'rgba(74,222,128,.15)':'rgba(248,113,113,.15)';
+      const bg=isCall?'rgba(74,222,128,.25)':'rgba(248,113,113,.25)';
       const bw=(c.notional/maxN*100).toFixed(1);
       const exp=c.expiry?c.expiry.slice(5):'?';
       const iv=c.iv!=null?c.iv+'%':'--';
       const dl=c.delta!=null?c.delta:'--';
-      const sym=c.ticker+' $'+c.strike+(isCall?' C':' P');
+      const lbl=c.ticker+' $'+c.strike+(isCall?' C':' P');
       const notional=this.fmt(c.notional);
+      const tip='Exp '+exp+' | IV '+iv+' | d '+dl+' | '+c.vol.toLocaleString()+' vol | '+c.ratio+'x OI';
       return [
-        '<div class="opt-card" style="border-left:3px solid '+clr+'">',
-          '<div class="opt-card-bar" data-w="'+bw+'" style="width:0%;background:'+bg+'"></div>',
-          '<div class="opt-card-inner">',
-            '<div class="e12-av" style="background:'+avatarColor(c.ticker)+';width:28px;height:28px;min-width:28px;font-size:10px">'+c.ticker.slice(0,2)+'</div>',
-            '<div class="opt-card-meta">',
-              '<div class="opt-card-sym">'+sym+'</div>',
-              '<div class="opt-card-sub">Exp '+exp+' &middot; IV '+iv+' &middot; &delta; '+dl+'</div>',
-            '</div>',
-            '<div class="opt-card-right">',
-              '<div class="opt-card-notional" style="color:'+clr+'">'+notional+'</div>',
-              '<div class="opt-card-ratio">'+c.vol.toLocaleString()+' vol &middot; '+c.ratio+'x OI</div>',
-            '</div>',
+        '<div class="opt-card" title="'+tip+'" style="border-left:3px solid '+clr+'">',
+          '<div class="opt-card-lbl" style="color:'+clr+'">'+lbl+'</div>',
+          '<div class="opt-card-track">',
+            '<div class="opt-card-bar" data-w="'+bw+'" style="width:0%;background:'+bg+'"></div>',
           '</div>',
+          '<div class="opt-card-val" style="color:'+clr+'">'+notional+'</div>',
         '</div>'
       ].join('');
     };
