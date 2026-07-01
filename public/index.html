@@ -170,6 +170,12 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e13-cross-up{background:rgba(74,222,128,.25);color:var(--green);}
 .e13-cross-dn{background:rgba(248,113,113,.25);color:var(--red);}
 .e13-card-glow{box-shadow:0 0 0 1px rgba(250,204,21,.4);background:rgba(250,204,21,.04)!important;}
+
+/* EMA 13 race cards */
+.e13-rc{position:relative;overflow:hidden;margin-bottom:3px;border-radius:5px;border-left:3px solid transparent;background:var(--bg2);}
+.e13-rc-bar{position:absolute;top:0;left:0;bottom:0;transition:width .7s cubic-bezier(.25,.46,.45,.94);border-radius:0 3px 3px 0;pointer-events:none;}
+.e13-rc-inner{position:relative;display:flex;align-items:center;gap:7px;padding:5px 8px;z-index:1;}
+.e13-sec-hdr{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;padding:4px 6px 3px;border-bottom:1px solid var(--border);margin-bottom:2px;}
 </style>
 </head>
 <body>
@@ -801,46 +807,64 @@ class Ema13Tab{
     }
   }
   renderSplit(pfx,results){
-    const crossed=results.filter(r=>r.crossedAbove||r.crossedBelow);
     const upCrossed=results.filter(r=>r.crossedAbove);
     const upSteady=results.filter(r=>r.above&&!r.crossedAbove).sort((a,b)=>b.pct-a.pct);
     const dnCrossed=results.filter(r=>r.crossedBelow);
     const dnSteady=results.filter(r=>!r.above&&!r.crossedBelow).sort((a,b)=>a.pct-b.pct);
-    const card=(r,isCross)=>{
+    const allUp=[...upCrossed,...upSteady], allDn=[...dnCrossed,...dnSteady];
+    const maxUp=Math.max(...allUp.map(r=>Math.abs(r.pct)),1);
+    const maxDn=Math.max(...allDn.map(r=>Math.abs(r.pct)),1);
+    const card=(r,isCross,maxPct)=>{
       const isUp=r.above;
       const pctColor=isUp?'var(--green)':' var(--red)';
+      const barColor=isUp?'rgba(74,222,128,.18)':' rgba(248,113,113,.18)';
+      const barW=(Math.abs(r.pct)/maxPct*100).toFixed(1);
       const sign=r.pct>=0?'+':'';
       const src=r.isWL?'WL':'SC';
-      const border=isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.3)':' rgba(248,113,113,.3)');
-      const bg=isCross?(isUp?'rgba(74,222,128,.06)':' rgba(248,113,113,.06)'):'';
-      return '<div class="e12-card" style="margin-bottom:3px;border-left:3px solid '+border+';'+(bg?'background:'+bg:'')+'">'+ 
-        '<div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div>'+ 
-        '<div class="e12-info">'+ 
-          '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:5px">'+src+'</span></div>'+ 
-          '<div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div>'+ 
+      const arrow=isCross?(isUp?'&#9650;&#9650;':'&#9660;&#9660;'):(isUp?'&#9650;':'&#9660;');
+      const borderColor=isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.4)':' rgba(248,113,113,.4)');
+      return '<div class="e13-rc" style="border-left:3px solid '+borderColor+'">'+ 
+        '<div class="e13-rc-bar" data-w="'+barW+'" style="width:0%;background:'+barColor+'"></div>'+ 
+        '<div class="e13-rc-inner">'+ 
+          '<div class="e12-av" style="background:'+avatarColor(r.t)+';width:28px;height:28px;min-width:28px;font-size:10px">'+r.t.slice(0,2)+'</div>'+ 
+          '<div class="e12-info">'+ 
+            '<div class="e12-sym">'+r.t+'<span style="font-size:9px;color:var(--muted);margin-left:4px">'+src+'</span></div>'+ 
+            '<div class="e12-detail">$'+r.price+' · EMA13 $'+r.ema13+'</div>'+ 
+          '</div>'+ 
+          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">'+ 
+            '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
+            '<div style="font-size:9px;color:'+pctColor+'">'+arrow+'</div>'+ 
+          '</div>'+ 
         '</div>'+ 
-        '<div style="color:'+pctColor+';font-weight:800;font-size:13px">'+sign+r.pct+'%</div>'+ 
       '</div>';
     };
-    const sectionHdr=(label,color,count)=>
-      '<div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:'+color+';'+ 
-      'padding:4px 6px 3px;margin-top:4px;border-bottom:1px solid var(--border);margin-bottom:3px">'+ 
-      label+' <span style="font-weight:400;color:var(--muted)">('+ count +')</span></div>';
-    const buildCol=(crossed,steady,crossColor,steadyLabel,steadyColor)=>{
+    const hdr=(label,color,n)=>
+      '<div class="e13-sec-hdr" style="color:'+color+'">'+label+' <span style="font-weight:400;color:var(--muted)">('+n+')</span></div>';
+    const buildCol=(crossed,steady,maxPct,crossColor,steadyLabel,steadyColor)=>{
       let h='';
-      if(crossed.length)h+=sectionHdr('&#9889; Just Crossed',crossColor,crossed.length)+crossed.map(r=>card(r,true)).join('');
-      if(steady.length)h+=(crossed.length?'<div style="height:6px"></div>':'')+sectionHdr(steadyLabel,steadyColor,steady.length)+steady.map(r=>card(r,false)).join('');
+      if(crossed.length)h+=hdr('&#9889; Just Crossed',crossColor,crossed.length)+crossed.map(r=>card(r,true,maxPct)).join('');
+      if(steady.length)h+=(crossed.length?'<div style="height:5px"></div>':'')+hdr(steadyLabel,steadyColor,steady.length)+steady.map(r=>card(r,false,maxPct)).join('');
       return h||'<div class="e12-idle">None</div>';
     };
-    const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html;};
+    const set=(id,html)=>{const el=document.getElementById(id);if(el){el.innerHTML=html;}};
     const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent='('+n+')';};
-    set(pfx+'-up',buildCol(upCrossed,upSteady,'var(--green)','&#9650; Already Above','var(--green)'));
-    set(pfx+'-dn',buildCol(dnCrossed,dnSteady,'var(--red)','&#9660; Already Below','var(--red)'));
-    cnt(pfx+'-up-count',upCrossed.length+upSteady.length);
-    cnt(pfx+'-dn-count',dnCrossed.length+dnSteady.length);
-    // Update cross hint in subtab bar
+    set(pfx+'-up',buildCol(upCrossed,upSteady,maxUp,'var(--green)','&#9650; Already Above','var(--green)'));
+    set(pfx+'-dn',buildCol(dnCrossed,dnSteady,maxDn,'var(--red)','&#9660; Already Below','var(--red)'));
+    cnt(pfx+'-up-count',allUp.length);cnt(pfx+'-dn-count',allDn.length);
+    // Animate race bars from 0 → target width
+    requestAnimationFrame(()=>{
+      const pfxEl=document.getElementById(pfx+'-up');
+      const dnEl=document.getElementById(pfx+'-dn');
+      [pfxEl,dnEl].forEach(col=>{
+        if(!col)return;
+        col.querySelectorAll('.e13-rc-bar[data-w]').forEach((bar,i)=>{
+          setTimeout(()=>{bar.style.width=bar.dataset.w+'%';},i*40);
+        });
+      });
+    });
     const hint=document.getElementById('e13-stab-hint');
-    if(hint&&crossed.length)hint.textContent='&#128293; '+crossed.length+' new crossing'+(crossed.length>1?'s':'')
+    const allCrossed=[...upCrossed,...dnCrossed];
+    if(hint)hint.textContent=allCrossed.length?'&#128293; '+allCrossed.length+' crossing'+(allCrossed.length>1?'s':'')+' now':''; 
   }
 }
 const e13tab=new Ema13Tab();
