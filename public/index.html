@@ -817,7 +817,7 @@ class Ema13Tab {
       if(bar)bar.insertAdjacentHTML('beforeend','<span id="e13-cd" style="font-size:10px;color:#444;margin-left:6px;white-space:nowrap"></span>');
     }
     B.innerHTML='<p style="color:#888;padding:16px">Scanning '+t.length+' tickers...</p>';
-    const tfp=this.tf==='daily'?'day':this.tf==='weekly'?'week':'month';
+    const tfp=this.tf;
     fetch('/api/ema13?tf='+tfp+'&wl='+t.join(','))
       .then(r=>r.json()).then(d=>{this.render(d);this.startPolling();})
       .catch(e=>{B.innerHTML='<p style="color:#f55;padding:8px">'+e.message+'</p>';});
