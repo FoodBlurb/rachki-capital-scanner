@@ -209,6 +209,10 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .e13-en{font-size:11px;color:#444}
 .e13-bt{height:3px;background:#0a0a0a;border-radius:2px;overflow:hidden;margin:0 0 0 24px}
 .e13-bf{height:100%;width:0;background:var(--bc);border-radius:2px;transition:width 1.1s cubic-bezier(.4,0,.2,1);box-shadow:0 0 8px var(--bc)}
+@keyframes e13fu{0%{background:#2ecc7133}100%{background:transparent}}
+@keyframes e13fd{0%{background:#e74c3c33}100%{background:transparent}}
+.e13-flash-up{animation:e13fu 1.5s ease-out}
+.e13-flash-dn{animation:e13fd 1.5s ease-out}
 
 /* EMA 13 race cards */
 .e13-rc{position:relative;overflow:hidden;margin-bottom:2px;border-radius:4px;border-left:3px solid transparent;background:var(--bg2);}
@@ -796,35 +800,89 @@ class Ema120Tab{
 }
 
 class Ema13Tab {
-  constructor(){this.tf='daily';this.extra=[];}
+  constructor(){this.tf='daily';this.extra=[];this.lastPrices={};this.ema13Map={};this.cdTimer=null;this.cd=30;}
   getTickers(){return[...new Set([...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]'),...this.extra])];}
+  startPolling(){
+    this.stopPolling();this.cd=30;this._ucd();
+    this.cdTimer=setInterval(()=>{this.cd--;this._ucd();if(this.cd<=0){this.cd=30;this.snap();}},1000);
+  }
+  stopPolling(){clearInterval(this.cdTimer);this.cdTimer=null;}
+  _ucd(){const e=document.getElementById('e13-cd');if(e)e.textContent='\u21bb '+this.cd+'s';}
   load(){
     const t=this.getTickers();
-    if(!t.length){document.getElementById('e13-body').innerHTML='<p style="color:#888;padding:16px">No tickers.</p>';return;}
-    document.getElementById('e13-body').innerHTML='<p style="color:#888;padding:16px">Scanning '+t.length+' tickers...</p>';
-    fetch('/api/ema13?tf='+this.tf+'&wl='+t.join(','))
-      .then(r=>r.json()).then(d=>this.render(d))
-      .catch(e=>{document.getElementById('e13-body').innerHTML='<p style="color:#f55;padding:8px">'+e.message+'</p>';});
+    const B=document.getElementById('e13-body');
+    if(!t.length){B.innerHTML='<p style="color:#888;padding:16px">No tickers.</p>';return;}
+    if(!document.getElementById('e13-cd')){
+      const bar=document.querySelector('.e13-add-bar');
+      if(bar)bar.insertAdjacentHTML('beforeend','<span id="e13-cd" style="font-size:10px;color:#444;margin-left:6px;white-space:nowrap"></span>');
+    }
+    B.innerHTML='<p style="color:#888;padding:16px">Scanning '+t.length+' tickers...</p>';
+    const tfp=this.tf==='daily'?'day':this.tf==='weekly'?'week':'month';
+    fetch('/api/ema13?tf='+tfp+'&wl='+t.join(','))
+      .then(r=>r.json()).then(d=>{this.render(d);this.startPolling();})
+      .catch(e=>{B.innerHTML='<p style="color:#f55;padding:8px">'+e.message+'</p>';});
   }
-  setTf(tf){this.tf=tf;document.querySelectorAll('.e13-tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));this.load();}
-  addTicker(){const inp=document.getElementById('e13-add-inp'),val=inp.value.trim().toUpperCase();if(!val)return;inp.value='';if(!this.extra.includes(val))this.extra.push(val);this.load();}
+  snap(){
+    const t=this.getTickers();if(!t.length)return;
+    fetch('/api/ema13?tf=snap&wl='+t.join(','))
+      .then(r=>r.json()).then(d=>{
+        if(!d.snaps)return;
+        d.snaps.forEach(s=>{
+          const card=document.querySelector('[data-ticker="'+s.t+'"]');
+          if(!card)return;
+          const pEl=card.querySelector('.e13-pn');
+          const spEl=card.querySelector('.e13-sp');
+          if(!pEl)return;
+          const old=this.lastPrices[s.t];
+          if(old!==undefined&&s.price!==old){
+            pEl.textContent='\u0024'+s.price;
+            const ema=this.ema13Map[s.t];
+            if(ema&&spEl){
+              const np=+((s.price-ema)/ema*100).toFixed(2);
+              spEl.textContent=(np>0?'+':'')+np+'%';
+              spEl.style.color=np>=0?'#2ecc71':'#e74c3c';
+            }
+            card.classList.remove('e13-flash-up','e13-flash-dn');
+            void card.offsetWidth;
+            card.classList.add(s.price>old?'e13-flash-up':'e13-flash-dn');
+          }
+          this.lastPrices[s.t]=s.price;
+        });
+      }).catch(()=>{});
+  }
+  setTf(tf){
+    this.tf=tf;
+    document.querySelectorAll('.e13-tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
+    this.stopPolling();this.load();
+  }
+  addTicker(){
+    const inp=document.getElementById('e13-add-inp'),val=inp.value.trim().toUpperCase();
+    if(!val)return;inp.value='';
+    if(!this.extra.includes(val))this.extra.push(val);
+    this.stopPolling();this.load();
+  }
   render(d){
     const B=document.getElementById('e13-body');
     if(d.error){B.innerHTML='<p style="color:#f55">'+d.error+'</p>';return;}
     const ab=d.above.sort((a,b)=>b.pct-a.pct),bl=d.below.sort((a,b)=>a.pct-b.pct);
     const mx=Math.max(...ab.map(r=>r.pct),...bl.map(r=>Math.abs(r.pct)),1);
-    const card=(r,i,s)=>{const w=(Math.abs(r.pct)/mx*100).toFixed(1),c=s==='above'?'#2ecc71':'#e74c3c';
-      return'<div class="e13-card'+(i<3?' e13-top':'')+'" data-bar="'+w+'" style="--bc:'+c+'">'
-      +'<div class="e13-ch"><span class="e13-rank">'+(i+1)+'</span><span class="e13-tn">'+r.t+'</span><span class="e13-sp" style="color:'+c+'">'+(r.pct>0?'+':'')+r.pct+'%</span></div>'
-      +'<div class="e13-cv"><span class="e13-pn">$'+r.price+'</span><span class="e13-arr">&#8594;</span><span class="e13-en">EMA13: '+r.ema13+'</span></div>'
-      +'<div class="e13-bt"><div class="e13-bf"></div></div></div>';};
+    [...ab,...bl].forEach(r=>{this.lastPrices[r.t]=r.price;this.ema13Map[r.t]=r.ema13;});
+    const card=(r,i,s)=>{
+      const w=(Math.abs(r.pct)/mx*100).toFixed(1),c=s==='above'?'#2ecc71':'#e74c3c';
+      return'<div class="e13-card'+(i<3?' e13-top':'')+'" data-bar="'+w+'" data-ticker="'+r.t+'" style="--bc:'+c+'">'
+        +'<div class="e13-ch"><span class="e13-rank">'+(i+1)+'</span><span class="e13-tn">'+r.t+'</span><span class="e13-sp" style="color:'+c+'">'+(r.pct>0?'+':'')+r.pct+'%</span></div>'
+        +'<div class="e13-cv"><span class="e13-pn">\u0024'+r.price+'</span><span class="e13-arr">\u2192</span><span class="e13-en">EMA13: '+r.ema13+'</span></div>'
+        +'<div class="e13-bt"><div class="e13-bf"></div></div></div>';
+    };
     B.innerHTML='<div class="e13-cols">'
-      +'<div class="e13-col e13-ca"><div class="e13-ch2 e13-ah">&#9650; ABOVE EMA 13 <span class="e13-cnt">'+ab.length+'</span></div>'+ab.map((r,i)=>card(r,i,'above')).join('')+'</div>'
-      +'<div class="e13-col e13-cb"><div class="e13-ch2 e13-bh">&#9660; BELOW EMA 13 <span class="e13-cnt">'+bl.length+'</span></div>'+bl.map((r,i)=>card(r,i,'below')).join('')+'</div></div>';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{document.querySelectorAll('.e13-card').forEach(c=>{c.querySelector('.e13-bf').style.width=c.dataset.bar+'%';});}));
+      +'<div class="e13-col e13-ca"><div class="e13-ch2 e13-ah">\u25b2 ABOVE EMA 13 <span class="e13-cnt">'+ab.length+'</span></div>'+ab.map((r,i)=>card(r,i,'above')).join('')+'</div>'
+      +'<div class="e13-col e13-cb"><div class="e13-ch2 e13-bh">\u25bc BELOW EMA 13 <span class="e13-cnt">'+bl.length+'</span></div>'+bl.map((r,i)=>card(r,i,'below')).join('')+'</div></div>';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      document.querySelectorAll('.e13-card').forEach(c=>{c.querySelector('.e13-bf').style.width=c.dataset.bar+'%';});
+    }));
   }
 }
-window.ema13=new Ema13Tab();window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();window.ema13 = new Ema13Tab();const ema=new EmaTab();
+window.ema13=new Ema13Tab();
 renderTickers();
 
 class OpexPlanner{
