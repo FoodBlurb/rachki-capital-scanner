@@ -12,6 +12,8 @@
   --teal:#06b6d4;--purple:#8b5cf6;--blue:#3b82f6;
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;height:100vh;display:flex;overflow:hidden}
+
+/* ── LEFT NAV ── */
 .left-nav{width:160px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:12px 8px;gap:4px}
 .nav-logo{font-weight:800;font-size:15px;color:var(--text);padding:6px 8px 14px;letter-spacing:.5px}
 .nav-logo span{color:var(--green)}
@@ -22,10 +24,16 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .nav-item.sc.active{color:var(--amber)}
 .nav-item.scm.active{color:var(--purple)}
 .nav-icon{font-size:15px;flex-shrink:0}
+
+/* ── MAIN ── */
 .main-content{flex:1;display:flex;overflow:hidden}
 .panel{display:none;flex:1;flex-direction:column;overflow:hidden}
 .panel.active{display:flex}
+
+/* ── SCANNER WRAP (filter + race) ── */
 .scanner-wrap{display:flex;flex:1;overflow:hidden}
+
+/* ── FILTER SIDEBAR ── */
 .fsb{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:12px;flex-shrink:0;overflow-y:auto;transition:width .22s}
 .fsb.collapsed{width:36px;padding:12px 6px;overflow:hidden}
 .fsb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;min-height:20px}
@@ -42,17 +50,27 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .sel-inp{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:4px 6px;border-radius:4px;font-size:12px;width:100%}
 .apply-btn{width:100%;padding:7px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-top:4px;transition:opacity .15s}
 .apply-btn:hover{opacity:.85}
+
+/* ── RACE AREA ── */
 .race-area{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:10px 12px}
+
+/* progress bar */
 .prog-bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;margin-bottom:8px;flex-shrink:0}
 .prog-fill{height:100%;border-radius:2px;transition:width .5s linear}
 .prog-wl{background:linear-gradient(90deg,var(--green),var(--teal))}
 .prog-sc{background:linear-gradient(90deg,var(--amber),#fbbf24)}
 .prog-scm{background:linear-gradient(90deg,var(--purple),#ec4899)}
+
+/* controls bar */
 .ctrl-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap}
 .conn-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:all .3s}
 .conn-dot.live{background:var(--green);box-shadow:0 0 7px var(--green)}
 .conn-lbl{font-size:11px;color:var(--muted)}
 .badge{font-size:10px;background:var(--green);color:#000;padding:2px 7px;border-radius:10px;font-weight:700}
+.sess-badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700;display:none}
+.sess-pre{background:rgba(139,92,246,.2);color:var(--purple);border:1px solid var(--purple)}
+.sess-reg{background:rgba(16,185,129,.2);color:var(--green);border:1px solid var(--green)}
+.sess-post{background:rgba(245,158,11,.2);color:var(--amber);border:1px solid var(--amber)}
 .count-lbl{font-size:11px;color:var(--muted)}
 .sort-tabs{display:flex;gap:4px;margin-left:auto}
 .sort-tab{padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:none;color:var(--muted);font-size:11px;cursor:pointer;font-family:inherit;transition:all .15s}
@@ -61,6 +79,8 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .btn-wl{background:var(--green);color:#000}
 .btn-sc{background:var(--amber);color:#000}
 .btn-scm{background:var(--purple);color:#fff}
+
+/* add ticker bar */
 .add-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-shrink:0;flex-wrap:wrap}
 .ticker-inp{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;width:90px;text-transform:uppercase;font-family:inherit}
 .ticker-inp::placeholder{text-transform:none}
@@ -69,6 +89,8 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .ticker-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px 3px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--text)}
 .ticker-tag button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;padding:0;line-height:1;transition:color .15s}
 .ticker-tag button:hover{color:var(--red)}
+
+/* columns */
 .cols{display:flex;gap:8px;flex:1;overflow:hidden;min-height:0}
 .col{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .col-hdr{font-size:11px;font-weight:700;padding:5px 10px;border-radius:6px;margin-bottom:6px;text-align:center;text-transform:uppercase;letter-spacing:.5px;flex-shrink:0}
@@ -80,252 +102,381 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 .col-inner::-webkit-scrollbar{width:3px}
 .col-inner::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .idle-msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;text-align:center;padding:16px}
-.row{position:absolute;left:2px;right:2px;height:38px;display:flex;align-items:center;padding:0 8px;border-radius:6px;border:1px solid transparent;cursor:default}
-.row.flash{animation:flash .5s ease-out}
-@keyframes flash{0%{filter:brightness(2.5)}100%{filter:brightness(1)}}
+
+/* rows */
+.row{position:absolute;left:2px;right:2px;height:50px;display:flex;align-items:center;padding:0 6px;border-radius:6px;border:1px solid transparent;cursor:default}
+.row.flash{animation:flash .4s ease-out}
+@keyframes flash{0%{filter:brightness(2)}100%{filter:brightness(1)}}
 .bar-up{background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(6,182,212,.08));border-color:rgba(16,185,129,.18)}
 .bar-dn{background:linear-gradient(135deg,rgba(239,68,68,.18),rgba(220,38,38,.08));border-color:rgba(239,68,68,.18)}
 .bar-sc-up{background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(251,191,36,.08));border-color:rgba(245,158,11,.18)}
 .bar-scm-up{background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));border-color:rgba(139,92,246,.18)}
-.fill{position:absolute;left:0;top:0;height:100%;border-radius:6px;opacity:.13;transition:width .6s ease-out}
+.fill{position:absolute;left:0;top:0;height:100%;border-radius:6px;opacity:.13;transition:width .55s cubic-bezier(.4,0,.2,1)}
 .fill-up{background:linear-gradient(90deg,var(--green),var(--teal))}
 .fill-dn{background:linear-gradient(90deg,var(--red),#dc2626)}
 .fill-sc{background:linear-gradient(90deg,var(--amber),#fbbf24)}
 .fill-scm{background:linear-gradient(90deg,var(--purple),#ec4899)}
-.rank{position:relative;font-size:10px;color:var(--muted);width:18px;flex-shrink:0}
-.ticker-name{position:relative;font-size:12px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lbl{position:relative;font-size:12px;font-weight:700}
-.lbl-up{color:var(--green)}.lbl-dn{color:var(--red)}
-.lbl-sc-up{color:var(--amber)}.lbl-scm-up{color:var(--purple)}
-.sub{position:relative;font-size:10px;color:var(--muted);margin-left:4px}
+.rank{position:relative;font-size:10px;color:var(--muted);width:18px;flex-shrink:0;text-align:right}
+.avatar{position:relative;width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;margin:0 7px 0 4px}
+.rinfo{position:relative;flex:1;display:flex;flex-direction:column;gap:1px;min-width:0;overflow:hidden}
+.rsym{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap}
+.rname{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rprice{position:relative;display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0}
+.lbl{font-size:12px;font-weight:800;white-space:nowrap}
+.lbl-up{color:var(--green)}
+.lbl-dn{color:var(--red)}
+.lbl-sc-up{color:var(--amber)}
+.lbl-scm-up{color:var(--purple)}
+.sub{font-size:10px;color:var(--muted);white-space:nowrap}
 </style>
 </head>
 <body>
+
+<!-- LEFT NAV -->
 <nav class="left-nav">
   <div class="nav-logo">📊 <span>Rachki</span></div>
-  <button class="nav-item wl active" id="nav-wl" onclick="showPanel('wl')"><span class="nav-icon">📈</span><span>Watchlist</span></button>
-  <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')"><span class="nav-icon">⚡</span><span>Small Cap</span></button>
-  <button class="nav-item scm" id="nav-scm" onclick="showPanel('scm')"><span class="nav-icon">🔥</span><span>SC Momentum</span></button>
+  <button class="nav-item wl active" id="nav-wl" onclick="showPanel('wl')">
+    <span class="nav-icon">📈</span><span>Watchlist</span>
+  </button>
+  <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')">
+    <span class="nav-icon">⚡</span><span>Small Cap</span>
+  </button>
 </nav>
+
+<!-- MAIN -->
 <div class="main-content">
 
-<!-- WATCHLIST -->
-<div class="panel active" id="panel-wl">
-  <div class="race-area">
-    <div class="prog-bar"><div class="prog-fill prog-wl" id="wl-prog" style="width:0%"></div></div>
-    <div class="ctrl-bar">
-      <span class="conn-dot" id="wl-dot"></span>
-      <span class="conn-lbl" id="wl-lbl">Ready</span>
-      <span class="badge" id="wl-badge" style="display:none">LIVE</span>
-      <span class="count-lbl" id="wl-count"></span>
-      <div class="sort-tabs">
-        <button class="sort-tab active" onclick="wl.setSort('pct',this)">% Move</button>
-        <button class="sort-tab" onclick="wl.setSort('chg',this)">$ Move</button>
-        <button class="sort-tab" onclick="wl.setSort('vol',this)">Volume</button>
-      </div>
-      <button class="race-btn btn-wl" id="wl-btn" onclick="wl.toggle()">&#9654; START</button>
-    </div>
-    <div class="add-bar">
-      <input class="ticker-inp" id="wl-inp" placeholder="e.g. TSLA" onkeydown="if(event.key==='Enter')addTicker()">
-      <button class="add-btn" onclick="addTicker()">+ ADD</button>
-      <div class="tag-wrap" id="wl-tags"></div>
-    </div>
-    <div class="cols">
-      <div class="col">
-        <div class="col-hdr up-hdr">&#9650; GAINERS <span id="wl-up-count"></span></div>
-        <div class="col-inner" id="wl-up-inner"><div class="idle-msg" id="wl-up-idle">Click &#9654; START to begin race</div></div>
-      </div>
-      <div class="col">
-        <div class="col-hdr dn-hdr">&#9660; LOSERS <span id="wl-dn-count"></span></div>
-        <div class="col-inner" id="wl-dn-inner"><div class="idle-msg" id="wl-dn-idle"></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SMALL CAP -->
-<div class="panel" id="panel-sc">
-  <div class="scanner-wrap">
-    <div class="fsb" id="fsb-sc">
-      <div class="fsb-header"><span class="fsb-title">Filters</span><button class="fsb-toggle" onclick="toggleFSB('sc')">&#9664;</button></div>
-      <div class="fsb-body">
-        <div class="fsb-group"><label class="fsb-label">Min Rel Vol</label>
-          <div class="fsb-row"><input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="1" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-sc-rv-v">1x</span></div></div>
-        <div class="fsb-group"><label class="fsb-label">Min % Change</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-sc-pct" value="0" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
-        <div class="fsb-group"><label class="fsb-label">Price Range ($)</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-sc-pmin" value="1" min="0" max="50" step="0.5" style="width:52px"><span style="font-size:11px;color:var(--muted)">&#8211;</span><input type="number" class="num-inp" id="f-sc-pmax" value="11" min="0" max="50" step="0.5" style="width:52px"></div></div>
-        <div class="fsb-group"><label class="fsb-label">Min $ Volume</label>
-          <select class="sel-inp" id="f-sc-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="500000">$500K</option><option value="1000000">$1M</option></select></div>
-        <button class="apply-btn" onclick="applyFSB('sc')">Apply Filters</button>
-      </div>
-    </div>
+  <!-- ── WATCHLIST ── -->
+  <div class="panel active" id="panel-wl">
     <div class="race-area">
-      <div class="prog-bar"><div class="prog-fill prog-sc" id="sc-prog" style="width:0%"></div></div>
+      <div class="prog-bar"><div class="prog-fill prog-wl" id="wl-prog" style="width:0%"></div></div>
       <div class="ctrl-bar">
-        <span class="conn-dot" id="sc-dot"></span><span class="conn-lbl" id="sc-lbl">Ready</span>
-        <span class="count-lbl" id="sc-count"></span>
+        <span class="conn-dot" id="wl-dot"></span>
+        <span class="conn-lbl" id="wl-lbl">Ready</span>
+        <span class="badge" id="wl-badge" style="display:none">LIVE</span>
+        <span class="sess-badge" id="wl-sess"></span>
+        <span class="count-lbl" id="wl-count"></span>
         <div class="sort-tabs">
-          <button class="sort-tab active" onclick="sc.setSort('relVol',this)">Rel Vol</button>
-          <button class="sort-tab" onclick="sc.setSort('pct',this)">% Chg</button>
-          <button class="sort-tab" onclick="sc.setSort('vol',this)">Volume</button>
+          <button class="sort-tab active" onclick="wl.setSort('pct',this)">% Chg</button>
+          <button class="sort-tab" onclick="wl.setSort('vol',this)">Volume</button>
+          <button class="sort-tab" onclick="wl.setSort('price',this)">Price</button>
         </div>
-        <button class="race-btn btn-sc" id="sc-btn" onclick="sc.toggle()">&#9654; START</button>
+        <button class="race-btn btn-wl" id="wl-btn" onclick="wl.toggle()">▶ START</button>
+      </div>
+      <div class="add-bar">
+        <input class="ticker-inp" id="wl-inp" placeholder="e.g. TSLA" onkeydown="if(event.key==='Enter')addTicker()">
+        <button class="add-btn" onclick="addTicker()">+ ADD</button>
+        <div class="tag-wrap" id="wl-tags"></div>
       </div>
       <div class="cols">
-        <div class="col"><div class="col-hdr sc-up-hdr">&#9650; GAINERS <span id="sc-up-count"></span></div><div class="col-inner" id="sc-up-inner"><div class="idle-msg" id="sc-up-idle">Click START to begin</div></div></div>
-        <div class="col"><div class="col-hdr dn-hdr">&#9660; LOSERS <span id="sc-dn-count"></span></div><div class="col-inner" id="sc-dn-inner"><div class="idle-msg" id="sc-dn-idle"></div></div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- SC MOMENTUM -->
-<div class="panel" id="panel-scm">
-  <div class="scanner-wrap">
-    <div class="fsb" id="fsb-scm">
-      <div class="fsb-header"><span class="fsb-title">Filters</span><button class="fsb-toggle" onclick="toggleFSB('scm')">&#9664;</button></div>
-      <div class="fsb-body">
-        <div class="fsb-group"><label class="fsb-label">Min Rel Vol</label>
-          <div class="fsb-row"><input type="range" id="f-scm-rv" min="0" max="5" step="0.5" value="1.5" oninput="document.getElementById('f-scm-rv-v').textContent=this.value+'x'"><span class="fsb-val" id="f-scm-rv-v">2x</span></div></div>
-        <div class="fsb-group"><label class="fsb-label">Min % Change</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pct" value="1" min="0" max="100" step="1"><span style="font-size:11px;color:var(--muted)">%</span></div></div>
-        <div class="fsb-group"><label class="fsb-label">Price Range ($)</label>
-          <div class="fsb-row"><input type="number" class="num-inp" id="f-scm-pmin" value="1" min="0" max="50" step="0.5" style="width:52px"><span style="font-size:11px;color:var(--muted)">&#8211;</span><input type="number" class="num-inp" id="f-scm-pmax" value="11" min="0" max="50" step="0.5" style="width:52px"></div></div>
-        <div class="fsb-group"><label class="fsb-label">Min $ Volume</label>
-          <select class="sel-inp" id="f-scm-dv"><option value="0">Any</option><option value="100000">$100K</option><option value="250000">$250K</option><option value="250000" selected>$250K</option><option value="1000000">$1M</option></select></div>
-        <button class="apply-btn" onclick="applyFSB('scm')">Apply Filters</button>
-      </div>
-    </div>
-    <div class="race-area">
-      <div class="prog-bar"><div class="prog-fill prog-scm" id="scm-prog" style="width:0%"></div></div>
-      <div class="ctrl-bar">
-        <span class="conn-dot" id="scm-dot"></span><span class="conn-lbl" id="scm-lbl">Ready</span>
-        <span class="count-lbl" id="scm-count"></span>
-        <div class="sort-tabs">
-          <button class="sort-tab active" onclick="scm.setSort('score',this)">Score</button>
-          <button class="sort-tab" onclick="scm.setSort('pct',this)">% Chg</button>
-          <button class="sort-tab" onclick="scm.setSort('relVol',this)">Rel Vol</button>
+        <div class="col">
+          <div class="col-hdr up-hdr">▲ GAINERS <span id="wl-up-count"></span></div>
+          <div class="col-inner" id="wl-up-inner">
+            <div class="idle-msg" id="wl-up-idle">Click ▶ START to begin race</div>
+          </div>
         </div>
-        <button class="race-btn btn-scm" id="scm-btn" onclick="scm.toggle()">&#9654; START</button>
-      </div>
-      <div class="cols">
-        <div class="col"><div class="col-hdr scm-up-hdr">&#128293; MOMENTUM UP <span id="scm-up-count"></span></div><div class="col-inner" id="scm-up-inner"><div class="idle-msg" id="scm-up-idle">Click START to begin</div></div></div>
-        <div class="col"><div class="col-hdr dn-hdr">&#128165; MOMENTUM DOWN <span id="scm-dn-count"></span></div><div class="col-inner" id="scm-dn-inner"><div class="idle-msg" id="scm-dn-idle"></div></div></div>
+        <div class="col">
+          <div class="col-hdr dn-hdr">▼ LOSERS <span id="wl-dn-count"></span></div>
+          <div class="col-inner" id="wl-dn-inner">
+            <div class="idle-msg" id="wl-dn-idle"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-</div>
+
+  <!-- ── SMALL CAP ── -->
+  <div class="panel" id="panel-sc">
+    <div class="scanner-wrap">
+      <div class="fsb" id="fsb-sc">
+        <div class="fsb-header">
+          <span class="fsb-title">Filters</span>
+          <button class="fsb-toggle" onclick="toggleFSB('sc')">◀</button>
+        </div>
+        <div class="fsb-body">
+          <div class="fsb-group">
+            <label class="fsb-label">Min Rel Vol</label>
+            <div class="fsb-row">
+              <input type="range" id="f-sc-rv" min="0" max="5" step="0.5" value="1" oninput="document.getElementById('f-sc-rv-v').textContent=this.value+'x'">
+              <span class="fsb-val" id="f-sc-rv-v">1x</span>
+            </div>
+          </div>
+          <div class="fsb-group">
+            <label class="fsb-label">Min % Change</label>
+            <div class="fsb-row">
+              <input type="number" class="num-inp" id="f-sc-pct" value="0" min="0" max="100" step="1">
+              <span style="font-size:11px;color:var(--muted)">%</span>
+            </div>
+          </div>
+          <div class="fsb-group">
+            <label class="fsb-label">Price Range ($)</label>
+            <div class="fsb-row">
+              <input type="number" class="num-inp" id="f-sc-pmin" value="1" min="0" max="50" step="0.5" style="width:52px">
+              <span style="font-size:11px;color:var(--muted)">–</span>
+              <input type="number" class="num-inp" id="f-sc-pmax" value="11" min="0" max="50" step="0.5" style="width:52px">
+            </div>
+          </div>
+          <div class="fsb-group">
+            <label class="fsb-label">Min $ Volume</label>
+            <select class="sel-inp" id="f-sc-dv">
+              <option value="0">Any</option>
+              <option value="100000">$100K</option>
+              <option value="250000">$250K</option>
+              <option value="500000">$500K</option>
+              <option value="1000000">$1M</option>
+            </select>
+          </div>
+          <button class="apply-btn" onclick="applyFSB('sc')">Apply Filters</button>
+        </div>
+      </div>
+      <div class="race-area">
+        <div class="prog-bar"><div class="prog-fill prog-sc" id="sc-prog" style="width:0%"></div></div>
+        <div class="ctrl-bar">
+          <span class="conn-dot" id="sc-dot"></span>
+          <span class="conn-lbl" id="sc-lbl">Ready</span>
+          <span class="sess-badge" id="sc-sess"></span>
+          <span class="count-lbl" id="sc-count"></span>
+          <div class="sort-tabs">
+            <button class="sort-tab" onclick="sc.setSort('relVol',this)">Rel Vol</button>
+            <button class="sort-tab active" onclick="sc.setSort('score',this)">Score</button>
+            <button class="sort-tab" onclick="sc.setSort('pct',this)">% Chg</button>
+          </div>
+          <button class="race-btn btn-sc" id="sc-btn" onclick="sc.toggle()">▶ START</button>
+        </div>
+        <div class="cols">
+          <div class="col">
+            <div class="col-hdr sc-up-hdr">▲ MOVERS UP <span id="sc-up-count"></span></div>
+            <div class="col-inner" id="sc-up-inner">
+              <div class="idle-msg" id="sc-up-idle">Click ▶ START to begin</div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="col-hdr dn-hdr">▼ LOSERS <span id="sc-dn-count"></span></div>
+            <div class="col-inner" id="sc-dn-inner">
+              <div class="idle-msg" id="sc-dn-idle"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /main-content -->
+
 <script>
-const ROW_H=48, RACE_DUR=45000, POLL_MS=3000, LERP=0.06;
+// ── helpers ──────────────────────────────────────────────────────────────────
+const ROW_H=50, RACE_DUR=45000, POLL_MS=3000, LERP=0.07;
 const pc=v=>(v>=0?'+':'')+v.toFixed(2)+'%';
-const pd=v=>(v>=0?'+$':'-$')+Math.abs(v).toFixed(2);
-const abb=n=>n&&n.length>14?n.slice(0,14)+'\u2026':n||'';
+const abb=(n,len=14)=>n&&n.length>len?n.slice(0,len)+'…':n||'';
 const AVATAR_COLORS=['#10b981','#3b82f6','#8b5cf6','#f59e0b','#06b6d4','#ec4899','#f97316','#14b8a6','#84cc16','#6366f1'];
-function avatarColor(t){let h=0;for(let c of t)h=(h*31+c.charCodeAt(0))&0x7fffffff;return AVATAR_COLORS[h%AVATAR_COLORS.length];}
+function avatarColor(t){let h=0;for(const c of t)h=(h*31+c.charCodeAt(0))&0x7fffffff;return AVATAR_COLORS[h%AVATAR_COLORS.length];}
 
+// ── custom tickers ───────────────────────────────────────────────────────────
 let customTickers=JSON.parse(localStorage.getItem('rc_tickers')||'[]');
 function renderTickers(){
   document.getElementById('wl-tags').innerHTML=
-    customTickers.map(t=>'<span class="ticker-tag">'+t+'<button onclick="removeTicker(\''+t+'\')">&#215;</button></span>').join('');
+    customTickers.map(t=>`<span class="ticker-tag">${t}<button onclick="removeTicker('${t}')">✕</button></span>`).join('');
 }
 function addTicker(){
   const inp=document.getElementById('wl-inp');
   const t=inp.value.trim().toUpperCase().replace(/[^A-Z]/g,'').slice(0,5);
-  if(t&&!customTickers.includes(t)){customTickers.push(t);localStorage.setItem('rc_tickers',JSON.stringify(customTickers));renderTickers();if(wl.running)wl.reset();}
+  if(t&&!customTickers.includes(t)){
+    customTickers.push(t);
+    localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
+    renderTickers();
+    if(wl.running) wl.reset();
+  }
   inp.value='';inp.focus();
 }
-function removeTicker(t){customTickers=customTickers.filter(x=>x!==t);localStorage.setItem('rc_tickers',JSON.stringify(customTickers));renderTickers();if(wl.running)wl.reset();}
+function removeTicker(t){
+  customTickers=customTickers.filter(x=>x!==t);
+  localStorage.setItem('rc_tickers',JSON.stringify(customTickers));
+  renderTickers();
+  if(wl.running) wl.reset();
+}
+
+// ── panel switcher ───────────────────────────────────────────────────────────
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   document.getElementById('nav-'+id).classList.add('active');
 }
-function toggleFSB(id){document.getElementById('fsb-'+id).classList.toggle('collapsed');}
+
+// ── filter sidebar ───────────────────────────────────────────────────────────
+function toggleFSB(id){
+  document.getElementById('fsb-'+id).classList.toggle('collapsed');
+}
 function applyFSB(id){
-  const tab=id==='sc'?sc:scm;
+  const tab=sc;
   tab.filters={
-    minRelVol:parseFloat(document.getElementById('f-'+id+'-rv').value)||0,
-    minPct:parseFloat(document.getElementById('f-'+id+'-pct').value)||0,
-    minPrice:parseFloat(document.getElementById('f-'+id+'-pmin').value)||0,
-    maxPrice:parseFloat(document.getElementById('f-'+id+'-pmax').value)||9999,
-    minDolVol:parseFloat(document.getElementById('f-'+id+'-dv').value)||0,
-  };tab.applyFilters();
+    minRelVol: parseFloat(document.getElementById('f-'+id+'-rv').value)||0,
+    minPct:    parseFloat(document.getElementById('f-'+id+'-pct').value)||0,
+    minPrice:  parseFloat(document.getElementById('f-'+id+'-pmin').value)||0,
+    maxPrice:  parseFloat(document.getElementById('f-'+id+'-pmax').value)||9999,
+    minDolVol: parseFloat(document.getElementById('f-'+id+'-dv').value)||0,
+  };
+  tab.applyFilters();
 }
 
+// ── RaceTab ──────────────────────────────────────────────────────────────────
 class RaceTab{
   constructor(c){
-    Object.assign(this,{running:false,rawStocks:[],filtered:[],upRows:{},dnRows:{},startTime:0,rafId:null,lastFetch:0});
-    this.apiUrl=c.apiUrl;this.progId=c.progId;
-    this.upId=c.upId;this.dnId=c.dnId;
-    this.upIdleId=c.upIdleId;this.dnIdleId=c.dnIdleId;
-    this.upCountId=c.upCountId;this.dnCountId=c.dnCountId;
-    this.dotId=c.dotId;this.lblId=c.lblId;
-    this.badgeId=c.badgeId||null;this.countId=c.countId||null;
-    this.btnId=c.btnId;this.sortKey=c.sortKey||'pct';this.filters=c.filters||{};
-    this.metricFn=c.metricFn||(s=>Math.abs(s.pct||0));
-    this.labelFn=c.labelFn||(s=>pc(s.pct||0));
-    this.subFn=c.subFn||(s=>s.relVol!=null?s.relVol.toFixed(1)+'x rel':'');
-    this.barUp=c.barUp||'bar-up';this.barDn=c.barDn||'bar-dn';
-    this.fillUp=c.fillUp||'fill-up';this.fillDn=c.fillDn||'fill-dn';
-    this.lblUp=c.lblUp||'lbl-up';this.lblDn=c.lblDn||'lbl-dn';
-    this.showAvatar=c.showAvatar!==false;
+    Object.assign(this,{
+      running:false, rawStocks:[], filtered:[],
+      upRows:{}, dnRows:{},
+      startTime:0, rafId:null, lastFetch:0,
+    });
+    this.apiUrl=c.apiUrl;
+    this.progId=c.progId;
+    this.upId=c.upId; this.dnId=c.dnId;
+    this.upIdleId=c.upIdleId; this.dnIdleId=c.dnIdleId;
+    this.upCountId=c.upCountId; this.dnCountId=c.dnCountId;
+    this.dotId=c.dotId; this.lblId=c.lblId;
+    this.badgeId=c.badgeId||null; this.countId=c.countId||null;
+    this.btnId=c.btnId;
+    this.sortKey=c.sortKey||'pct';
+    this.filters=c.filters||{};
+    this.sortModes=c.sortModes||null;
+    // if sortModes defined, bootstrap from the initial sortKey
+    const initMode=this.sortModes&&this.sortModes[c.sortKey||'pct'];
+    this.metricFn=(initMode&&initMode.metricFn)||c.metricFn||(s=>Math.abs(s.pct||0));
+    this.labelFn=(initMode&&initMode.labelFn)||c.labelFn||((s)=>pc(s.pct||0));
+    this.subFn=(initMode&&initMode.subFn)||c.subFn||null;
+    this.barUp=c.barUp||'bar-up'; this.barDn=c.barDn||'bar-dn';
+    this.fillUp=c.fillUp||'fill-up'; this.fillDn=c.fillDn||'fill-dn';
+    this.lblUp=c.lblUp||'lbl-up'; this.lblDn=c.lblDn||'lbl-dn';
   }
-  getUrl(){return typeof this.apiUrl==='function'?this.apiUrl():this.apiUrl;}
+
+  getUrl(){ return typeof this.apiUrl==='function'?this.apiUrl():this.apiUrl; }
+
   applyFilters(){
-    const f=this.filters;let s=this.rawStocks;
-    if(f.minRelVol)s=s.filter(x=>(x.relVol||0)>=f.minRelVol);
-    if(f.minPct)s=s.filter(x=>Math.abs(x.pct||0)>=f.minPct);
-    if(f.minPrice)s=s.filter(x=>(x.price||0)>=f.minPrice);
-    if(f.maxPrice&&f.maxPrice<9000)s=s.filter(x=>(x.price||0)<=f.maxPrice);
-    if(f.minDolVol)s=s.filter(x=>(x.price||0)*(x.vol||0)>=f.minDolVol);
-    this.filtered=s;if(this.running)this._buildRows();
+    const f=this.filters;
+    let s=this.rawStocks;
+    if(f.minRelVol) s=s.filter(x=>(x.relVol||0)>=f.minRelVol);
+    if(f.minPct)    s=s.filter(x=>Math.abs(x.pct||0)>=f.minPct);
+    if(f.minPrice)  s=s.filter(x=>(x.price||0)>=f.minPrice);
+    if(f.maxPrice&&f.maxPrice<9000) s=s.filter(x=>(x.price||0)<=f.maxPrice);
+    if(f.minDolVol) s=s.filter(x=>(x.price||0)*(x.vol||0)>=f.minDolVol);
+    this.filtered=s;
+    if(this.running) this._buildRows();
   }
+
   splitAndSort(stocks){
-    const k=this.sortKey;
-    const m=s=>k==='score'?Math.abs(s.pct||0)*(s.relVol||1):k==='relVol'?(s.relVol||0):k==='chg'?Math.abs(s.chg||0):k==='vol'?(s.vol||0):Math.abs(s.pct||0);
+    const key=this.sortKey;
+    const m=s=>key==='score'?Math.abs(s.pct||0)*(s.relVol||1):
+               key==='relVol'?(s.relVol||0):
+               key==='vol'?(s.vol||0):
+               Math.abs(s.pct||0);
     const up=stocks.filter(s=>(s.pct||0)>=0).sort((a,b)=>m(b)-m(a));
     const dn=stocks.filter(s=>(s.pct||0)<0).sort((a,b)=>m(b)-m(a));
     return{up,dn};
   }
-  _buildCol(cId,iId,stocks,isUp){
-    const c=document.getElementById(cId),idle=document.getElementById(iId);
-    const noFilter=this.rawStocks.length>0&&!stocks.length;idle.textContent=noFilter?'No stocks match — loosen filters':'Click START to begin';idle.style.display=stocks.length?'none':'';
-    if(!stocks.length){c.style.height='0';return;}
-    const bCls=isUp?this.barUp:this.barDn,fCls=isUp?this.fillUp:this.fillDn,lCls=isUp?this.lblUp:this.lblDn;
+
+  _buildCol(containerId,idleId,stocks,isUp){
+    const container=document.getElementById(containerId);
+    const idle=document.getElementById(idleId);
+    idle.style.display=stocks.length?'none':'';
+    if(!stocks.length){ container.style.height='0'; return; }
+
+    const barCls=isUp?this.barUp:this.barDn;
+    const fillCls=isUp?this.fillUp:this.fillDn;
+    const lblCls=isUp?this.lblUp:this.lblDn;
     const rows=isUp?this.upRows:this.dnRows;
     const maxM=this.metricFn(stocks[0])||1;
+
     stocks.forEach((s,i)=>{
       if(!rows[s.t]){
         const el=document.createElement('div');
-        el.className='row '+bCls;
-        const av=this.showAvatar?'<span class="avatar" style="background:'+avatarColor(s.t)+'">'+s.t.slice(0,2)+'</span>':'';
-        el.innerHTML='<div class="fill '+fCls+'"></div>'
-          +'<span class="rank"></span>'+av
-          +'<div class="rinfo"><span class="rsym">'+s.t+'</span><span class="rname">'+abb(s.n||s.t)+'</span></div>'
-          +'<div class="rprice"><span class="lbl '+lCls+'"></span><span class="rchg"></span></div>';
-        c.appendChild(el);rows[s.t]=el;
+        el.className='row '+barCls;
+        el.innerHTML=
+          `<div class="fill ${fillCls}"></div>`+
+          `<span class="rank"></span>`+
+          `<span class="avatar" style="background:${avatarColor(s.t)}">${s.t.slice(0,2)}</span>`+
+          `<div class="rinfo"><span class="rsym">${s.t}</span><span class="rname">${abb(s.n||s.t)}</span></div>`+
+          `<div class="rprice"><span class="lbl ${lblCls}"></span><span class="sub"></span></div>`;
+        container.appendChild(el);
+        rows[s.t]=el;
       }
       const el=rows[s.t];
       const prevLbl=el.querySelector('.lbl').textContent;
       const newLbl=this.labelFn(s);
       el.querySelector('.rank').textContent='#'+(i+1);
       el.querySelector('.lbl').textContent=newLbl;
-      const rchg=el.querySelector('.rchg');
-      if(rchg)rchg.textContent=s.price?'$'+s.price.toFixed(2)+(s.chg!=null?' '+pd(s.chg):''):'';
+      el.querySelector('.sub').textContent=this.subFn?this.subFn(s):(s.relVol!=null?s.relVol.toFixed(1)+'x vol':'');
       el.querySelector('.fill').style.width=(this.metricFn(s)/maxM*100)+'%';
+      // lerp animation: set target, RAF will interpolate
       el._targetY=i*ROW_H;
-      if(el._currentY===undefined)el._currentY=i*ROW_H;
+      if(el._currentY===undefined) el._currentY=i*ROW_H;
+      // flash on value change
       if(prevLbl&&prevLbl!==newLbl){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
     });
-    const tks=new Set(stocks.map(s=>s.t));
-    Object.keys(rows).forEach(t=>{if(!tks.has(t)){rows[t].remove();delete rows[t];}});
-    c.style.height=(stocks.length*ROW_H)+'px';
-    document.getElementById(isUp?this.upCountId:this.dnCountId).textContent=stocks.length?'('+stocks.length+')':'';
+
+    // remove stale
+    const tickers=new Set(stocks.map(s=>s.t));
+    Object.keys(rows).forEach(t=>{ if(!tickers.has(t)){ rows[t].remove(); delete rows[t]; } });
+    container.style.height=(stocks.length*ROW_H)+'px';
+
+    const countId=isUp?this.upCountId:this.dnCountId;
+    document.getElementById(countId).textContent=stocks.length?`(${stocks.length})`:'';
   }
-  _buildRows(){const{up,dn}=this.splitAndSort(this.filtered);this._buildCol(this.upId,this.upIdleId,up,true);this._buildCol(this.dnId,this.dnIdleId,dn,false);}
+
+  _buildRows(){
+    const{up,dn}=this.splitAndSort(this.filtered);
+    this._buildCol(this.upId,this.upIdleId,up,true);
+    this._buildCol(this.dnId,this.dnIdleId,dn,false);
+  }
+
+  async _fetch(){
+    try{
+      const r=await fetch(this.getUrl());
+      if(!r.ok) throw new Error(r.status);
+      const d=await r.json();
+      this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
+      this.applyFilters();
+      document.getElementById(this.dotId).className='conn-dot live';
+      document.getElementById(this.lblId).textContent='Live · '+new Date().toLocaleTimeString();
+      if(this.badgeId) document.getElementById(this.badgeId).style.display='';
+      // Detect and show market session
+      if(this.sessId){
+        // Try ms field from API; fall back to ET clock
+        const statMap={};
+        this.rawStocks.forEach(s=>{if(s.ms)statMap[s.ms]=(statMap[s.ms]||0)+1;});
+        let sess=Object.entries(statMap).sort((a,b)=>b[1]-a[1])[0]?.[0]||'';
+        if(!sess){ // fallback: detect from ET time
+          const et=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+          const mins=et.getHours()*60+et.getMinutes();
+          if(mins<9*60+30) sess='early_trading';
+          else if(mins<16*60) sess='regular';
+          else sess='late_trading';
+        }
+        const el=document.getElementById(this.sessId);
+        if(el){
+          el.className='sess-badge';
+          if(sess==='early_trading'){el.textContent='PRE-MARKET';el.classList.add('sess-pre');}
+          else if(sess==='late_trading'){el.textContent='AFTER-HRS';el.classList.add('sess-post');}
+          else{el.textContent='REGULAR';el.classList.add('sess-reg');}
+          el.style.display='inline-block';
+        }
+      }
+      if(this.countId) document.getElementById(this.countId).textContent=this.rawStocks.length+' stocks';
+    }catch(e){
+      document.getElementById(this.dotId).className='conn-dot';
+      document.getElementById(this.lblId).textContent='Error – retrying…';
+    }
+    this.lastFetch=Date.now();
+  }
+
+  _loop(ts){
+    if(!this.running) return;
+    const elapsed=(ts-this.startTime)%RACE_DUR;
+    const pct=elapsed/RACE_DUR;
+    document.getElementById(this.progId).style.width=(pct*100)+'%';
+    if(Date.now()-this.lastFetch>POLL_MS) this._fetch();
+    this._animateRows();
+    this.rafId=requestAnimationFrame(ts=>this._loop(ts));
+  }
+
   _animateRows(){
     [...Object.values(this.upRows),...Object.values(this.dnRows)].forEach(el=>{
       if(el._targetY===undefined)return;
@@ -333,94 +484,92 @@ class RaceTab{
       el.style.top=el._currentY+'px';
     });
   }
-  async _fetch(){
-    try{
-      const r=await fetch(this.getUrl());if(!r.ok)throw new Error(r.status);
-      const d=await r.json();
-      this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
-      this.applyFilters();
-      document.getElementById(this.dotId).className='conn-dot live';
-      document.getElementById(this.lblId).textContent='Live \u00b7 '+new Date().toLocaleTimeString();
-      if(this.badgeId)document.getElementById(this.badgeId).style.display='';
-      if(this.countId)document.getElementById(this.countId).textContent=this.rawStocks.length+' stocks';
-    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error \u2013 retrying\u2026';}
-    this.lastFetch=Date.now();
-  }
-  _loop(ts){
-    if(!this.running)return;
-    const pct=Math.min((ts-this.startTime)/RACE_DUR,1);
-    document.getElementById(this.progId).style.width=(pct*100)+'%';
-    if(pct>=1){this.reset();return;}
-    if(Date.now()-this.lastFetch>POLL_MS)this._fetch();
-    this._animateRows();
+  toggle(){ this.running?this.reset():this.start(); }
+
+  start(){
+    this.running=true;
+    this.startTime=performance.now();
+    document.getElementById(this.btnId).textContent='⏹ STOP';
+    this._fetch();
     this.rafId=requestAnimationFrame(ts=>this._loop(ts));
   }
-  toggle(){this.running?this.reset():this.start();}
-  start(){this.running=true;this.startTime=performance.now();document.getElementById(this.btnId).textContent='\u23f9 STOP';this._fetch();this.rafId=requestAnimationFrame(ts=>this._loop(ts));}
+
   reset(){
-    this.running=false;cancelAnimationFrame(this.rafId);
+    this.running=false;
+    cancelAnimationFrame(this.rafId);
     document.getElementById(this.progId).style.width='0%';
-    document.getElementById(this.btnId).textContent='\u25b6 START';
-    [this.upRows,this.dnRows].forEach(rows=>Object.values(rows).forEach(el=>el.remove()));
+    document.getElementById(this.btnId).textContent='▶ START';
+    [this.upRows,this.dnRows].forEach(rows=>{
+      Object.values(rows).forEach(el=>el.remove());
+    });
     this.upRows={};this.dnRows={};
     document.getElementById(this.upIdleId).style.display='';
-    const di=document.getElementById(this.dnIdleId);if(di)di.style.display='';
-    document.getElementById(this.upCountId).textContent='';document.getElementById(this.dnCountId).textContent='';
+    if(document.getElementById(this.dnIdleId)) document.getElementById(this.dnIdleId).style.display='';
+    document.getElementById(this.upCountId).textContent='';
+    document.getElementById(this.dnCountId).textContent='';
+    if(this.sessId){const s=document.getElementById(this.sessId);if(s)s.style.display='none';}
+    if(this.badgeId){const b=document.getElementById(this.badgeId);if(b)b.style.display='none';}
+    document.getElementById(this.dotId).className='conn-dot';
+    document.getElementById(this.lblId).textContent='Ready';
     this.rawStocks=[];this.filtered=[];
   }
-  setSort(key,btn){this.sortKey=key;btn.closest('.sort-tabs').querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(this.running)this._buildRows();}
-}
-/* extra row styles injected via JS since style tag is closed */
 
+  setSort(key,btn){
+    this.sortKey=key;
+    btn.closest('.sort-tabs').querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(this.sortModes&&this.sortModes[key]){
+      const m=this.sortModes[key];
+      if(m.metricFn) this.metricFn=m.metricFn;
+      if(m.labelFn)  this.labelFn=m.labelFn;
+      if(m.subFn)    this.subFn=m.subFn;
+    }
+    if(this.running) this._buildRows();
+  }
+}
+
+// ── instances ─────────────────────────────────────────────────────────────────
 const wl=new RaceTab({
   apiUrl:()=>'/api/quotes'+(customTickers.length?'?extra='+customTickers.join(','):''),
-  progId:'wl-prog',upId:'wl-up-inner',dnId:'wl-dn-inner',
-  upIdleId:'wl-up-idle',dnIdleId:'wl-dn-idle',
-  upCountId:'wl-up-count',dnCountId:'wl-dn-count',
-  dotId:'wl-dot',lblId:'wl-lbl',badgeId:'wl-badge',countId:'wl-count',
-  btnId:'wl-btn',sortKey:'pct',filters:{},showAvatar:true,
-  barUp:'bar-up',barDn:'bar-dn',fillUp:'fill-up',fillDn:'fill-dn',
-  lblUp:'lbl-up',lblDn:'lbl-dn',
-  labelFn:s=>pc(s.pct||0),metricFn:s=>Math.abs(s.pct||0),
+  progId:'wl-prog',
+  upId:'wl-up-inner', dnId:'wl-dn-inner',
+  upIdleId:'wl-up-idle', dnIdleId:'wl-dn-idle',
+  upCountId:'wl-up-count', dnCountId:'wl-dn-count',
+  dotId:'wl-dot', lblId:'wl-lbl',
+  badgeId:'wl-badge', sessId:'wl-sess', countId:'wl-count',
+  btnId:'wl-btn', sortKey:'pct', filters:{},
+  barUp:'bar-up', barDn:'bar-dn',
+  fillUp:'fill-up', fillDn:'fill-dn',
+  lblUp:'lbl-up', lblDn:'lbl-dn',
+  labelFn:s=>pc(s.pct||0),
+  subFn:s=>(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' · ':'')+'$'+(s.price||0).toFixed(2),
+  metricFn:s=>Math.abs(s.pct||0),
 });
+
 const sc=new RaceTab({
   apiUrl:'/api/smallcap',
-  progId:'sc-prog',upId:'sc-up-inner',dnId:'sc-dn-inner',
-  upIdleId:'sc-up-idle',dnIdleId:'sc-dn-idle',
-  upCountId:'sc-up-count',dnCountId:'sc-dn-count',
-  dotId:'sc-dot',lblId:'sc-lbl',countId:'sc-count',
-  btnId:'sc-btn',sortKey:'relVol',showAvatar:true,
+  progId:'sc-prog',
+  upId:'sc-up-inner', dnId:'sc-dn-inner',
+  upIdleId:'sc-up-idle', dnIdleId:'sc-dn-idle',
+  upCountId:'sc-up-count', dnCountId:'sc-dn-count',
+  dotId:'sc-dot', lblId:'sc-lbl', sessId:'sc-sess', countId:'sc-count',
+  btnId:'sc-btn', sortKey:'score',
   filters:{minRelVol:1,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
-  barUp:'bar-sc-up',barDn:'bar-dn',fillUp:'fill-sc',fillDn:'fill-dn',
-  lblUp:'lbl-sc-up',lblDn:'lbl-dn',
-  labelFn:s=>pc(s.pct||0),metricFn:s=>s.relVol||0,
-});
-const scm=new RaceTab({
-  apiUrl:'/api/smallcap',
-  progId:'scm-prog',upId:'scm-up-inner',dnId:'scm-dn-inner',
-  upIdleId:'scm-up-idle',dnIdleId:'scm-dn-idle',
-  upCountId:'scm-up-count',dnCountId:'scm-dn-count',
-  dotId:'scm-dot',lblId:'scm-lbl',countId:'scm-count',
-  btnId:'scm-btn',sortKey:'score',showAvatar:true,
-  filters:{minRelVol:1.5,minPct:1,minPrice:1,maxPrice:11,minDolVol:250000},
-  barUp:'bar-scm-up',barDn:'bar-dn',fillUp:'fill-scm',fillDn:'fill-dn',
-  lblUp:'lbl-scm-up',lblDn:'lbl-dn',
-  labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',
-  metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),
-});
-renderTickers();
-</script>
-<style>
-.avatar{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin:0 7px 0 4px;letter-spacing:-.5px}
-.rinfo{flex:1;display:flex;flex-direction:column;gap:1px;min-width:0}
-.rsym{font-size:12px;font-weight:800;color:var(--text);white-space:nowrap}
-.rname{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rprice{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0;margin-left:6px}
-.lbl{font-size:12px;font-weight:700}
-.lbl-up{color:var(--green)}.lbl-dn{color:var(--red)}
-.lbl-sc-up{color:var(--amber)}.lbl-scm-up{color:var(--purple)}
-.rchg{font-size:10px;color:var(--muted);white-space:nowrap}
-.row{height:48px}
-</style>
-</body>
-</html>
+  barUp:'bar-sc-up', barDn:'bar-dn',
+  fillUp:'fill-sc', fillDn:'fill-dn',
+  lblUp:'lbl-sc-up', lblDn:'lbl-dn',
+  sortModes:{
+    score:{
+      metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),
+      labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',
+      subFn:s=>pc(s.pct||0)+(s.relVol!=null?' · '+s.relVol.toFixed(1)+'x vol':''),
+    },
+    relVol:{
+      metricFn:s=>s.relVol||0,
+      labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'–',
+      subFn:s=>pc(s.pct||0)+' · $'+(s.price||0).toFixed(2),
+    },
+    pct:{
+      metricFn:s=>Math.abs(s.pct||0),
+      labelFn:s=>pc(s.pct||0),
+      subFn
