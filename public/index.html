@@ -785,66 +785,6 @@ class EmaTab{
   }
 }
 
-class Ema120Tab{
-  constructor(){this.running=false;this.timer=null;}
-  toggle(){this.running?this.stop():this.start();}
-  start(){
-    this.running=true;
-    const btn=document.getElementById('e12-btn');
-    btn.textContent='STOP';btn.classList.add('btn-stop');
-    this.scan();this.timer=setInterval(()=>this.scan(),300000);this.priceTimer=setInterval(()=>this.priceTick(),30000);
-  }
-  stop(){
-    this.running=false;clearInterval(this.timer);
-    const btn=document.getElementById('e12-btn');
-    btn.textContent='START';btn.classList.remove('btn-stop');
-    document.getElementById('e12-dot').className='conn-dot';
-    document.getElementById('e12-lbl').textContent='Stopped';
-    const p=document.getElementById('e12-prog');p.style.transition='none';p.style.width='0%';
-  }
-  async scan(){
-    const wlStr=customTickers.join(',');
-    document.getElementById('e12-lbl').textContent='Scanning 3 timeframes...';
-    document.getElementById('e12-dot').className='conn-dot';
-    const prog=document.getElementById('e12-prog');
-    prog.style.transition='width 10s linear';prog.style.width='85%';
-    try{
-      const [day,week,month]=await Promise.all([
-        fetch('/api/ema120?tf=day&wl='+wlStr).then(r=>r.json()),
-        fetch('/api/ema120?tf=week&wl='+wlStr).then(r=>r.json()),
-        fetch('/api/ema120?tf=month&wl='+wlStr).then(r=>r.json()),
-      ]);
-      prog.style.transition='none';prog.style.width='100%';
-      setTimeout(()=>{prog.style.width='0%';},600);
-      this.renderCol('e12-day',day.results||[]);
-      this.renderCol('e12-week',week.results||[]);
-      this.renderCol('e12-month',month.results||[]);
-      document.getElementById('e12-dot').className='conn-dot live';
-      document.getElementById('e12-lbl').textContent='Updated Â· '+new Date().toLocaleTimeString();
-    }catch(err){
-      const pg=document.getElementById('e12-prog');pg.style.transition='none';pg.style.width='0%';
-      document.getElementById('e12-dot').className='conn-dot';
-      document.getElementById('e12-lbl').textContent='Error â retrying...';
-    }
-  }
-  renderCol(id,results){
-    const el=document.getElementById(id);
-    if(!results.length){el.innerHTML='<div class="e12-idle">No data</div>';return;}
-    const wlItems=results.filter(r=>r.isWL);
-    const scItems=results.filter(r=>r.isSC&&!r.isWL);
-    const rank=r=>r.crossedAbove?3:r.above?2:r.crossedBelow?1:0;
-    const sortFn=(a,b)=>{const d=rank(b)-rank(a);return d!==0?d:b.pct-a.pct;};
-    const card=r=>{
-      const cls=r.crossedAbove?'e12-cross-up':r.crossedBelow?'e12-cross-dn':r.above?'e12-above':'e12-below';
-      const bcls=(r.crossedAbove||r.above)?'bull':'bear';
-      const bdg=r.crossedAbove?'crossed up':r.crossedBelow?'crossed dn':(r.pct>=0?'+':'')+r.pct+'%';
-      return '<div class="e12-card '+cls+'"><div class="e12-av" style="background:'+avatarColor(r.t)+'">'+r.t.slice(0,2)+'</div><div class="e12-info"><div class="e12-sym">'+r.t+'</div><div class="e12-detail">$'+r.price+' Â· EMA $'+r.ema120+'</div></div><div class="e12-badge '+bcls+'">'+bdg+'</div></div>';
-    };
-    const sec=(title,items)=>items.length?'<div class="e12-sec-title">'+title+'</div>'+items.sort(sortFn).map(card).join(''):'';
-    el.innerHTML=sec('Watchlist',wlItems)+sec('Small Cap',scItems);
-  }
-}
-
 class Ema13Tab {
   constructor(){this.tf='daily';this.extra=[];this.lastPrices={};this.ema13Map={};this.cdTimer=null;this.cd=30;}
   getTickers(){return[...new Set([...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]'),...this.extra])];}
