@@ -230,9 +230,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <button class="nav-item sc" id="nav-sc" onclick="showPanel('sc')">
     <span class="nav-icon">&#9889;</span><span>Small Cap</span>
   </button>
-  <button class="nav-item ema" id="nav-ema" onclick="showPanel('ema')">
-    <span class="nav-icon">&#12316;</span><span>EMA Cross</span>
-  </button>
+  
   <button class="nav-item e12" id="nav-e12" onclick="showPanel('e12')">
     <span class="nav-icon">&#12336;</span><span>EMA 120</span>
   </button>
@@ -363,32 +361,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   </div>
 
   <!-- EMA CROSS -->
-  <div class="panel" id="panel-ema">
-    <div class="race-area">
-      <div class="prog-bar"><div class="prog-fill prog-ema" id="ema-prog" style="width:0%"></div></div>
-      <div class="ctrl-bar">
-        <span class="conn-dot" id="ema-dot"></span>
-        <span class="conn-lbl" id="ema-lbl">Ready</span>
-        <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted)">13 x 120 EMA Â· 10 min Â· Watchlist tickers</span>
-        <button class="race-btn btn-ema" id="ema-btn" onclick="ema.toggle()">&#9654; START</button>
-      </div>
-      <div class="cols">
-        <div class="col">
-          <div class="col-hdr up-hdr">&#9650; BULLISH CROSS &nbsp;Â· 13 EMA crossed above 120 EMA</div>
-          <div class="col-inner" id="ema-up-inner">
-            <div class="idle-msg">Click START to scan watchlist</div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="col-hdr dn-hdr">&#9660; BEARISH CROSS &nbsp;Â· 13 EMA crossed below 120 EMA</div>
-          <div class="col-inner" id="ema-dn-inner">
-            <div class="idle-msg"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
