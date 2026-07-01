@@ -41,7 +41,7 @@ function analyze(bars, period) {
   const price = closes[n-1], e = ema[n-1], prevP = closes[n-2], prevE = ema[n-2];
   if (e == null || prevE == null) return null;
   return {
-    price: +price.toFixed(2), ema: +e.toFixed(3), period,
+    price: +price.toFixed(2), ema120: +e.toFixed(3), period,
     above: price > e, pct: +((price - e) / e * 100).toFixed(2),
     crossedAbove: prevP <= prevE && price > e,
     crossedBelow: prevP >= prevE && price < e,
