@@ -32,11 +32,6 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-s
 .opt-col-hdr{padding:8px 10px;font-size:12px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:6px;background:var(--bg2);border-radius:6px 6px 0 0}
 .opt-count{font-size:10px;font-weight:500;color:var(--muted);margin-left:auto}
 .opt-col-body{flex:1;overflow-y:auto;padding:4px 6px;display:flex;flex-direction:column;gap:4px}
-.opt-card{display:flex;align-items:center;gap:8px;padding:3px 8px;height:26px;border-bottom:1px solid rgba(255,255,255,.04)}
-.opt-card-lbl{width:110px;min-width:110px;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.opt-card-track{flex:1;height:12px;background:var(--bg3);border-radius:2px;position:relative;overflow:hidden}
-.opt-card-bar{position:absolute;left:0;top:0;bottom:0;transition:width .6s ease}
-.opt-card-val{width:65px;min-width:65px;text-align:right;font-size:11px;font-weight:800;white-space:nowrap}
 .nav-item.opex.active{color:#06b6d4}
 .opex-wrap{display:flex;flex:1;flex-direction:column;overflow:hidden;padding:8px 12px;gap:6px}
 .opex-form-bar{display:flex;flex-wrap:wrap;align-items:flex-end;gap:6px;background:var(--bg2);border-radius:6px;padding:8px 10px;border:1px solid var(--bg3)}
@@ -229,10 +224,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <button class="nav-item e13" id="nav-e13" onclick="showPanel('e13')">
     <span class="nav-icon">&#12336;</span><span>EMA 13</span>
   </button>
-  <button class="nav-item opt" id="nav-opt" onclick="showPanel('opt')">
-    <span class="nav-icon">&#128308;</span><span>Options Flow</span>
-  </button>
-
+  
 <button class="nav-item opex" id="nav-opex" onclick="showPanel('opex')">
   <span class="nav-icon">🎯</span><span>Opex Planner</span>
 </button>
@@ -436,29 +428,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
     </div>
   </div>
   <!-- OPTIONS FLOW -->
-  <div class="panel" id="panel-opt">
-    <div class="opt-wrap">
-      <div class="prog-bar"><div class="prog-fill" id="opt-prog" style="width:0%;background:linear-gradient(90deg,#f97316,#fb923c)"></div></div>
-      <div class="ctrl-bar">
-        <span class="conn-dot" id="opt-dot"></span>
-        <span class="conn-lbl" id="opt-lbl">Ready</span>
-        <div style="flex:1"></div>
-        <span style="font-size:11px;color:var(--muted);margin-right:10px">&#128257; Every 5 min</span>
-        <button class="btn-start" id="opt-btn" onclick="optflow.toggle()">&#9654; START</button>
-      </div>
-      <div class="opt-cols">
-        <div class="opt-col">
-          <div class="opt-col-hdr" style="color:var(--green);border-bottom:2px solid var(--green)">&#128200; CALLS &mdash; Bullish <span class="opt-count" id="opt-call-count"></span></div>
-          <div class="opt-col-body" id="opt-calls"><div class="e12-idle">Click START</div></div>
-        </div>
-        <div class="opt-col-div"></div>
-        <div class="opt-col">
-          <div class="opt-col-hdr" style="color:var(--red);border-bottom:2px solid var(--red)">&#128201; PUTS &mdash; Bearish <span class="opt-count" id="opt-put-count"></span></div>
-          <div class="opt-col-body" id="opt-puts"><div class="e12-idle">Click START</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  
 <div class="panel" id="panel-opex">
   <div class="opex-wrap">
     <div class="prog-bar"><div class="prog-fill" id="opex-prog" style="width:0%;background:linear-gradient(90deg,#06b6d4,#22d3ee)"></div></div>
@@ -980,85 +950,6 @@ class Ema13Tab{
 const e13tab=new Ema13Tab();
 const ema=new EmaTab();
 renderTickers();
-class OptFlowTab{
-  constructor(){this.running=false;this.timer=null;}
-  toggle(){this.running?this.stop():this.start();}
-  start(){
-    this.running=true;
-    const btn=document.getElementById('opt-btn');
-    btn.innerHTML='&#9646;&#9646; STOP';btn.classList.add('btn-stop');
-    this.scan();
-    this.timer=setInterval(()=>this.scan(),300000);
-  }
-  stop(){
-    this.running=false;clearInterval(this.timer);this.timer=null;
-    const btn=document.getElementById('opt-btn');
-    btn.innerHTML='&#9654; START';btn.classList.remove('btn-stop');
-    const pg=document.getElementById('opt-prog');if(pg)pg.style.width='0%';
-    document.getElementById('opt-dot').className='conn-dot';
-    document.getElementById('opt-lbl').textContent='Stopped';
-  }
-  async scan(){
-    const dot=document.getElementById('opt-dot');
-    const lbl=document.getElementById('opt-lbl');
-    const pg=document.getElementById('opt-prog');
-    dot.className='conn-dot conn-live';lbl.textContent='Scanning options…';
-    const wlStr=customTickers.join(',');
-    const t0=Date.now();
-    try{
-      const d=await fetch('/api/options?wl='+wlStr).then(r=>r.json());
-      if(pg)pg.style.width='100%';
-      this.render(d.calls||[],d.puts||[]);
-      lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
-      dot.className='conn-dot conn-live';
-    }catch(err){
-      dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
-    }
-  }
-  fmt(n){
-    if(n>=1e6)return'$'+(n/1e6).toFixed(1)+'M';
-    if(n>=1e3)return'$'+(n/1e3).toFixed(0)+'K';
-    return'$'+n;
-  }
-  render(calls,puts){
-    const maxN=Math.max(...[...calls,...puts].map(c=>c.notional),1);
-    const card=(c)=>{
-      const isCall=c.type==='call';
-      const clr=isCall?'var(--green)':'var(--red)';
-      const bg=isCall?'rgba(74,222,128,.25)':'rgba(248,113,113,.25)';
-      const bw=(c.notional/maxN*100).toFixed(1);
-      const exp=c.expiry?c.expiry.slice(5):'?';
-      const iv=c.iv!=null?c.iv+'%':'--';
-      const dl=c.delta!=null?c.delta:'--';
-      const lbl=c.ticker+' $'+c.strike+(isCall?' C':' P');
-      const notional=this.fmt(c.notional);
-      const tip='Exp '+exp+' | IV '+iv+' | d '+dl+' | '+c.vol.toLocaleString()+' vol | '+c.ratio+'x OI';
-      return [
-        '<div class="opt-card" title="'+tip+'" style="border-left:3px solid '+clr+'">',
-          '<div class="opt-card-lbl" style="color:'+clr+'">'+lbl+'</div>',
-          '<div class="opt-card-track">',
-            '<div class="opt-card-bar" data-w="'+bw+'" style="width:0%;background:'+bg+'"></div>',
-          '</div>',
-          '<div class="opt-card-val" style="color:'+clr+'">'+notional+'</div>',
-        '</div>'
-      ].join('');
-    };
-    const setCol=(id,items,cid,fb)=>{
-      const el=document.getElementById(id);if(!el)return;
-      el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">'+fb+'</div>';
-      const ct=document.getElementById(cid);if(ct)ct.textContent=items.length?'('+items.length+')':'';
-    };
-    setCol('opt-calls',calls,'opt-call-count','No unusual calls');
-    setCol('opt-puts',puts,'opt-put-count','No unusual puts');
-    requestAnimationFrame(()=>{
-      ['opt-calls','opt-puts'].forEach(colId=>{
-        const col=document.getElementById(colId);if(!col)return;
-        col.querySelectorAll('.opt-card-bar[data-w]').forEach((bar,i)=>setTimeout(()=>{bar.style.width=bar.dataset.w+'%';},i*40));
-      });
-    });
-  }
-}
-const optflow=new OptFlowTab();
 
 class OpexPlanner{
   async analyze(){
