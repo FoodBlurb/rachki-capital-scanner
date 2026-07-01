@@ -4,17 +4,18 @@ import fetch from 'node-fetch';
 // EMA periods: day=120, week=120, month=50 (API only has ~60 months history)
 
 const SC_TICKERS = [
-  'MARA','RIOT','CLSK','HUT','BITF','WULF','CIFR','BTBT','CORZ',
-  'PLUG','NKLA','GOEV','WKHS','MULN','BLNK','FCEL','HYLN',
-  'OCGN','NVAX','AGEN','CTXR','ABUS','SAVA',
-  'BB','NOK','BKKT','OPEN','PSFE','MVIS','INPX','GFAI',
-  'TLRY','SNDL','CRON','ACB',
-  'AMC','GME',
-  'CLOV','SPCE','GENI','IDEX','KULR','ENVX',
-  'SOS','EBON','NCTY','LIZI','CNET','CXAI',
-  'INDO','IMPP','ATER','CTRM','FFIE','XELA','PSTV','CIDM',
-  'VERB','GREE','MNMD','ONDS','JMIA',
-  'WINT','STTK','VLNX','SENS','NVOS','HYMC','ORBC',
+  // Crypto miners
+  'MARA','RIOT','CLSK','HUT','BITF','WULF','CORZ',
+  // AI / quantum / growth
+  'IONQ','RGTI','QUBT','KULR','SOUN','ENVX',
+  // Aerospace / EV / clean energy
+  'ACHR','JOBY','BLNK','PLUG','FCEL','NKLA',
+  // Biotech
+  'NVAX','OCGN','ABUS','MNMD',
+  // Retail / meme / cannabis
+  'GME','AMC','TLRY','SNDL',
+  // Tech / misc
+  'MVIS','BB','OPEN','SPCE',
 ];
 
 const TF = {
