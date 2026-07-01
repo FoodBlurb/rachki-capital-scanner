@@ -996,7 +996,8 @@ class OptFlowTab{
     const setCol=(id,items,cntId,fallback)=>{
       const el=document.getElementById(id);if(!el)return;
       el.innerHTML=items.length?items.map(card).join(''):'<div class="e12-idle">'+fallback+'</div>';
-      const cnt=document.getElementById(cntId);if(cnt)cnt.textContent=items.length?'('+items.length+')':''; n    };
+      const cnt=document.getElementById(cntId);if(cnt)cnt.textContent=items.length?'('+items.length+')':'';
+    };
     setCol('opt-calls',calls,'opt-call-count','No unusual calls');
     setCol('opt-puts',puts,'opt-put-count','No unusual puts');
     requestAnimationFrame(()=>{
