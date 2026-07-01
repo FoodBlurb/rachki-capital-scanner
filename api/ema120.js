@@ -1,7 +1,7 @@
 import fetch from 'node-fetch';
 
 // Vercel serverless – GET /api/ema120?tf=day|week|month&wl=TICKER,...
-// Returns 120 EMA analysis for watchlist + small cap tickers
+// EMA periods: day=120, week=120, month=50 (API only has ~60 months history)
 
 const SC_TICKERS = [
   'MARA','RIOT','CLSK','HUT','BITF','WULF','CIFR','BTBT','CORZ',
@@ -18,9 +18,9 @@ const SC_TICKERS = [
 ];
 
 const TF = {
-  day:   { mult: 1, span: 'day',   daysBack: 210  },
-  week:  { mult: 1, span: 'week',  daysBack: 1250 },
-  month: { mult: 1, span: 'month', daysBack: 4500 },
+  day:   { mult: 1, span: 'day',   daysBack: 210,  period: 120 },
+  week:  { mult: 1, span: 'week',  daysBack: 1250, period: 120 },
+  month: { mult: 1, span: 'month', daysBack: 4500, period: 50  },
 };
 
 function calcEMA(prices, period) {
@@ -33,15 +33,15 @@ function calcEMA(prices, period) {
   return out;
 }
 
-function analyze(bars) {
-  if (!bars || bars.length < 122) return null;
+function analyze(bars, period) {
+  if (!bars || bars.length < period + 2) return null;
   const closes = bars.map(b => b.c);
-  const ema = calcEMA(closes, 120);
+  const ema = calcEMA(closes, period);
   const n = closes.length;
   const price = closes[n-1], e = ema[n-1], prevP = closes[n-2], prevE = ema[n-2];
   if (e == null || prevE == null) return null;
   return {
-    price: +price.toFixed(2), ema120: +e.toFixed(3),
+    price: +price.toFixed(2), ema: +e.toFixed(3), period,
     above: price > e, pct: +((price - e) / e * 100).toFixed(2),
     crossedAbove: prevP <= prevE && price > e,
     crossedBelow: prevP >= prevE && price < e,
@@ -84,12 +84,12 @@ export default async function handler(req, res) {
     const rows = await Promise.all(batch.map(async ticker => {
       try {
         const bars = await fetchAllBars(base, key, ticker, cfg, fromDate, toDate);
-        const a = analyze(bars);
+        const a = analyze(bars, cfg.period);
         if (!a) return null;
         return { t: ticker, isWL: wlSet.has(ticker), isSC: scSet.has(ticker), ...a };
       } catch { return null; }
     }));
     out.push(...rows.filter(Boolean));
   }
-  return res.status(200).json({ results: out, tf, updatedAt: toDate });
+  return res.status(200).json({ results: out, tf, period: cfg.period, updatedAt: toDate });
 }
