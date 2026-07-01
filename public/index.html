@@ -819,135 +819,65 @@ class Ema120Tab{
 }
 
 class Ema13Tab{
-  constructor(){this.running=false;this.timer=null;this.priceTimer=null;this.tf='day';this.cache={};}
-  toggle(){this.running?this.stop():this.start();}
-  switchTf(tf){
-    this.tf=tf;
-    ['day','week','month'].forEach(t=>{
-      document.getElementById('e13-stab-'+t).classList.toggle('e13-stab-active',t===tf);
-      const pg=document.getElementById('e13-'+t+'-page');
-      if(pg)pg.style.display=t===tf?'block':'none';
-    });
-    if(this.cache[tf])this.renderSplit('e13-'+tf,this.cache[tf]);
+  constructor(){this.data=null;this.mode='cross';}
+  fmtTime(ms){
+    if(!ms) return '--';
+    const d=new Date(ms);
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const h=d.getHours(),m=d.getMinutes();
+    const ampm=h>=12?'PM':'AM';
+    const hh=h%12||12;
+    const mm=String(m).padStart(2,'0');
+    return days[d.getDay()]+' '+hh+':'+mm+ampm;
   }
-  start(){
-    this.running=true;
-    const btn=document.getElementById('e13-btn');
-    btn.innerHTML='&#9646;&#9646; STOP';btn.classList.add('btn-stop');
-    this.scan();this.timer=setInterval(()=>this.scan(),300000);
-  }
-  stop(){
-    this.running=false;clearInterval(this.timer);this.timer=null;clearInterval(this.priceTimer);this.priceTimer=null;
-    const btn=document.getElementById('e13-btn');
-    btn.innerHTML='&#9654; START';btn.classList.remove('btn-stop');
-    const pg=document.getElementById('e13-prog');if(pg)pg.style.width='0%';
-    document.getElementById('e13-dot').className='conn-dot';
-    document.getElementById('e13-lbl').textContent='Stopped';
-  }
-  async scan(){
-    const dot=document.getElementById('e13-dot'),lbl=document.getElementById('e13-lbl'),pg=document.getElementById('e13-prog');
-    dot.className='conn-dot conn-live';lbl.textContent='Scanning…';
-    const wlStr=customTickers.join(',');
-    const t0=Date.now();
-    try{
-      const [day,week,month]=await Promise.all([
-        fetch('/api/ema13?tf=day&wl='+wlStr).then(r=>r.json()),
-        fetch('/api/ema13?tf=week&wl='+wlStr).then(r=>r.json()),
-        fetch('/api/ema13?tf=month&wl='+wlStr).then(r=>r.json()),
-      ]);
-      if(pg)pg.style.width='100%';
-      this.cache={day:day.results||[],week:week.results||[],month:month.results||[]};
-      this.renderSplit('e13-day',this.cache.day);
-      this.renderSplit('e13-week',this.cache.week);
-      this.renderSplit('e13-month',this.cache.month);
-      this.switchTf(this.tf);
-      const crossed=[...this.cache.day,...this.cache.week,...this.cache.month].filter(r=>r.crossedAbove||r.crossedBelow);
-      const hint=document.getElementById('e13-stab-hint');
-      if(hint)hint.textContent=crossed.length?'&#128293; '+crossed.length+' cross event'+(crossed.length>1?'s':'')+' detected':'';
-      lbl.textContent='Updated '+new Date().toLocaleTimeString()+' ('+(Date.now()-t0)+'ms)';
-    }catch(err){
-      dot.className='conn-dot conn-err';lbl.textContent='Error: '+err.message;
-    }
-  }
-  async priceTick(){
-    if(!this.cache||!Object.keys(this.cache).length)return;
+  async load(){
+    const dot=document.getElementById('e13-dot');
     const lbl=document.getElementById('e13-lbl');
+    const pg=document.getElementById('e13-prog');
+    const tbody=document.getElementById('e13-body');
+    dot.className='conn-dot conn-live';
+    lbl.textContent='Scanning EMA 13/14 crossovers since Monday…';
+    pg.style.width='20%';
+    tbody.innerHTML='<tr><td colspan="6" class="e12-idle">Loading…</td></tr>';
     try{
-      const wlStr=customTickers.join(',');
-      const d=await fetch('/api/ema13?tf=snap&wl='+wlStr).then(r=>r.json());
-      if(!d.snaps)return;
-      const priceMap={};
-      d.snaps.forEach(s=>priceMap[s.t]=s.price);
-      // Update cached results with new prices & recompute pct
-      ['day','week','month'].forEach(tf=>{
-        if(!this.cache[tf])return;
-        this.cache[tf].forEach(r=>{
-          if(priceMap[r.t]!=null){
-            r.price=priceMap[r.t];
-            r.pct=+((r.price-r.ema13)/r.ema13*100).toFixed(2);
-            r.above=r.price>r.ema13;
-          }
-        });
-        this.renderSplit('e13-'+tf,this.cache[tf]);
-      });
-      this.switchTf(this.tf);
-      if(lbl)lbl.textContent='&#128257; '+new Date().toLocaleTimeString();
+      const wl=(window._wlTickers||[]).join(',');
+      const d=await fetch('/api/ema13?tf=cross'+(wl?'&wl='+wl:'')).then(r=>r.json());
+      if(d.error) throw new Error(d.error);
+      this.data=d;
+      pg.style.width='100%';
+      const crossed=d.results.filter(r=>r.crossedThisWeek).length;
+      lbl.textContent='EMA13/14 cross rank · '+crossed+' crossed since Mon · '+d.results.length+' tickers · '+d.monday;
+      this.render(d.results);
     }catch(err){
-      if(lbl)lbl.textContent='Snap error: '+err.message;
+      dot.className='conn-dot conn-err';
+      lbl.textContent='Error: '+err.message;
+      tbody.innerHTML='<tr><td colspan="6" class="e12-idle" style="color:var(--red)">'+err.message+'</td></tr>';
     }
   }
-  renderSplit(pfx,results){
-    const upCrossed=results.filter(r=>r.crossedAbove);
-    const upSteady=results.filter(r=>r.above&&!r.crossedAbove).sort((a,b)=>b.pct-a.pct);
-    const dnSteady=results.filter(r=>!r.above&&!r.crossedBelow).sort((a,b)=>a.pct-b.pct);
-    const dnCrossed=results.filter(r=>r.crossedBelow);
-    const maxPct=Math.max(...results.map(r=>Math.abs(r.pct)),1);
-    const card=(r,isCross)=>{
-      const isUp=r.above;
-      const pctColor=isUp?'var(--green)':' var(--red)';
-      const barColor=isUp?'rgba(74,222,128,.18)':' rgba(248,113,113,.18)';
-      const barW=(Math.abs(r.pct)/maxPct*100).toFixed(1);
-      const sign=r.pct>=0?'+':'';
-      const src=r.isWL?'WL':'SC';
-      const arrow=isCross?(isUp?'&#9650;&#9650;':'&#9660;&#9660;'):(isUp?'&#9650;':'&#9660;');
-      return '<div class="e13-rc" style="border-left:3px solid '+(isCross?(isUp?'var(--green)':' var(--red)'):(isUp?'rgba(74,222,128,.4)':' rgba(248,113,113,.4)'))+'">'+ 
-        '<div class="e13-rc-bar" data-w="'+barW+'" style="width:0%;background:'+barColor+'"></div>'+ 
-        '<div class="e13-rc-inner">'+ 
-          '<div class="e12-av" style="background:'+avatarColor(r.t)+';width:26px;height:26px;min-width:26px;font-size:10px">'+r.t.slice(0,2)+'</div>'+ 
-          '<div class="e12-info" style="min-width:0">'+ 
-            '<div class="e12-sym" style="font-size:11px">'+r.t+'<span style="font-size:8px;color:var(--muted);margin-left:3px">'+src+'</span></div>'+ 
-            '<div class="e12-detail" style="font-size:9px">$'+r.price+' / $'+r.ema13+'</div>'+ 
-          '</div>'+ 
-          '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:0px;margin-left:auto">'+ 
-            '<div style="color:'+pctColor+';font-weight:800;font-size:12px;white-space:nowrap">'+sign+r.pct+'%</div>'+ 
-            '<div style="font-size:9px;color:'+pctColor+'">'+arrow+'</div>'+ 
-          '</div>'+ 
-        '</div>'+ 
-      '</div>';
-    };
-    const set=(id,items,fallback)=>{
-      const el=document.getElementById(id);
-      if(!el)return;
-      el.innerHTML=items.length?items.map(r=>card(r,id.includes('jup')||id.includes('jdn'))).join(''): '<div class="e12-idle">'+(fallback||'None')+'</div>';
-    };
-    const cnt=(id,n)=>{const el=document.getElementById(id);if(el)el.textContent=n?'('+n+')':''; };
-    set(pfx+'-jup',upCrossed,'–');set(pfx+'-up',upSteady,'None');
-    set(pfx+'-dn',dnSteady,'None');set(pfx+'-jdn',dnCrossed,'–');
-    cnt(pfx+'-jup-count',upCrossed.length);cnt(pfx+'-up-count',upSteady.length);
-    cnt(pfx+'-dn-count',dnSteady.length);cnt(pfx+'-jdn-count',dnCrossed.length);
-    requestAnimationFrame(()=>{
-      ['jup','up','dn','jdn'].forEach(colId=>{
-        const col=document.getElementById(pfx+'-'+colId);
-        if(!col)return;
-        col.querySelectorAll('.e13-rc-bar[data-w]').forEach((bar,i)=>setTimeout(()=>bar.style.width=bar.dataset.w+'%',i*35));
-      });
-    });
-    const allCrossed=[...upCrossed,...dnCrossed];
-    const hint=document.getElementById('e13-stab-hint');
-    if(hint)hint.textContent=allCrossed.length?'&#128293; '+allCrossed.length+' crossing'+(allCrossed.length!==1?'s':'')+' now':''; 
+  render(rows){
+    const tbody=document.getElementById('e13-body');
+    if(!rows||!rows.length){tbody.innerHTML='<tr><td colspan="6" class="e12-idle">No data</td></tr>';return;}
+    let rank=0;
+    tbody.innerHTML=rows.map(r=>{
+      const hasCross=r.crossedThisWeek;
+      const dirColor=r.crossDir==='above'?'var(--green)':'var(--red)';
+      const dirLabel=r.crossDir==='above'?'▲ above':'▼ below';
+      const pctColor=r.pct>0?'var(--green)':r.pct<0?'var(--red)':'var(--muted)';
+      const rowCls=hasCross?'':'opacity:0.45';
+      if(hasCross) rank++;
+      return '<tr style="'+rowCls+'">'
+        +'<td style="color:var(--muted);font-size:10px;text-align:center">'+(hasCross?rank:'–')+'</td>'
+        +'<td><b style="color:'+(r.isWL?'var(--green)':'var(--fg)')+'">'+r.t+'</b></td>'
+        +'<td style="text-align:right">$'+r.price+'</td>'
+        +'<td style="text-align:center;color:'+(hasCross?dirColor:'var(--muted)')+'">'+
+          (hasCross?('<b>'+dirLabel+'</b>'):'no cross')+'</td>'
+        +'<td style="text-align:center;color:var(--amber)">'+this.fmtTime(r.crossTs)+'</td>'
+        +'<td style="text-align:right;color:'+pctColor+'">'+(r.pct!=null?(r.pct>0?'+':'')+r.pct+'%':'--')+'</td>'
+        +'</tr>';
+    }).join('');
   }
 }
-const e13tab=new Ema13Tab();
+const ema13=new Ema13Tab();
 const ema=new EmaTab();
 renderTickers();
 
