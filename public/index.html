@@ -689,35 +689,21 @@ class EmaTab{
         }
       }catch(err){console.error('EmaTab',tk,err);}
     }
-    this.render(bull,bear,alreadyAbove,alreadyBelow);
-    const now=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-    document.getElementById('ema-lbl').textContent=`Live · ${now} · ${tickers.length} tickers scanned`;
-    document.getElementById('ema-dot').className='conn-dot live';
-    const prog=document.getElementById('ema-prog');
-    prog.style.transition='none';prog.style.width='0%';
-    requestAnimationFrame(()=>{prog.style.transition='width 60s linear';prog.style.width='100%';});
-  }
-  render(bull,bear,alreadyAbove=[],alreadyBelow=[]){
+    this.render(bull,bear,alreadyAbove=[],alreadyBelow=[]){
+    alreadyAbove.sort((a,b)=>(b.e13-b.e120)/b.e120-(a.e13-a.e120)/a.e120);
+    alreadyBelow.sort((a,b)=>(b.e120-b.e13)/b.e120-(a.e120-a.e13)/a.e120);
+    bull.sort((a,b)=>a.mAgo-b.mAgo);
+    bear.sort((a,b)=>a.mAgo-b.mAgo);
     const ago=m=>m===0?'just now':`${m}m ago`;
-    const card=(s,up)=>`
-      <div class="ec-card">
-        <div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div>
-        <div class="ec-body">
-          <div class="ec-sym">${s.tk}</div>
-          <div class="ec-sub">13 EMA ${up?'▲ crossed above':'▼ crossed below'} 120 EMA · ${s.t}${s.mAgo>0?' ('+ago(s.mAgo)+')':''}</div>
-        </div>
-        <div class="ec-right">
-          <div class="ec-price ${up?'bull':'bear'}">$${s.price.toFixed(2)}</div>
-          <div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div>
-        </div>
-      </div>`;
-    const idle=msg=>`<div class="idle-msg">${msg}</div>`;
+    const pct=(s,up)=>((up?s.e13-s.e120:s.e120-s.e13)/s.e120*100).toFixed(2);
+    const card=(s,up)=>`<div class="ec-card"><div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div><div class="ec-body"><div class="ec-sym">${s.tk}</div><div class="ec-sub">13 EMA ${up?'▲ crossed above':'▼ crossed below'} 120 EMA · ${s.t}${s.mAgo>0?' ('+ago(s.mAgo)+')':''}</div></div><div class="ec-right"><div class="ec-price ${up?'bull':'bear'}">${s.price.toFixed(2)}</div><div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div></div></div>`;
     const dv=l=>`<div class="ec-divider">${l}</div>`;
-    const ac=(s,up)=>`<div class="ec-card ec-already"><div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div><div class="ec-body"><div class="ec-sym">${s.tk}</div><div class="ec-sub">13 EMA ${up?'already above':'already below'} 120 EMA · ${s.t}</div></div><div class="ec-right"><div class="ec-price ${up?'bull':'bear'}">$${s.price.toFixed(2)}</div><div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div></div></div>`;
+    const ac=(s,up)=>`<div class="ec-card ec-already"><div class="ec-av" style="background:${avatarColor(s.tk)}">${s.tk.slice(0,2)}</div><div class="ec-body"><div class="ec-sym">${s.tk}</div><div class="ec-sub">13 EMA ${up?'above':'below'} 120 EMA · ${pct(s,up)}% spread · ${s.t}</div></div><div class="ec-right"><div class="ec-price ${up?'bull':'bear'}">${s.price.toFixed(2)}</div><div class="ec-ema">EMA13 ${s.e13.toFixed(3)} · EMA120 ${s.e120.toFixed(3)}</div></div></div>`;
+    const idle=msg=>`<div class="idle-msg">${msg}</div>`;
     const upMain=bull.length?`<div class="ec-list">${bull.map(s=>card(s,true)).join('')}</div>`:idle('No recent bullish crosses (last 30 min)');
     const dnMain=bear.length?`<div class="ec-list">${bear.map(s=>card(s,false)).join('')}</div>`:idle('No recent bearish crosses (last 30 min)');
-    const upRest=alreadyAbove.length?dv('Already Crossed Above')+`<div class="ec-list">${alreadyAbove.map(s=>ac(s,true)).join('')}</div>`:'';
-    const dnRest=alreadyBelow.length?dv('Already Crossed Below')+`<div class="ec-list">${alreadyBelow.map(s=>ac(s,false)).join('')}</div>`:'';
+    const upRest=alreadyAbove.length?dv('Already Crossed Above — by momentum')+`<div class="ec-list">${alreadyAbove.map(s=>ac(s,true)).join('')}</div>`:'';
+    const dnRest=alreadyBelow.length?dv('Already Crossed Below — by momentum')+`<div class="ec-list">${alreadyBelow.map(s=>ac(s,false)).join('')}</div>`:'';
     document.getElementById('ema-up-inner').innerHTML=upMain+upRest;
     document.getElementById('ema-dn-inner').innerHTML=dnMain+dnRest;
   }
