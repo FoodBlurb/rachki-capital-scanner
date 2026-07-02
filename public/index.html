@@ -381,6 +381,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 </div>
 
 <script>
+function avatarColor(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))&0xffffff;return'hsl('+(h%360)+',55%,45%)';}
+function abb(n){return n&&n.length>18?n.slice(0,16)+'\u2026':n||'';}
+function pc(v){return(v>=0?'+':'')+Number(v).toFixed(2)+'%';}
 class Ema120Tab {
   constructor(){
     this.tf='day';
