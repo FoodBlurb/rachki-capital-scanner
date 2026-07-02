@@ -208,7 +208,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   <button class="nav-item e12" id="nav-e12" onclick="showPanel('e12');window.ema120.load()">
     <span class="nav-icon">&#12336;</span><span>EMA 120</span>
   </button>
-  <button class="nav-item e13" onclick="showPanel('e13');window.ema13.load()">〰EMA 13</button></nav>
+  <button class="nav-item e13" id="nav-e13" onclick="showPanel('e13');window.ema13.load()">〰EMA 13</button></nav>
 
 <div class="main-content">
 
@@ -536,8 +536,8 @@ function removeTicker(t){
 function showPanel(id){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  document.getElementById('nav-'+id).classList.add('active');
+  document.getElementById('panel-'+id)?.classList.add('active');
+  document.getElementById('nav-'+id)?.classList.add('active');
 }
 function toggleFSB(id){document.getElementById('fsb-'+id).classList.toggle('collapsed');}
 function applyFSB(id){
