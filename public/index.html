@@ -207,7 +207,8 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
   
   <button class="nav-item e12" id="nav-e12" onclick="showPanel('e12');window.ema120.load()">
     <span class="nav-icon">&#12336;</span><span>EMA 120</span>
-  </button></nav>
+  </button>
+  <button class="nav-item e13" onclick="showPanel('e13');window.ema13.load()">〰EMA 13</button></nav>
 
 <div class="main-content">
 
@@ -331,25 +332,35 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 
   <!-- EMA 13 (daily/weekly/monthly) -->
   <div class="panel" id="panel-e13">
-  <div class="e13-wrap">
-    <div class="ctrl-bar" style="flex-wrap:wrap;gap:6px">
-      <span id="e13-dot" class="conn-dot"></span>
-      <span id="e13-lbl" class="conn-lbl">EMA 13 Scanner</span>
-      <div class="e13-tf-tabs">
-        <button class="e13-tf-btn active" data-tf="daily" onclick="ema13.setTf('daily')">Daily</button>
-        <button class="e13-tf-btn" data-tf="weekly" onclick="ema13.setTf('weekly')">Weekly</button>
-        <button class="e13-tf-btn" data-tf="monthly" onclick="ema13.setTf('monthly')">Monthly</button>
+  <div class="race-area">
+    <div class="prog-bar"><div class="prog-fill prog-e13" id="e13-prog" style="width:0%"></div></div>
+    <div class="ctrl-bar">
+      <span class="conn-dot" id="e13-dot"></span>
+      <span class="conn-lbl" id="e13-lbl">Ready</span>
+      <div style="flex:1"></div>
+      <div class="sort-tabs">
+        <button class="sort-tab active" onclick="ema13.setTf('daily',this)">Daily</button>
+        <button class="sort-tab" onclick="ema13.setTf('weekly',this)">Weekly</button>
+        <button class="sort-tab" onclick="ema13.setTf('monthly',this)">Monthly</button>
       </div>
-      <div class="e13-add-bar">
-        <input id="e13-add-inp" placeholder="Add ticker..." onkeydown="if(event.key==='Enter')ema13.addTicker()">
-        <button onclick="ema13.addTicker()">+</button>
+      <button class="race-btn btn-e13" id="e13-btn" onclick="ema13.toggle()">START</button>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <div class="col-hdr up-hdr">ABOVE EMA 13 <span id="e13-above-count"></span></div>
+        <div class="col-inner" id="e13-above-inner">
+          <div class="idle-msg" id="e13-above-idle">Click START to scan</div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="col-hdr dn-hdr">BELOW EMA 13 <span id="e13-below-count"></span></div>
+        <div class="col-inner" id="e13-below-inner">
+          <div class="idle-msg" id="e13-below-idle"></div>
+        </div>
       </div>
     </div>
-    <div id="e13-body" style="overflow-y:auto;flex:1;padding:8px 0"></div>
   </div>
-</div>
-
-<div class="panel" id="panel-e12">
+</div><div class="panel" id="panel-e12">
   <div class="race-area">
     <div class="prog-bar"><div class="prog-fill prog-ema" id="e12-prog" style="width:0%"></div></div>
     <div class="ctrl-bar">
@@ -795,89 +806,119 @@ class EmaTab{
 }
 
 class Ema13Tab {
-  constructor(){this.tf='day';this.extra=[];this.lastPrices={};this.ema13Map={};this.cdTimer=null;this.cd=30;}
-  getTickers(){return[...new Set([...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]'),...this.extra])];}
-  startPolling(){
-    this.stopPolling();this.cd=30;this._ucd();
-    this.cdTimer=setInterval(()=>{this.cd--;this._ucd();if(this.cd<=0){this.cd=30;this.snap();}},1000);
+  constructor(){
+    this.tf='daily';
+    this.aboveTickers=new Set();this.belowTickers=new Set();
+    this.aboveRows={};this.belowRows={};
+    this.running=false;this.rafId=null;
+    this.startTime=0;this.lastFetch=0;this.lastEmaFetch=0;
+    this.rawQuotes=[];
   }
-  stopPolling(){clearInterval(this.cdTimer);this.cdTimer=null;}
-  _ucd(){const e=document.getElementById('e13-cd');if(e)e.textContent='\u21bb '+this.cd+'s';}
-  load(){
-    const t=this.getTickers();
-    const B=document.getElementById('e13-body');
-    if(!t.length){B.innerHTML='<p style="color:#888;padding:16px">No tickers.</p>';return;}
-    if(!document.getElementById('e13-cd')){
-      const bar=document.querySelector('.e13-add-bar');
-      if(bar)bar.insertAdjacentHTML('beforeend','<span id="e13-cd" style="font-size:10px;color:#444;margin-left:6px;white-space:nowrap"></span>');
-    }
-    B.innerHTML='<p style="color:#888;padding:16px">Scanning '+t.length+' tickers...</p>';
-    const tfp=this.tf;
-    fetch('/api/ema13?tf='+tfp+'&wl='+t.join(','))
-      .then(r=>r.json()).then(d=>{this.render(d);this.startPolling();})
-      .catch(e=>{B.innerHTML='<p style="color:#f55;padding:8px">'+e.message+'</p>';});
-  }
-  snap(){
-    const t=this.getTickers();if(!t.length)return;
-    fetch('/api/ema13?tf=snap&wl='+t.join(','))
-      .then(r=>r.json()).then(d=>{
-        if(!d.snaps)return;
-        d.snaps.forEach(s=>{
-          const card=document.querySelector('[data-ticker="'+s.t+'"]');
-          if(!card)return;
-          const pEl=card.querySelector('.e13-pn');
-          const spEl=card.querySelector('.e13-sp');
-          if(!pEl)return;
-          const old=this.lastPrices[s.t];
-          if(old!==undefined&&s.price!==old){
-            pEl.textContent='\u0024'+s.price;
-            const ema=this.ema13Map[s.t];
-            if(ema&&spEl){
-              const np=+((s.price-ema)/ema*100).toFixed(2);
-              spEl.textContent=(np>0?'+':'')+np+'%';
-              spEl.style.color=np>=0?'#2ecc71':'#e74c3c';
-            }
-            card.classList.remove('e13-flash-up','e13-flash-dn');
-            void card.offsetWidth;
-            card.classList.add(s.price>old?'e13-flash-up':'e13-flash-dn');
-          }
-          this.lastPrices[s.t]=s.price;
-        });
-      }).catch(()=>{});
-  }
-  setTf(tf){
+  load(){}
+  getTickers(){return[...new Set([...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]')])];}
+  setTf(tf,btn){
     this.tf=tf;
-    document.querySelectorAll('.e13-tf-btn').forEach(b=>b.classList.toggle('active',b.dataset.tf===tf));
-    this.stopPolling();this.load();
+    btn.closest('.sort-tabs').querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(this.running){this.aboveTickers=new Set();this.belowTickers=new Set();this._fetchEma();}
   }
-  addTicker(){
-    const inp=document.getElementById('e13-add-inp'),val=inp.value.trim().toUpperCase();
-    if(!val)return;inp.value='';
-    if(!this.extra.includes(val))this.extra.push(val);
-    this.stopPolling();this.load();
+  toggle(){this.running?this.reset():this.start();}
+  start(){
+    this.running=true;this.startTime=performance.now();
+    document.getElementById('e13-btn').textContent='STOP';
+    this._fetchEma();
+    this.rafId=requestAnimationFrame(ts=>this._loop(ts));
   }
-  render(d){
-    const B=document.getElementById('e13-body');
-    if(d.error){B.innerHTML='<p style="color:#f55">'+d.error+'</p>';return;}
-    const ab=d.above.sort((a,b)=>b.pct-a.pct),bl=d.below.sort((a,b)=>a.pct-b.pct);
-    const mx=Math.max(...ab.map(r=>r.pct),...bl.map(r=>Math.abs(r.pct)),1);
-    [...ab,...bl].forEach(r=>{this.lastPrices[r.t]=r.price;this.ema13Map[r.t]=r.ema13;});
-    const card=(r,i,s)=>{
-      const w=(Math.abs(r.pct)/mx*100).toFixed(1),c=s==='above'?'#2ecc71':'#e74c3c';
-      return'<div class="e13-card'+(i<3?' e13-top':'')+'" data-bar="'+w+'" data-ticker="'+r.t+'" style="--bc:'+c+'">'
-        +'<div class="e13-ch"><span class="e13-rank">'+(i+1)+'</span><span class="e13-tn">'+r.t+'</span><span class="e13-sp" style="color:'+c+'">'+(r.pct>0?'+':'')+r.pct+'%</span></div>'
-        +'<div class="e13-cv"><span class="e13-pn">\u0024'+r.price+'</span><span class="e13-arr">\u2192</span><span class="e13-en">EMA13: '+r.ema13+'</span></div>'
-        +'<div class="e13-bt"><div class="e13-bf"></div></div></div>';
-    };
-    B.innerHTML='<div class="e13-cols">'
-      +'<div class="e13-col e13-ca"><div class="e13-ch2 e13-ah">\u25b2 ABOVE EMA 13 <span class="e13-cnt">'+ab.length+'</span></div>'+ab.map((r,i)=>card(r,i,'above')).join('')+'</div>'
-      +'<div class="e13-col e13-cb"><div class="e13-ch2 e13-bh">\u25bc BELOW EMA 13 <span class="e13-cnt">'+bl.length+'</span></div>'+bl.map((r,i)=>card(r,i,'below')).join('')+'</div></div>';
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{
-      document.querySelectorAll('.e13-card').forEach(c=>{c.querySelector('.e13-bf').style.width=c.dataset.bar+'%';});
-    }));
+  reset(){
+    this.running=false;cancelAnimationFrame(this.rafId);this.rafId=null;
+    document.getElementById('e13-prog').style.width='0%';
+    document.getElementById('e13-btn').textContent='START';
+    document.getElementById('e13-dot').className='conn-dot';
+    document.getElementById('e13-lbl').textContent='Ready';
+    [this.aboveRows,this.belowRows].forEach(rows=>{Object.values(rows).forEach(el=>el.remove());});
+    this.aboveRows={};this.belowRows={};
+    document.getElementById('e13-above-idle').style.display='';
+    document.getElementById('e13-above-count').textContent='';
+    document.getElementById('e13-below-count').textContent='';
+    this.rawQuotes=[];this.lastFetch=0;
+  }
+  async _fetchEma(){
+    const t=this.getTickers();if(!t.length)return;
+    document.getElementById('e13-lbl').textContent='Scanning EMA 13...';
+    try{
+      const d=await fetch('/api/ema13?wl='+t.join(',')+'&tf='+this.tf).then(r=>r.json());
+      this.aboveTickers=new Set((d.above||[]).map(r=>r.t));
+      this.belowTickers=new Set((d.below||[]).map(r=>r.t));
+      this.lastEmaFetch=Date.now();
+      document.getElementById('e13-lbl').textContent='EMA scanned · '+new Date().toLocaleTimeString();
+    }catch(e){document.getElementById('e13-lbl').textContent='EMA error';}
+  }
+  async _fetchQuotes(){
+    const t=this.getTickers();if(!t.length)return;
+    try{
+      const d=await fetch('/api/quotes?extra='+t.join(',')).then(r=>r.json());
+      this.rawQuotes=d.tickers||d.stocks||[];
+      this._buildRows();
+      document.getElementById('e13-dot').className='conn-dot live';
+      document.getElementById('e13-lbl').textContent='Live · '+new Date().toLocaleTimeString();
+    }catch(e){}
+    this.lastFetch=Date.now();
+  }
+  _loop(ts){
+    if(!this.running)return;
+    const elapsed=(ts-this.startTime)%45000;
+    document.getElementById('e13-prog').style.width=(elapsed/45000*100)+'%';
+    if(Date.now()-this.lastFetch>3000)this._fetchQuotes();
+    if(Date.now()-this.lastEmaFetch>300000)this._fetchEma();
+    this._animateRows();
+    this.rafId=requestAnimationFrame(ts=>this._loop(ts));
+  }
+  _animateRows(){
+    [...Object.values(this.aboveRows),...Object.values(this.belowRows)].forEach(el=>{
+      if(el._targetY===undefined)return;
+      if(el._currentY===undefined)el._currentY=el._targetY;
+      el._currentY+=(el._targetY-el._currentY)*0.07;
+      el.style.top=el._currentY+'px';
+    });
+  }
+  _buildRows(){
+    const ROW_H=50;
+    const abAll=this.rawQuotes.filter(s=>this.aboveTickers.has(s.t)).sort((a,b)=>(b.pct||0)-(a.pct||0));
+    const blAll=this.rawQuotes.filter(s=>this.belowTickers.has(s.t)).sort((a,b)=>(a.pct||0)-(b.pct||0));
+    const maxA=abAll[0]?Math.abs(abAll[0].pct||0):1;
+    const maxB=blAll[0]?Math.abs(blAll[0].pct||0):1;
+    this._buildCol('e13-above-inner','e13-above-idle','e13-above-count',abAll,true,maxA,ROW_H);
+    this._buildCol('e13-below-inner','e13-below-idle','e13-below-count',blAll,false,maxB,ROW_H);
+  }
+  _buildCol(cid,iid,countId,stocks,isUp,maxM,ROW_H){
+    const c=document.getElementById(cid),idle=document.getElementById(iid);
+    idle.style.display=stocks.length?'none':'';
+    if(!stocks.length){c.style.height='0';return;}
+    const rows=isUp?this.aboveRows:this.belowRows;
+    stocks.forEach((s,i)=>{
+      if(!rows[s.t]){
+        const el=document.createElement('div');
+        el.className='row '+(isUp?'bar-up':'bar-dn');
+        el.innerHTML='<div class="fill '+(isUp?'fill-up':'fill-dn')+'"></div><span class="rank"></span><span class="avatar" style="background:'+avatarColor(s.t)+'">'+s.t.slice(0,2)+'</span><div class="rinfo"><span class="rsym">'+s.t+'</span><span class="rname">'+abb(s.n||s.t)+'</span></div><div class="rprice"><span class="lbl '+(isUp?'lbl-up':'lbl-dn')+'"></span><span class="sub"></span></div>';
+        c.appendChild(el);rows[s.t]=el;
+      }
+      const el=rows[s.t];
+      const prevLbl=el.querySelector('.lbl').textContent;
+      const newLbl=pc(s.pct||0);
+      el.querySelector('.rank').textContent='#'+(i+1);
+      el.querySelector('.lbl').textContent=newLbl;
+      el.querySelector('.sub').textContent=(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' · ':'')+'$'+(s.price||0).toFixed(2);
+      el.querySelector('.fill').style.width=(Math.abs(s.pct||0)/maxM*100)+'%';
+      el._targetY=i*ROW_H;
+      if(el._currentY===undefined)el._currentY=i*ROW_H;
+      if(prevLbl&&prevLbl!==newLbl){el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+    });
+    const ts=new Set(stocks.map(s=>s.t));
+    Object.keys(rows).forEach(t=>{if(!ts.has(t)){rows[t].remove();delete rows[t];}});
+    c.style.height=(stocks.length*ROW_H)+'px';
+    document.getElementById(countId).textContent=stocks.length?'('+stocks.length+')':'';
   }
 }
-window.ema13=new Ema13Tab();
-renderTickers();</script>
+window.ema13=new Ema13Tab();renderTickers();</script>
 </body>
 </html>
