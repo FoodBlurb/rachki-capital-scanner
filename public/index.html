@@ -357,9 +357,9 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
       <span class="conn-lbl" id="e12-lbl">Ready</span>
       <div style="flex:1"></div>
       <div class="sort-tabs">
-        <button class="sort-tab active" onclick="ema120.setTf('daily',this)">Daily</button>
-        <button class="sort-tab" onclick="ema120.setTf('weekly',this)">Weekly</button>
-        <button class="sort-tab" onclick="ema120.setTf('monthly',this)">Monthly</button>
+        <button class="sort-tab active" onclick="ema120.setTf('day',this)">Daily</button>
+        <button class="sort-tab" onclick="ema120.setTf('week',this)">Weekly</button>
+        <button class="sort-tab" onclick="ema120.setTf('month',this)">Monthly</button>
       </div>
       <button class="race-btn btn-ema" id="e12-btn" onclick="ema120.toggle()">START</button>
     </div>
@@ -383,7 +383,7 @@ input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
 <script>
 class Ema120Tab {
   constructor(){
-    this.tf='daily';
+    this.tf='day';
     this.aboveTickers=new Set();this.belowTickers=new Set();
     this.aboveRows={};this.belowRows={};
     this.running=false;this.rafId=null;
@@ -792,7 +792,7 @@ class EmaTab{
 }
 
 class Ema13Tab {
-  constructor(){this.tf='daily';this.extra=[];this.lastPrices={};this.ema13Map={};this.cdTimer=null;this.cd=30;}
+  constructor(){this.tf='day';this.extra=[];this.lastPrices={};this.ema13Map={};this.cdTimer=null;this.cd=30;}
   getTickers(){return[...new Set([...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]'),...this.extra])];}
   startPolling(){
     this.stopPolling();this.cd=30;this._ucd();
