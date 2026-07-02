@@ -628,7 +628,7 @@ class RaceTab{
       this.rawStocks=d.tickers||d.stocks||d.quotes||(Array.isArray(d)?d:[]);
       this.applyFilters();
       document.getElementById(this.dotId).className='conn-dot live';
-      document.getElementById(this.lblId).textContent='Live Â· '+new Date().toLocaleTimeString();
+      document.getElementById(this.lblId).textContent='Live · '+new Date().toLocaleTimeString();
       if(this.badgeId)document.getElementById(this.badgeId).style.display='';
       if(this.sessId){
         const statMap={};
@@ -639,7 +639,7 @@ class RaceTab{
         if(el){el.className='sess-badge';if(sess==='early_trading'){el.textContent='PRE-MARKET';el.classList.add('sess-pre');}else if(sess==='late_trading'){el.textContent='AFTER-HRS';el.classList.add('sess-post');}else{el.textContent='REGULAR';el.classList.add('sess-reg');}el.style.display='inline-block';}
       }
       if(this.countId)document.getElementById(this.countId).textContent=this.rawStocks.length+' stocks';
-    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error â retrying...';}
+    }catch(e){document.getElementById(this.dotId).className='conn-dot';document.getElementById(this.lblId).textContent='Error - retrying...';}
     this.lastFetch=Date.now();
   }
   _loop(ts){
@@ -685,7 +685,7 @@ const wl=new RaceTab({
   badgeId:'wl-badge',sessId:'wl-sess',countId:'wl-count',btnId:'wl-btn',sortKey:'pct',filters:{},
   barUp:'bar-up',barDn:'bar-dn',fillUp:'fill-up',fillDn:'fill-dn',lblUp:'lbl-up',lblDn:'lbl-dn',
   labelFn:s=>pc(s.pct||0),
-  subFn:s=>(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' Â· ':'')+'$'+(s.price||0).toFixed(2),
+  subFn:s=>(s.chg!=null?(s.chg>=0?'+':'')+s.chg.toFixed(2)+' · ':'')+'$'+(s.price||0).toFixed(2),
   metricFn:s=>Math.abs(s.pct||0),
 });
 
@@ -696,9 +696,9 @@ const sc=new RaceTab({
   btnId:'sc-btn',sortKey:'score',filters:{minRelVol:0,minPct:0,minPrice:1,maxPrice:11,minDolVol:0},
   barUp:'bar-sc-up',barDn:'bar-dn',fillUp:'fill-sc',fillDn:'fill-dn',lblUp:'lbl-sc-up',lblDn:'lbl-dn',
   sortModes:{
-    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' Â· '+s.relVol.toFixed(1)+'x vol':'')+' · $'+(s.price||0).toFixed(2)},
-    relVol:{metricFn:s=>s.relVol||0,labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'--',subFn:s=>pc(s.pct||0)+' Â· $'+(s.price||0).toFixed(2)},
-    pct:{metricFn:s=>Math.abs(s.pct||0),labelFn:s=>pc(s.pct||0),subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol Â· $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2)},
+    score:{metricFn:s=>Math.abs(s.pct||0)*(s.relVol||1),labelFn:s=>(Math.abs(s.pct||0)*(s.relVol||1)).toFixed(1)+' score',subFn:s=>pc(s.pct||0)+(s.relVol!=null?' · '+s.relVol.toFixed(1)+'x vol':'')+' · $'+(s.price||0).toFixed(2)},
+    relVol:{metricFn:s=>s.relVol||0,labelFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol':'--',subFn:s=>pc(s.pct||0)+' · $'+(s.price||0).toFixed(2)},
+    pct:{metricFn:s=>Math.abs(s.pct||0),labelFn:s=>pc(s.pct||0),subFn:s=>s.relVol!=null?s.relVol.toFixed(1)+'x vol · $'+(s.price||0).toFixed(2):'$'+(s.price||0).toFixed(2)},
   },
 });
 
@@ -775,7 +775,7 @@ class EmaTab{
     }catch(e){console.warn('snap',e);}
 
     document.getElementById('ema-dot').className='conn-dot live';
-    document.getElementById('ema-lbl').textContent='Live Â· '+new Date().toLocaleTimeString();
+    document.getElementById('ema-lbl').textContent='Live · '+new Date().toLocaleTimeString();
     this.render(bull,bear,abv,blw);
   }
   render(bull,bear,alreadyAbove,alreadyBelow){
@@ -791,18 +791,18 @@ class EmaTab{
     const mom=x=>{
       if(x.dayPct==null)return '';
       const ps=(x.dayPct>=0?'+':'')+x.dayPct.toFixed(2)+'%';
-      const rv=x.relVol!=null?' Â· '+x.relVol.toFixed(1)+'x vol':'';
+      const rv=x.relVol!=null?' · '+x.relVol.toFixed(1)+'x vol':'';
       const col=x.dayPct>=0?'var(--green)':'var(--red)';
       return '<div class="ec-mom"><span style="color:'+col+';font-weight:700">'+ps+'</span>'+rv+'</div>';
     };
-    const card=(s,up)=>'<div class="ec-card"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'crossed above':'crossed below')+' 120 EMA Â· '+s.t+(s.mAgo>0?' ('+ago(s.mAgo)+')':'')+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' Â· EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
+    const card=(s,up)=>'<div class="ec-card"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'crossed above':'crossed below')+' 120 EMA · '+s.t+(s.mAgo>0?' ('+ago(s.mAgo)+')':'')+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' · EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
     const dv=l=>'<div class="ec-divider">'+l+'</div>';
-    const ac=(s,up)=>'<div class="ec-card ec-already"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'above':'below')+' 120 EMA Â· '+spr(s,up)+'% spread Â· '+s.t+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' Â· EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
+    const ac=(s,up)=>'<div class="ec-card ec-already"><div class="ec-av" style="background:'+avatarColor(s.tk)+'">'+s.tk.slice(0,2)+'</div><div class="ec-body"><div class="ec-sym">'+s.tk+'</div><div class="ec-sub">13 EMA '+(up?'above':'below')+' 120 EMA · '+spr(s,up)+'% spread · '+s.t+'</div>'+mom(s)+'</div><div class="ec-right"><div class="ec-price '+(up?'bull':'bear')+'">'+((s.livePrice||s.price).toFixed(2))+'</div><div class="ec-ema">EMA13 '+s.e13.toFixed(3)+' · EMA120 '+s.e120.toFixed(3)+'</div></div></div>';
     const idle=msg=>'<div class="idle-msg">'+msg+'</div>';
     const upMain=bull.length?'<div class="ec-list">'+bull.map(s=>card(s,true)).join('')+'</div>':idle('No recent bullish crosses (last 30 min)');
     const dnMain=bear.length?'<div class="ec-list">'+bear.map(s=>card(s,false)).join('')+'</div>':idle('No recent bearish crosses (last 30 min)');
-    const upRest=alreadyAbove.length?dv('Already Crossed Above â by momentum')+'<div class="ec-list">'+alreadyAbove.map(s=>ac(s,true)).join('')+'</div>':'';
-    const dnRest=alreadyBelow.length?dv('Already Crossed Below â by momentum')+'<div class="ec-list">'+alreadyBelow.map(s=>ac(s,false)).join('')+'</div>':'';
+    const upRest=alreadyAbove.length?dv('Already Crossed Above - by momentum')+'<div class="ec-list">'+alreadyAbove.map(s=>ac(s,true)).join('')+'</div>':'';
+    const dnRest=alreadyBelow.length?dv('Already Crossed Below - by momentum')+'<div class="ec-list">'+alreadyBelow.map(s=>ac(s,false)).join('')+'</div>':'';
     document.getElementById('ema-up-inner').innerHTML=upMain+upRest;
     document.getElementById('ema-dn-inner').innerHTML=dnMain+dnRest;
   }
