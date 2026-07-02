@@ -517,6 +517,8 @@ class Ema120Tab {
 }
 window.ema120=new Ema120Tab();
 
+const DEFAULT_TICKERS=['CAR','WEN','ASTS','NFLX','MSFT','V','LLY','COIN','OKLO','IREN','AAPL','META','MSTR','BA','PLTR','CRWV','SNOW','MDB','IWM','AMZN','AVGO','TSLA','SPY','QCOM','APP','NBIS','QQQ','HPE','GOOGL','NVDA','SMCI','MRAM','INTC','CRDO','ORCL','AMD','CBRS','DELL','SNDK','AAOI','LITE','MRVL','MU','BTCUSD'];
+let customTickers=[...new Set([...DEFAULT_TICKERS,...JSON.parse(localStorage.getItem('rc_tickers_v2')||'[]')])];
 function renderTickers(){
   document.getElementById('wl-tags').innerHTML=customTickers.map(t=>'<span class="ticker-tag">'+t+'<button onclick="removeTicker(\''+t+'\')">x</button></span>').join('');
 }
