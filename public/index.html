@@ -552,6 +552,7 @@ function applyFSB(id){
   tab.applyFilters();
 }
 
+const ROW_H=50,RACE_DUR=45000,POLL_MS=3000,LERP=0.07;
 class RaceTab{
   constructor(c){
     Object.assign(this,{running:false,rawStocks:[],filtered:[],upRows:{},dnRows:{},startTime:0,rafId:null,lastFetch:0});
